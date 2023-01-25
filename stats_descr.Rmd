@@ -85,6 +85,6 @@ invisible(lapply(list.of.packages, library, character.only = TRUE))
 setwd("~/Documents/ENSAE/Stats_app")
 ```
 
-
+Essai1
 
 
