@@ -50,6 +50,7 @@ setwd("~/Documents/ENSAE/Stats_app")
 ```{r chargement-dataset}
 
 load("~/Documents/ENSAE/Stats_app/Data/donnees.secretisees.delinquance.RData")
+load("C:\\Users\\marie\\OneDrive\\Documents\\cours\\ensae\\stat app\\donnees.secretisees.delinquance.RData") # marie
 
 ```
 
