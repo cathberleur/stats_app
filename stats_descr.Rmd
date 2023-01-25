@@ -89,5 +89,14 @@ Liste des différents indicateurs de délinquance :
     - Vols violents sans arme.
 
 
+Premières stats desc sur toute la base :
+
+```{r stats-desc-toute-la-base}
+table(t.del, t.del$classe)
+```
+
 Maintenant on va créer des sous-bases par type de délinquance (variable classe) et par année (on enlève 2020 et 2021). 
 
+```{r sous-bases}
+
+```
