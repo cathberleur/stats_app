@@ -49,7 +49,9 @@ setwd("~/Documents/ENSAE/Stats_app")
 
 ```{r chargement-dataset}
 
-load("~/Documents/ENSAE/Stats_app/Data/donnees.secretisees.delinquance.RData")
+load("~/Documents/ENSAE/Stats_app/Data/donnees.secretisees.delinquance.RData") #cathu
+load("C:/Users/Utilisateur/Desktop/donnees.secretisees.delinquance.RData") #clem
+
 
 ```
 
