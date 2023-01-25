@@ -49,8 +49,14 @@ setwd("~/Documents/ENSAE/Stats_app")
 
 ```{r chargement-dataset}
 
+<<<<<<< HEAD
 load("~/Documents/ENSAE/Stats_app/Data/donnees.secretisees.delinquance.RData")
 load("C:\\Users\\marie\\OneDrive\\Documents\\cours\\ensae\\stat app\\donnees.secretisees.delinquance.RData") # marie
+=======
+load("~/Documents/ENSAE/Stats_app/Data/donnees.secretisees.delinquance.RData") #cathu
+load("C:/Users/Utilisateur/Desktop/donnees.secretisees.delinquance.RData") #clem
+
+>>>>>>> 0a08780583f155155cad79172f2cc44d6d7097d1
 
 ```
 
