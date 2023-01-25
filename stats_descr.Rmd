@@ -51,11 +51,20 @@ setwd("~/Documents/ENSAE/Stats_app")
 
 
 load("C:\\Users\\marie\\OneDrive\\Documents\\cours\\ensae\\stat app\\donnees.secretisees.delinquance.RData") # marie
-load("~/Documents/ENSAE/Stats_app/Data/donnees.secretisees.delinquance.RData") #cathu
-load("C:/Users/Utilisateur/Desktop/donnees.secretisees.delinquance.RData") #clem
-
+#load("~/Documents/ENSAE/Stats_app/Data/donnees.secretisees.delinquance.RData") #cathu
+#load("C:/Users/Utilisateur/Desktop/donnees.secretisees.delinquance.RData") #clem
 
 ```
+
+```{r chargement-contours-communes}
+contours <- st_read("C:\\Users\\marie\\OneDrive\\Documents\\cours\\ensae\\stat app\\contoursGeographiques") # marie
+```
+
+
+```{r chargement-contours-départements}
+
+```
+
 
 Ce fichier contient un seul objet R, un tibble t.del, comprenant 6,5 millions de lignes et 8 colonnes :
     - id, un identifiant arbitraire.
@@ -84,6 +93,11 @@ Liste des différents indicateurs de délinquance :
     - Vols de véhicules ;
     - Vols sans violence contre des personnes ;
     - Vols violents sans arme.
+    
+```{r merge-données-avec-contours-géographiques}
+donnes_joint_inf <- merge(x=contours,y=t.del, by.x='insee',by.y='cog_com_22_inf', all.x=TRUE)
+
+```
 
 
 Premières stats desc sur toute la base :
@@ -95,5 +109,6 @@ table(t.del, t.del$classe)
 Maintenant on va créer des sous-bases par type de délinquance (variable classe) et par année (on enlève 2020 et 2021). 
 
 ```{r sous-bases}
+joint_inf_A <- subset(joint_inf, classe =="A")
 
 ```
