@@ -1,6 +1,6 @@
 ---
 title: "Statistiques descriptives"
-author: "Stats app"
+author: "Bracq"
 date: "2023-01-25"
 header-includes:
 - \usepackage{fancyhdr}
