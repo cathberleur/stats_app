@@ -35,7 +35,6 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 ```
 
 ```{r, include=FALSE}
-
 list.of.packages <- c("tidyverse", "haven", "readxl", "stats", "ggplot2", "ggcorrplot", "data.table", "dplyr", "corrplot", "stargazer", "Hmisc")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages, repos = "http://cran.us.r-project.org")
@@ -43,6 +42,14 @@ if(length(new.packages)) install.packages(new.packages, repos = "http://cran.us.
 invisible(lapply(list.of.packages, library, character.only = TRUE))
 
 setwd("~/Documents/ENSAE/Stats_app")
+```
+
+
+```{r, charger-libraries}
+library(sf)
+library(rgdal)
+library(cartography)
+library(sp)
 ```
 
 
@@ -94,8 +101,10 @@ Liste des différents indicateurs de délinquance :
     - Vols sans violence contre des personnes ;
     - Vols violents sans arme.
     
-```{r merge-données-avec-contours-géographiques}
-donnes_joint_inf <- merge(x=contours,y=t.del, by.x='insee',by.y='cog_com_22_inf', all.x=TRUE)
+On merge avec les contours géographiques selon le zonage de l'infraction
+```{r merge-données-avec-contours-géographiques-selon-cog_inf}
+donnees_del <- t.del
+donnees_joint_inf <- merge(x=contours,y=t.del, by.x='insee',by.y='cog_com_22_inf', all.x=TRUE)
 
 ```
 
