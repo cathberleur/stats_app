@@ -35,7 +35,7 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 ```
 
 ```{r, include=FALSE}
-list.of.packages <- c("tidyverse", "haven", "readxl", "stats", "ggplot2", "ggcorrplot", "data.table", "dplyr", "corrplot", "stargazer", "Hmisc")
+list.of.packages <- c("tidyverse", "haven", "readxl", "stats", "ggplot2", "ggcorrplot", "data.table", "dplyr", "corrplot", "stargazer", "Hmisc",'cartography','sf','rgdal','sp')
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages, repos = "http://cran.us.r-project.org")
 
