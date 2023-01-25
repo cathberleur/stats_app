@@ -121,5 +121,5 @@ Maintenant on va créer des sous-bases par type de délinquance (variable classe
 t.del.A <- subset(t.del, t.del$classe == "A") #on sélectionne un type de délinquance
 t.del.A2 <- subset(t.del.A, t.del.A$annee %in% c(2016, 2017, 2018, 2019)) #on sélectionne les années
 ```
-
+abcd
 
