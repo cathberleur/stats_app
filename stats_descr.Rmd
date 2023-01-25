@@ -42,48 +42,14 @@ if(length(new.packages)) install.packages(new.packages, repos = "http://cran.us.
 
 invisible(lapply(list.of.packages, library, character.only = TRUE))
 
-header-includes:
-- \usepackage{fancyhdr}
-- \pagestyle{fancy}
-- \fancyhead{}
-- \fancyfoot{}
-- \fancyhead[CO,CE]{Poing Levé}
-- \fancyfoot[CO,CE]{Sondage}
-- \fancyfoot[R]{\thepage}
-output:
-  pdf_document:
-    toc: yes
-    toc_depth : 3
-    latex_engine: xelatex
-  html_document:
-    toc: yes
-editor_options: 
-  markdown: 
-    wrap: sentence
----
-
-```{=html}
-<style>
-body {
-text-align: justify}
-</style>
-```
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
-
-```
-
-```{r, include=FALSE}
-
-list.of.packages <- c("tidyverse", "haven", "readxl", "stats", "ggplot2", "ggcorrplot", "data.table", "dplyr", "corrplot", "stargazer", "Hmisc")
-new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
-if(length(new.packages)) install.packages(new.packages, repos = "http://cran.us.r-project.org")
-
-invisible(lapply(list.of.packages, library, character.only = TRUE))
-
 setwd("~/Documents/ENSAE/Stats_app")
 ```
 
-Push or pull
+
+
+```{r chargement-dataset}
+
+load("~/Documents/ENSAE/Stats_app/Data/donnees.secretisees.delinquance.RData")
+
+```
 
