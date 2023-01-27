@@ -56,10 +56,9 @@ library(sp)
 
 ```{r chargement-dataset}
 
-
 load("C:\\Users\\marie\\OneDrive\\Documents\\cours\\ensae\\stat app\\donnees.secretisees.delinquance.RData") # marie
 #load("~/Documents/ENSAE/Stats_app/Data/donnees.secretisees.delinquance.RData") #cathu
-#load("C:/Users/Utilisateur/Desktop/donnees.secretisees.delinquance.RData") #clem
+load("C:/Users/Utilisateur/Desktop/donnees.secretisees.delinquance.RData") #clem
 
 ```
 
@@ -121,6 +120,7 @@ Maintenant on va créer des sous-bases par type de délinquance (variable classe
 ```{r sous-bases}
 donnees_joint_inf_1619 <- subset(donnees_joint_inf, donnees_joint_inf$annee %in% c(2016, 2017, 2018, 2019)) #on sélectionne les années
 
+
 # Délinquance de type A
 donnees_joint_inf_A <- subset(donnees_joint_inf_1619, donnees_joint_inf_1619$classe == "A") #on sélectionne un type de délinquance
 save(donnees_joint_inf_A, file = "del-merged-A.RData")
@@ -131,5 +131,14 @@ save(donnees_joint_inf_B, file = "del-merged-B.RData")
 
 
 ```
-abcd
+Avec une fonction
+```{r}
+sousbases_classedel <- function(classe) {
+  donnees_joint_inf1 <- subset(donnees_joint_inf_1619, donnees_joint_inf_1619$classe == classe) #on sélectionne un type de délinquance
+  save(donnees_joint_inf1, file = "del-merged-1.RData")
+}
+
+sousbases_classedel(A)
+```
+
 
