@@ -130,15 +130,13 @@ Avec une fonction
 ```{r fonction-classes}
 donnees_joint_inf_1619 <- subset(donnees_joint_inf, donnees_joint_inf$annee %in% c(2016, 2017, 2018, 2019)) #on sélectionne les années
 
-decoupage_classe <- function(classe) {
-  donnees_joint_inf1 <- subset(donnees_joint_inf_1619, donnees_joint_inf_1619$classe == classe) #on sélectionne un type de délinquance
-  saveRDS(donnees_joint_inf1, file = paste(paste('del_merged',classe,sep = "_"),'rds',sep='.')) # on enregistre le sous df correspondant
+decoupage_classe <- function(classe_del) {
+  donnees_joint_inf1 <- subset(donnees_joint_inf_1619, donnees_joint_inf_1619$classe == classe_del) #on sélectionne un type de délinquance
+  saveRDS(donnees_joint_inf1, file = paste(paste('del_merged',classe_del,sep = "_"),'rds',sep='.')) # on enregistre le sous df correspondant
 }
 
 liste_classe <- unique(donnees_del$classe) # on récupère une liste de toutes les classes de délinquance
 lapply(liste_classe, decoupage_classe) # on applique la fonction à chaque classe pour créer le df correspondant
 
-lapply(liste_classe2, decoupage_classe) # on applique la fonction à chaque classe pour créer le df correspondant
-
-
+#A <- readRDS(file = "C:\\Users\\marie\\Documents\\GitHub\\stats_app\\del_merged_A.rds")
 ```
