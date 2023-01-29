@@ -66,3 +66,11 @@ table(t.del.A, t.del.A$dept_serv)
 ```
 
 Il faudrait maintenant merger les zonages.
+aller les chercher sur https://www.insee.fr/fr/information/2028028, premier zip
+Je pense qu'il faut un peu modifier l'excel (supprimer les premières lignes, les feuilles autres que la première et le mettre en csv)
+
+```{r, chargement zonages}
+zonages <- st_read("~/GitHub/stats_app/table-appartenance-geo-communes-22.csv") #Clem
+
+```
+
