@@ -1,5 +1,5 @@
 ---
-title: "Statistiques descriptives"
+title: "Statistiques descriptives - base complète"
 author: "Bracq"
 date: "2023-01-25"
 header-includes:
@@ -133,6 +133,8 @@ save(donnees_joint_inf_B, file = "del-merged-B.RData")
 ```
 Avec une fonction
 ```{r}
+donnees_joint_inf_1619 <- subset(donnees_joint_inf, donnees_joint_inf$annee %in% c(2016, 2017, 2018, 2019)) #on sélectionne les années
+
 sousbases_classedel <- function(classe) {
   donnees_joint_inf1 <- subset(donnees_joint_inf_1619, donnees_joint_inf_1619$classe == classe) #on sélectionne un type de délinquance
   save(donnees_joint_inf1, file = "del-merged-1.RData")
