@@ -1,3 +1,9 @@
 
+<<<<<<< Updated upstream
 *.xlsx
 table-appartenance-geo-communes-22.csv
+=======
+table-appartenance-geo-communes-22.csv
+table-appartenance-geo-communes-22.xlsx
+*.Rmd
+>>>>>>> Stashed changes
