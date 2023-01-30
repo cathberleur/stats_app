@@ -35,7 +35,7 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 ```
 
 ```{r, include=FALSE}
-list.of.packages <- c("tidyverse", "haven", "readxl", "stats", "ggplot2", "ggcorrplot", "data.table", "dplyr", "corrplot", "stargazer", "Hmisc",'cartography','sf','rgdal','sp')
+list.of.packages <- c("tidyverse", "haven", "readxl", "stats", "ggplot2", "ggcorrplot", "data.table", "dplyr", "corrplot", "stargazer", "Hmisc",'cartography','sf','rgdal','sp','xlsx')
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages, repos = "http://cran.us.r-project.org")
 
@@ -50,11 +50,19 @@ library(sf)
 library(rgdal)
 library(cartography)
 library(sp)
+library(xlsx)
 ```
 
 Le but étant d'alléger la base, penser à nettoyer le "global environment" avant de charger une sous-base.
 ```{r, chargement d'une sous-base}
 t.del.A <- load("~/GitHub/stats_app/del-merged-A.RData") #Clem
+
+```
+
+```{r, chargement-d-une-sous-base}
+t.del.A <- readRDS("~/GitHub/stats_app/del_merged_A.rds") #marie
+table(t.del.A, t.del.A$dept_serv)
+
 
 ```
 
@@ -69,8 +77,10 @@ Il faudrait maintenant merger les zonages.
 aller les chercher sur https://www.insee.fr/fr/information/2028028, premier zip
 Je pense qu'il faut un peu modifier l'excel (supprimer les premières lignes, les feuilles autres que la première et le mettre en csv)
 
-```{r, chargement zonages}
+```{r, chargement-zonages}
 zonages <- st_read("~/GitHub/stats_app/table-appartenance-geo-communes-22.csv") #Clem
 
+urlfile<-'https://raw.githubusercontent.com/cathberleur/stats_app/main/table-appartenance-geo-communes-22.csv?token=GHSAT0AAAAAAB55A24UDD3QHO7RUTQ73G3GY6XRXWA'
+dsin<-read.table(urlfile, header=TRUE)
+zonages2 <- 
 ```
-
