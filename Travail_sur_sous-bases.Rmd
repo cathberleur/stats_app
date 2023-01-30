@@ -80,6 +80,6 @@ Je pense qu'il faut un peu modifier l'excel (supprimer les premières lignes, le
 ```{r, chargement-zonages}
 zonages <- st_read("~/GitHub/stats_app/table-appartenance-geo-communes-22.csv") #Clem
 
-urlfile<-'https://raw.githubusercontent.com/cathberleur/stats_app/main/table-appartenance-geo-communes-22.csv?token=GHSAT0AAAAAAB55A24UDD3QHO7RUTQ73G3GY6XRXWA'
-zonages2 <- read.csv(urlfile, header=TRUE)
+urlfile<-'https://raw.githubusercontent.com/cathberleur/stats_app/main/table-appartenance-geo-communes-22.csv?token=GHSAT0AAAAAAB55A24UQMWX5OKPKFPWK65CY6XT75A'
+zonaliste_labels <- c('Code géographique','Libellé géographique','Département	Région','Arrondissement','Canton ville','Intercommunalité - Métropole',"Nature d'EPCI","Zone d'emploi 2020",'Unité urbaine 2020',"Tranche d'unité urbaine 2020 calculée sur la population 2017","Tranche détaillée d'unité urbaine 2020 calculée sur la population 2017","Aire d'attraction des villes 2020","Tranche d'aire d'attraction des villes 2020 calculée sur la population 2017","Tranche détaillée d'aire d'attraction des villes 2020 calculée sur la population 2017","Catégorie commune dans aire d'attraction des villes 2020","Bassin de vie 2012")
 ```
