@@ -67,12 +67,6 @@ contours <- st_read("C:\\Users\\marie\\OneDrive\\Documents\\cours\\ensae\\stat a
 contours <- st_read("C:\\Users\\Utilisateur\\Desktop\\contoursGeographiques") #Clem
 ```
 
-
-```{r chargement-contours-départements}
-
-```
-
-
 Ce fichier contient un seul objet R, un tibble t.del, comprenant 6,5 millions de lignes et 8 colonnes :
     - id, un identifiant arbitraire.
     - annee, qui ne correspond pas à la vraie année enregistrée, elles ont toutes été permutées.
@@ -105,7 +99,8 @@ On merge avec les contours géographiques selon le zonage de l'infraction
 ```{r merge-données-avec-contours-géographiques-selon-cog_inf}
 donnees_del <- t.del
 donnees_joint_inf <- merge(x=contours,y=t.del, by.x='insee',by.y='cog_com_22_inf', all.x=TRUE)
-
+save(donnees_joint_inf, file = "del_merged.RData")
+rm(t.del)
 ```
 
 
@@ -127,20 +122,21 @@ save(donnees_joint_inf_A, file = "del-merged-A.RData")
 
 # Délinquance de type B
 donnees_joint_inf_B <- subset(donnees_joint_inf_1619, donnees_joint_inf_1619$classe == "B") #on sélectionne un type de délinquance
-save(donnees_joint_inf_B, file = "del-merged-B.RData")
+saveRDS(donnees_joint_inf_B, file = "del-merged-B.rds")
 
 
 ```
 Avec une fonction
-```{r}
+```{r fonction-classes}
 donnees_joint_inf_1619 <- subset(donnees_joint_inf, donnees_joint_inf$annee %in% c(2016, 2017, 2018, 2019)) #on sélectionne les années
 
-sousbases_classedel <- function(classe) {
-  donnees_joint_inf1 <- subset(donnees_joint_inf_1619, donnees_joint_inf_1619$classe == classe) #on sélectionne un type de délinquance
-  save(donnees_joint_inf1, file = "del-merged-1.RData")
+decoupage_classe <- function(classe_del) {
+  donnees_joint_inf1 <- subset(donnees_joint_inf_1619, donnees_joint_inf_1619$classe == classe_del) #on sélectionne un type de délinquance
+  saveRDS(donnees_joint_inf1, file = paste(paste('del_merged',classe_del,sep = "_"),'rds',sep='.')) # on enregistre le sous df correspondant
 }
 
-sousbases_classedel(A)
+liste_classe <- unique(donnees_del$classe) # on récupère une liste de toutes les classes de délinquance
+lapply(liste_classe, decoupage_classe) # on applique la fonction à chaque classe pour créer le df correspondant
+
+#A <- readRDS(file = "C:\\Users\\marie\\Documents\\GitHub\\stats_app\\del_merged_A.rds")
 ```
-
-
