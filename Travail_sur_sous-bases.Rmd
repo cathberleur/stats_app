@@ -81,6 +81,5 @@ Je pense qu'il faut un peu modifier l'excel (supprimer les premières lignes, le
 zonages <- st_read("~/GitHub/stats_app/table-appartenance-geo-communes-22.csv") #Clem
 
 urlfile<-'https://raw.githubusercontent.com/cathberleur/stats_app/main/table-appartenance-geo-communes-22.csv?token=GHSAT0AAAAAAB55A24UDD3QHO7RUTQ73G3GY6XRXWA'
-dsin<-read.table(urlfile, header=TRUE)
-zonages2 <- 
+zonages2 <- read.csv(urlfile, header=TRUE)
 ```
