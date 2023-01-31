@@ -1,0 +1,142 @@
+----
+title: "Statistiques descriptives - base complète"
+author: "Bracq"
+date: "2023-01-25"
+header-includes:
+- \usepackage{fancyhdr}
+- \pagestyle{fancy}
+- \fancyhead{}
+- \fancyfoot{}
+- \fancyhead[CO,CE]{Poing Levé}
+- \fancyfoot[CO,CE]{Sondage}
+- \fancyfoot[R]{\thepage}
+output:
+  pdf_document:
+    toc: yes
+    toc_depth : 3
+    latex_engine: xelatex
+  html_document:
+    toc: yes
+editor_options: 
+  markdown: 
+    wrap: sentence
+---
+
+```{=html}
+<style>
+body {
+text-align: justify}
+</style>
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+
+```
+
+```{r, include=FALSE}
+list.of.packages <- c("tidyverse", "haven", "readxl", "stats", "ggplot2", "ggcorrplot", "data.table", "dplyr", "corrplot", "stargazer", "Hmisc",'cartography','sf','rgdal','sp')
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages, repos = "http://cran.us.r-project.org")
+
+invisible(lapply(list.of.packages, library, character.only = TRUE))
+
+setwd("~/Documents/ENSAE/Stats_app")
+```
+
+
+```{r, charger-libraries}
+library(sf)
+library(rgdal)
+library(cartography)
+library(sp)
+```
+
+
+
+```{r chargement-dataset}
+
+load("C:\\Users\\marie\\OneDrive\\Documents\\cours\\ensae\\stat app\\donnees.secretisees.delinquance.RData") # marie
+#load("~/Documents/ENSAE/Stats_app/Data/donnees.secretisees.delinquance.RData") #cathu
+load("C:/Users/Utilisateur/Desktop/donnees.secretisees.delinquance.RData") #clem
+
+```
+
+```{r chargement-contours-communes}
+contours <- st_read("C:\\Users\\marie\\OneDrive\\Documents\\cours\\ensae\\stat app\\contoursGeographiques") # marie
+contours <- st_read("C:\\Users\\Utilisateur\\Desktop\\contoursGeographiques") #Clem
+```
+
+Ce fichier contient un seul objet R, un tibble t.del, comprenant 6,5 millions de lignes et 8 colonnes :
+    - id, un identifiant arbitraire.
+    - annee, qui ne correspond pas à la vraie année enregistrée, elles ont toutes été permutées.
+    - duree_debut_fait_date_enregistrement, qui correspond à la durée écoulée, en jours, entre la date de début des faits et la date d'enregistrement de l'infraction.
+    - classe, qui correspond à la forme de délinquance. Les 12 indicateurs sont habituellement suivis par le SSMSI (liste ci-dessous). Leur nom a été remplacé par une lettre arbitraire.
+    - dept_serv, le département du service où a été enregistrée l'infraction.
+    - un trinôme de communes en géographie figée au 1er janvier 2022 :
+    - une commune pour le lieu de commission de l'infraction ;
+    - une commune pour le lieu de résidence de la victime (ou siège pour une entreprise, ...) ;
+    - une commune pour le lieu de résidence du mis en cause.
+          -> pour la secrétisation des données, ce trinôme a été modifiée. Chacune des trois communes a été (ou pas) remplacée par une commune voisine. Les structures géographiques devraient être donc en grande partie conservées.
+
+Ainsi, ce tableau de données  correspond à un échantillon des données de délinquance entre 2016 et 2021, un taux de sondage différent par classe ayant été appliqué.
+
+Liste des différents indicateurs de délinquance :
+    - Cambriolages de logement ;
+    - Coups et blessures volontaires dans la sphère familiale ;
+    - Coups et blessures volontaires en dehors de la sphère familiale ;
+    - Destructions et dégradations ;
+    - Homicides ;
+    - Violences sexuelles ;
+    - Vols avec armes ;
+    - Vols d'accessoires sur véhicules ;
+    - Vols dans les véhicules ;
+    - Vols de véhicules ;
+    - Vols sans violence contre des personnes ;
+    - Vols violents sans arme.
+    
+On merge avec les contours géographiques selon le zonage de l'infraction
+```{r merge-données-avec-contours-géographiques-selon-cog_inf}
+donnees_del <- t.del
+donnees_joint_inf <- merge(x=contours,y=t.del, by.x='insee',by.y='cog_com_22_inf', all.x=TRUE)
+save(donnees_joint_inf, file = "del_merged.RData")
+rm(t.del)
+```
+
+
+Premières stats desc sur toute la base :
+
+```{r stats-desc-toute-la-base}
+table(t.del, t.del$classe) ##Attention fait planter mon ordi
+```
+
+Maintenant on va créer des sous-bases par type de délinquance (variable classe) et par année (on enlève 2020 et 2021). 
+
+```{r sous-bases}
+donnees_joint_inf_1619 <- subset(donnees_joint_inf, donnees_joint_inf$annee %in% c(2016, 2017, 2018, 2019)) #on sélectionne les années
+
+
+# Délinquance de type A
+donnees_joint_inf_A <- subset(donnees_joint_inf_1619, donnees_joint_inf_1619$classe == "A") #on sélectionne un type de délinquance
+save(donnees_joint_inf_A, file = "del-merged-A.RData")
+
+# Délinquance de type B
+donnees_joint_inf_B <- subset(donnees_joint_inf_1619, donnees_joint_inf_1619$classe == "B") #on sélectionne un type de délinquance
+saveRDS(donnees_joint_inf_B, file = "del-merged-B.rds")
+
+
+```
+Avec une fonction
+```{r fonction-classes}
+donnees_joint_inf_1619 <- subset(donnees_joint_inf, donnees_joint_inf$annee %in% c(2016, 2017, 2018, 2019)) #on sélectionne les années
+
+decoupage_classe <- function(classe_del) {
+  donnees_joint_inf1 <- subset(donnees_joint_inf_1619, donnees_joint_inf_1619$classe == classe_del) #on sélectionne un type de délinquance
+  saveRDS(donnees_joint_inf1, file = paste(paste('del_merged',classe_del,sep = "_"),'rds',sep='.')) # on enregistre le sous df correspondant
+}
+
+liste_classe <- unique(donnees_del$classe) # on récupère une liste de toutes les classes de délinquance
+lapply(liste_classe, decoupage_classe) # on applique la fonction à chaque classe pour créer le df correspondant
+
+#A <- readRDS(file = "C:\\Users\\marie\\Documents\\GitHub\\stats_app\\del_merged_A.rds")
+```
