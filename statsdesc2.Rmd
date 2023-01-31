@@ -60,7 +60,7 @@ library(sp)
 load("C:\\Users\\marie\\OneDrive\\Documents\\cours\\ensae\\stat app\\donnees.secretisees.delinquance.RData") # marie
 #load("~/Documents/ENSAE/Stats_app/Data/donnees.secretisees.delinquance.RData") #cathu
 load("C:/Users/Utilisateur/Desktop/donnees.secretisees.delinquance.RData") #clem
-
+load("/Users/sklenard/Downloads/donnees.secretisees.delinquance.RData")# Gaby 
 ```
 
 ```{r chargement-contours-communes}
@@ -108,7 +108,8 @@ rm(t.del)
 Premières stats desc sur toute la base :
 
 ```{r stats-desc-toute-la-base}
-table(t.del, t.del$classe) ##Attention fait planter mon ordi
+table(t.del, t.del$classe) ##Attention fait planter mon ordi (Clémence)
+# Erreur dans xtfrm.data.frame(x) : (converti depuis l'avis) impossible d’utiliser xtfrm sur un tableau de données (data frame) (Gabriel)
 ```
 
 Maintenant on va créer des sous-bases par type de délinquance (variable classe) et par année (on enlève 2020 et 2021). 
