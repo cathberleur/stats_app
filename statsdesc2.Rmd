@@ -42,6 +42,7 @@ if(length(new.packages)) install.packages(new.packages, repos = "http://cran.us.
 invisible(lapply(list.of.packages, library, character.only = TRUE))
 
 setwd("~/Documents/ENSAE/Stats_app")
+#me donne une erreur : Error in FUN(X[[i]], ...) : aucun package nommé ‘ggcorrplot’ n'est trouvé
 ```
 
 
@@ -139,4 +140,8 @@ liste_classe <- unique(donnees_del$classe) # on récupère une liste de toutes l
 lapply(liste_classe, decoupage_classe) # on applique la fonction à chaque classe pour créer le df correspondant
 
 #A <- readRDS(file = "C:\\Users\\marie\\Documents\\GitHub\\stats_app\\del_merged_A.rds")
+#A <- readRDS(file = "C:/Users/Utilisateur/Documents/GitHub/stats_app/del_merged_A.rds")#clem
+
 ```
+
+

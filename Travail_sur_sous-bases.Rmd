@@ -56,7 +56,6 @@ library(dplyr)
 
 Le but étant d'alléger la base, penser à nettoyer le "global environment" avant de charger une sous-base.
 ```{r, chargement-d-une-sous-base}
-t.del.A <- load("~/GitHub/stats_app/del-merged-A.RData") #Clem
 
 t.del.A <- readRDS("~/GitHub/stats_app/del_merged_A.rds") #avec la fonction
 ```
