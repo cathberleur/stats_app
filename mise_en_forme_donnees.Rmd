@@ -1,6 +1,6 @@
 ---
 title: "Statistiques descriptives - base complète"
-author: "Bracq"
+author: "Bracq, Meyer"
 date: "2023-01-25"
 header-includes:
 - \usepackage{fancyhdr}
