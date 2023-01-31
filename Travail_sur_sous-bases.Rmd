@@ -57,11 +57,12 @@ Le but étant d'alléger la base, penser à nettoyer le "global environment" ava
 ```{r, chargement d'une sous-base}
 t.del.A <- load("~/GitHub/stats_app/del-merged-A.RData") #Clem
 
+t.del.A <- readRDS("~/GitHub/stats_app/del_merged_A.rds") #avec la fonction
+table(t.del.A, t.del.A$dept_serv)
 ```
 
 ```{r, chargement-d-une-sous-base}
-t.del.A <- readRDS("~/GitHub/stats_app/del_merged_A.rds") #marie
-table(t.del.A, t.del.A$dept_serv)
+
 
 
 ```
@@ -79,7 +80,4 @@ Je pense qu'il faut un peu modifier l'excel (supprimer les premières lignes, le
 
 ```{r, chargement-zonages}
 zonages <- st_read("~/GitHub/stats_app/table-appartenance-geo-communes-22.csv") #Clem
-
-urlfile<-'https://raw.githubusercontent.com/cathberleur/stats_app/main/table-appartenance-geo-communes-22.csv?token=GHSAT0AAAAAAB55A24UQMWX5OKPKFPWK65CY6XT75A'
-zonaliste_labels <- c('Code géographique','Libellé géographique','Département	Région','Arrondissement','Canton ville','Intercommunalité - Métropole',"Nature d'EPCI","Zone d'emploi 2020",'Unité urbaine 2020',"Tranche d'unité urbaine 2020 calculée sur la population 2017","Tranche détaillée d'unité urbaine 2020 calculée sur la population 2017","Aire d'attraction des villes 2020","Tranche d'aire d'attraction des villes 2020 calculée sur la population 2017","Tranche détaillée d'aire d'attraction des villes 2020 calculée sur la population 2017","Catégorie commune dans aire d'attraction des villes 2020","Bassin de vie 2012")
 ```
