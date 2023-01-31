@@ -51,6 +51,7 @@ library(sf)
 library(rgdal)
 library(cartography)
 library(sp)
+library(stringr)
 ```
 
 
