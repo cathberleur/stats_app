@@ -54,17 +54,17 @@ library(dplyr)
 
 ```
 
-Le but étant d'alléger la base, penser à nettoyer le "global environment" avant de charger une sous-base.
+Le but étant d'alléger la base, penser à nettoyer le "global environment" avant de charger une sous-base. A exécuter après la feuille mise_en_forme_donnees (ou changer le lien de chargement des fichiers si ils sont enregistrés ailleurs pour ne pas les recréer inutilement à chaque fois)
 ```{r, chargement-d-une-sous-base}
 
-t.del.A <- readRDS("~/GitHub/stats_app/del_merged_A.rds") #avec la fonction
+t.del.A <- readRDS("~/GitHub/stats_app/del_merged_A.rds")
 ```
 
 
 ```{r stats-desc}
 table(t.del.A, t.del.A$dept_serv)
-
-#Error in t.del.A$dept_serv : $ operator is invalid for atomic vectors : je sais pas pouquoi ça marchepas...
+# très long, pas sûre que ça marche...
+#Error in t.del.A$dept_serv : $ operator is invalid for atomic vectors : je sais pas pouquoi ça marchepas... (clem)
 ```
 
 ```{r}
