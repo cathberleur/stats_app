@@ -126,9 +126,10 @@ saveRDS(df_zonage, file = "del_merged.rds")
 
 Premières stats desc sur toute la base :
 
-```{r tableau-1}
-table(t.del$annee, t.del$classe)
-tab1 <- table(t.del$annee, t.del$classe)
+```{r tableau-1-prop}
+tab1 <- table(t.del$classe, t.del$annee)
+prop.table(tab1)*100
+#en réflexion... objectif : faire des pourcentages
 ```
 
 ```{r tableau-2}
@@ -140,16 +141,16 @@ tab2 <- table(t.del$dept_serv, t.del$classe)
 barplot(table(t.del$classe), col = "#1b98e0", main = "Effectifs par classe de délinquance", xlab="Classe de délinquance", ylab = "Effectifs")
 ```
 
+
 ```{r mosaicplot}
-mosaicplot(tab2, shade = T, las = 2, main = "titre", xlab= "?x", ylab="y")
+#ici le mosaicplot est illisible : il faudrait créer une variable région
+#tab3 <- table(t.del$classe, t.del$region)
+mosaicplot(tab2, shade = T, las = 2, main = "Type de délinquance selon le département", xlab= "Départements", ylab="Classe de délinquance")
 ```
 
-```{r boxplot}
-boxplot(t.del$annee, main = "titre", ylab= "y")
-```
 
 ```{r tapply}
-tapply(t.del$annee, t.del$classe, summary, na.rm=TRUE)
+tapply(t.del$id, t.del$classe, , na.rm=TRUE)
 
 ```
 
@@ -186,4 +187,10 @@ lapply(liste_classe, decoupage_classe) # on applique la fonction à chaque class
 
 # df_zonage1 <- merge(x=donnees_joint_inf1, y=zonages, by.x='insee', by.y='CODGEO', all.x=TRUE)
 #  saveRDS(df_zonage
+```
+
+
+```{r boxplot}
+#pas d'intérêt ici mais comme ça on a le code pour en faire un si besoin
+boxplot(t.del$annee, main = "titre", ylab= "y")
 ```
