@@ -85,3 +85,20 @@ saveRDS(t.del.A_merged, file = "del_merged_A.rds")
 
 ```
 
+On crée une fonction pour faire la même chose sur toutes les classes
+
+```{r}
+
+merge_zonages_contours <- function(df_del) {
+  df_del.long <- melt(data = df_del, id.vars=c('id',"annee","duree_debut_fait_date_enregistrement","classe","dept_serv"),variable.name='info commune', value.name='commune')
+  df_del.long <- as_tibble(df_del.long)
+  df_del_geo <- merge(x=contours,y=df_del.long, by.x='insee',by.y='commune', all.y=TRUE)
+  df_del_geo$insee = str_remove(df_del_geo$insee, "^0+")
+  df_del_merged <- merge(x=df_del_geo, y=zonages, by.x='insee', by.y='CODGEO', all.x=TRUE)
+  df_del_merged <- as_tibble(df_del_merged)
+  saveRDS(df_del_merged, file = paste(paste('del_merged',classe_del,sep = "_"),'rds',sep='.')) # on enregistre le sous df correspondant
+}
+
+```
+
+
