@@ -122,8 +122,6 @@ saveRDS(df_zonage, file = "del_merged.rds")
 
 ```
 
-
-
 Premières stats desc sur toute la base :
 
 ```{r tableau-1-prop}
@@ -141,20 +139,6 @@ tab2 <- table(t.del$dept_serv, t.del$classe)
 barplot(table(t.del$classe), col = "#1b98e0", main = "Effectifs par classe de délinquance", xlab="Classe de délinquance", ylab = "Effectifs")
 ```
 
-
-```{r mosaicplot}
-#ici le mosaicplot est illisible : il faudrait créer une variable région
-#tab3 <- table(t.del$classe, t.del$region)
-mosaicplot(tab2, shade = T, las = 2, main = "Type de délinquance selon le département", xlab= "Départements", ylab="Classe de délinquance")
-```
-
-
-```{r tapply}
-tapply(t.del$id, t.del$classe, , na.rm=TRUE)
-
-```
-
-
 Maintenant on va créer des sous-bases par type de délinquance (variable classe) et par année (on enlève 2020 et 2021). 
 
 ```{r sous-bases}
@@ -171,6 +155,7 @@ saveRDS(donnees_joint_inf_B, file = "del-merged-B.rds")
 
 
 ```
+
 Avec une fonction
 ```{r fonction-classes}
 donnees_joint_inf_1619 <- subset(df_zonage, df_zonage$annee %in% c(2016, 2017, 2018, 2019)) #on sélectionne les années
@@ -189,8 +174,22 @@ lapply(liste_classe, decoupage_classe) # on applique la fonction à chaque class
 #  saveRDS(df_zonage
 ```
 
+Trucs en cours :
+
+
+```{r mosaicplot}
+#ici le mosaicplot est illisible : il faudrait créer une variable région
+#tab3 <- table(t.del$classe, t.del$region)
+mosaicplot(tab2, shade = T, las = 2, main = "Type de délinquance selon le département", xlab= "Départements", ylab="Classe de délinquance")
+```
+
 
 ```{r boxplot}
 #pas d'intérêt ici mais comme ça on a le code pour en faire un si besoin
 boxplot(t.del$annee, main = "titre", ylab= "y")
+```
+
+```{r tapply}
+#tapply(t.del$, t.del$, , na.rm=TRUE)
+#pareil en réflexion
 ```
