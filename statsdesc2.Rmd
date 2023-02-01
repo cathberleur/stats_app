@@ -1,6 +1,6 @@
-----
+---
 title: "Statistiques descriptives - base complète"
-author: "Bracq"
+author: "Bracq, Berleur, Meyer, Sklenard"
 date: "2023-01-25"
 header-includes:
 - \usepackage{fancyhdr}
@@ -35,33 +35,33 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 ```
 
 ```{r, include=FALSE}
-list.of.packages <- c("tidyverse", "haven", "readxl", "stats", "ggplot2", "ggcorrplot", "data.table", "dplyr", "corrplot", "stargazer", "Hmisc",'cartography','sf','rgdal','sp')
+list.of.packages <- c("tidyverse", "sf", "readxl", "rgdal", "ggplot2", "data.table", "dplyr", "stargazer", "cartography","sf","rgdal","sp","readr", "sp", "stringr", "questionr")
+
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages, repos = "http://cran.us.r-project.org")
 
 invisible(lapply(list.of.packages, library, character.only = TRUE))
 
-setwd("~/Documents/ENSAE/Stats_app")
-#me donne une erreur : Error in FUN(X[[i]], ...) : aucun package nommé ‘ggcorrplot’ n'est trouvé
+setwd("~/Documents/ENSAE/Stats_app/git") #cathu
 ```
 
 
 ```{r, charger-libraries}
-library(sf)
-library(rgdal)
-library(cartography)
-library(sp)
-library(stringr)
+# library(sf)
+# library(rgdal)
+# library(cartography)
+# library(sp)
+# library(stringr)
 ```
 
 
 
 ```{r chargement-dataset}
 
-load("C:\\Users\\marie\\OneDrive\\Documents\\cours\\ensae\\stat app\\donnees.secretisees.delinquance.RData") # marie
-#load("~/Documents/ENSAE/Stats_app/Data/donnees.secretisees.delinquance.RData") #cathu
-load("C:/Users/Utilisateur/Desktop/donnees.secretisees.delinquance.RData") #clem
-load("/Users/sklenard/Downloads/donnees.secretisees.delinquance.RData")# Gaby 
+# load("C:\\Users\\marie\\OneDrive\\Documents\\cours\\ensae\\stat app\\donnees.secretisees.delinquance.RData") # marie
+load("~/Documents/ENSAE/Stats_app/Data/donnees.secretisees.delinquance.RData") #cathu
+# load("C:/Users/Utilisateur/Desktop/donnees.secretisees.delinquance.RData") #clem
+# load("/Users/sklenard/Downloads/donnees.secretisees.delinquance.RData")# Gaby 
 ```
 
 ```{r chargement-contours-communes}
