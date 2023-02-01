@@ -51,24 +51,28 @@ library(rgdal)
 library(cartography)
 library(sp)
 library(dplyr)
-
+library(tibble)
+library(data.table)
+library(reshape2)
 ```
 
 Le but étant d'alléger la base, penser à nettoyer le "global environment" avant de charger une sous-base. A exécuter après la feuille mise_en_forme_donnees (ou changer le lien de chargement des fichiers si ils sont enregistrés ailleurs pour ne pas les recréer inutilement à chaque fois)
 ```{r, chargement-d-une-sous-base}
 
 t.del.A <- readRDS("~/GitHub/stats_app/del_merged_A.rds")
+#t.del.A <- readRDS("C:\\Users\\marie\\OneDrive\\Documents\\cours\\ensae\\stat app\\sous df\\del_merged_A.rds")
 ```
 
 
 ```{r stats-desc}
 table(t.del.A, t.del.A$dept_serv)
-# très long, pas sûre que ça marche...
 #Error in t.del.A$dept_serv : $ operator is invalid for atomic vectors : je sais pas pouquoi ça marchepas... (clem)
 ```
 
-```{r}
-
+```{r essai}
+t.del.A
+t.del.A_long <- melt(data = t.del.A, id.vars=c('id',"annee","duree_debut_fait_date_enregistrement","classe","dept_serv"),variable.name='info commune', value.name='commune')
+t.del.A_long <- as_tibble(t.del.A_long)
 ```
 
 
