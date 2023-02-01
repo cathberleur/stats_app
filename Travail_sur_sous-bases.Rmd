@@ -68,11 +68,20 @@ t.del.A <- readRDS("~/GitHub/stats_app/del_merged_A.rds")
 table(t.del.A, t.del.A$dept_serv)
 #Error in t.del.A$dept_serv : $ operator is invalid for atomic vectors : je sais pas pouquoi ça marchepas... (clem)
 ```
-
-```{r essai}
+On transforme le df en formant long pour avoir une colonne 'info commune' (infraction, mec ou victime) et une colonne 'commune'
+```{r wide_to_long}
 t.del.A
 t.del.A_long <- melt(data = t.del.A, id.vars=c('id',"annee","duree_debut_fait_date_enregistrement","classe","dept_serv"),variable.name='info commune', value.name='commune')
 t.del.A_long <- as_tibble(t.del.A_long)
 ```
 
+On merge avec les contours géo et les zonages de l'insee !!
+```{r jointures}
+t.del.A_geo <- merge(x=contours,y=t.del.A_long, by.x='insee',by.y='commune', all.y=TRUE)
+t.del.A_geo$insee = str_remove(t.del.A_geo$insee, "^0+")
+t.del.A_merged <- merge(x=t.del.A_geo, y=zonages, by.x='insee', by.y='CODGEO', all.x=TRUE)
+t.del.A_merged <- as_tibble(t.del.A_merged)
+saveRDS(t.del.A_merged, file = "del_merged_A.rds")
+
+```
 
