@@ -108,20 +108,36 @@ Liste des différents indicateurs de délinquance :
     - Vols de véhicules ;
     - Vols sans violence contre des personnes ;
     - Vols violents sans arme.
-    
-On merge avec les contours géographiques selon le zonage de l'infraction
-```{r merge-données-avec-contours-géographiques-selon-cog_inf}
-donnees_del <- t.del
-donnees_joint_inf <- merge(x=contours,y=t.del, by.x='insee',by.y='cog_com_22_inf', all.y=TRUE)
+
+
+Maintenant on va créer des sous-bases par type de délinquance (variable classe) et par année (on enlève 2020 et 2021). 
+
+Avec une fonction
+```{r fonction-classes}
+donnees_joint_inf_1619 <- subset(t.del, t.del$annee %in% c(2016, 2017, 2018, 2019)) #on sélectionne les années
+
+decoupage_classe <- function(classe_del) {
+  donnees_joint_inf1 <- subset(donnees_joint_inf_1619, donnees_joint_inf_1619$classe == classe_del) #on sélectionne un type de délinquance
+  saveRDS(donnees_joint_inf1, file = paste(paste('del_merged',classe_del,sep = "_"),'rds',sep='.')) # on enregistre le sous df correspondant
+}
+
+liste_classe <- unique(t.del$classe) # on récupère une liste de toutes les classes de délinquance
+lapply(liste_classe, decoupage_classe) # on applique la fonction à chaque classe pour créer le df correspondant
+
+#A <- readRDS(file = "C:\\Users\\marie\\Documents\\GitHub\\stats_app\\del_merged_A.rds")
+
+# df_zonage1 <- merge(x=donnees_joint_inf1, y=zonages, by.x='insee', by.y='CODGEO', all.x=TRUE)
+#  saveRDS(df_zonage
 ```
 
-```{r merge-avec-zonages-insee}
-donnees_joint_inf$insee = str_remove(donnees_joint_inf$insee, "^0+")
-df_zonage <- merge(x=donnees_joint_inf, y=zonages, by.x='insee', by.y='CODGEO', all.x=TRUE)
-saveRDS(df_zonage, file = "del_merged.rds")
+<<<<<<< Updated upstream
+=======
+>>>>>>> Stashed changes
 
-```
 
+
+
+>>>>>>> Stashed changes
 Premières stats desc sur toute la base :
 
 ```{r tableau-1-prop}
