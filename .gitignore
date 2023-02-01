@@ -7,3 +7,7 @@ table-appartenance-geo-communes-22.csv
 table-appartenance-geo-communes-22.xlsx
 *.Rmd
 >>>>>>> Stashed changes
+del-merged-1.RData
+*.RData
+*.rds
+*.Rda
