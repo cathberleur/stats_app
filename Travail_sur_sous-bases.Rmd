@@ -51,6 +51,7 @@ library(rgdal)
 library(cartography)
 library(sp)
 library(dplyr)
+library(tibble)
 
 ```
 
@@ -58,6 +59,7 @@ Le but étant d'alléger la base, penser à nettoyer le "global environment" ava
 ```{r, chargement-d-une-sous-base}
 
 t.del.A <- readRDS("~/GitHub/stats_app/del_merged_A.rds")
+#t.del.A <- readRDS("C:\\Users\\marie\\OneDrive\\Documents\\cours\\ensae\\stat app\\sous df\\del_merged_A.rds")
 ```
 
 
@@ -67,8 +69,9 @@ table(t.del.A, t.del.A$dept_serv)
 #Error in t.del.A$dept_serv : $ operator is invalid for atomic vectors : je sais pas pouquoi ça marchepas... (clem)
 ```
 
-```{r}
-
+```{r essai}
+d.del.A
+df_A_long <- melt(data = t.del.A, id.vars=c('insee',"nom","wikipedia","surf_ha","id","annee","duree_debut_fait_date_enregistrement","classe","dept_serv"),variable.ame=)
 ```
 
 

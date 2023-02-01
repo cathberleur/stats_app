@@ -35,7 +35,7 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 ```
 
 ```{r, include=FALSE}
-list.of.packages <- c("tidyverse", "haven", "readxl", "stats", "ggplot2", "ggcorrplot", "data.table", "dplyr", "corrplot", "stargazer", "Hmisc",'cartography','sf','rgdal','sp','readr')
+list.of.packages <- c("tidyverse", "haven", "readxl", "stats", "ggplot2", "ggcorrplot", "data.table", "dplyr", "corrplot", "stargazer", "Hmisc",'cartography','sf','rgdal','sp','readr','tibble')
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages, repos = "http://cran.us.r-project.org")
 
@@ -51,6 +51,7 @@ library(rgdal)
 library(cartography)
 library(sp)
 library(stringr)
+library(tibble)
 ```
 
 
@@ -105,7 +106,28 @@ Liste des différents indicateurs de délinquance :
     - Vols de véhicules ;
     - Vols sans violence contre des personnes ;
     - Vols violents sans arme.
-    
+
+Maintenant on va créer des sous-bases par type de délinquance (variable classe) et par année (on enlève 2020 et 2021). 
+
+Avec une fonction
+```{r fonction-classes}
+donnees_joint_inf_1619 <- subset(t.del, t.del$annee %in% c(2016, 2017, 2018, 2019)) #on sélectionne les années
+
+decoupage_classe <- function(classe_del) {
+  donnees_joint_inf1 <- subset(donnees_joint_inf_1619, donnees_joint_inf_1619$classe == classe_del) #on sélectionne un type de délinquance
+  saveRDS(donnees_joint_inf1, file = paste(paste('del_merged',classe_del,sep = "_"),'rds',sep='.')) # on enregistre le sous df correspondant
+}
+
+liste_classe <- unique(t.del$classe) # on récupère une liste de toutes les classes de délinquance
+lapply(liste_classe, decoupage_classe) # on applique la fonction à chaque classe pour créer le df correspondant
+
+#A <- readRDS(file = "C:\\Users\\marie\\Documents\\GitHub\\stats_app\\del_merged_A.rds")
+
+# df_zonage1 <- merge(x=donnees_joint_inf1, y=zonages, by.x='insee', by.y='CODGEO', all.x=TRUE)
+#  saveRDS(df_zonage
+```
+
+On mergera après en fait ...
 On merge avec les contours géographiques selon le zonage de l'infraction
 ```{r merge-données-avec-contours-géographiques-selon-cog_inf}
 donnees_del <- t.del
@@ -128,7 +150,8 @@ table(t.del, t.del$classe) ##Attention fait planter mon ordi
 # Avis : impossible d’utiliser xtfrm sur un tableau de données (data frame)Error in table(donnees_del2, donnees_del2$classe) : tous les arguments doivent avoir la même longueur
 ```
 
-Maintenant on va créer des sous-bases par type de délinquance (variable classe) et par année (on enlève 2020 et 2021). 
+
+
 
 ```{r sous-bases}
 donnees_joint_inf_1619 <- subset(df_zonage, df_zonage$annee %in% c(2016, 2017, 2018, 2019)) #on sélectionne les années
@@ -142,22 +165,5 @@ save(donnees_joint_inf_A, file = "del-merged-A.RData")
 donnees_joint_inf_B <- subset(donnees_joint_inf_1619, donnees_joint_inf_1619$classe == "B") #on sélectionne un type de délinquance
 saveRDS(donnees_joint_inf_B, file = "del-merged-B.rds")
 
-
 ```
-Avec une fonction
-```{r fonction-classes}
-donnees_joint_inf_1619 <- subset(df_zonage, df_zonage$annee %in% c(2016, 2017, 2018, 2019)) #on sélectionne les années
 
-decoupage_classe <- function(classe_del) {
-  donnees_joint_inf1 <- subset(donnees_joint_inf_1619, donnees_joint_inf_1619$classe == classe_del) #on sélectionne un type de délinquance
-  saveRDS(donnees_joint_inf1, file = paste(paste('del_merged',classe_del,sep = "_"),'rds',sep='.')) # on enregistre le sous df correspondant
-}
-
-liste_classe <- unique(donnees_del$classe) # on récupère une liste de toutes les classes de délinquance
-lapply(liste_classe, decoupage_classe) # on applique la fonction à chaque classe pour créer le df correspondant
-
-#A <- readRDS(file = "C:\\Users\\marie\\Documents\\GitHub\\stats_app\\del_merged_A.rds")
-
-# df_zonage1 <- merge(x=donnees_joint_inf1, y=zonages, by.x='insee', by.y='CODGEO', all.x=TRUE)
-#  saveRDS(df_zonage
-```
