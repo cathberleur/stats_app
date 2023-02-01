@@ -1,6 +1,6 @@
 ---
 title: "Statistiques descriptives - base complète"
-author: "Bracq, Meyer"
+author: "Bracq, Meyer, Sklenard, Berleur"
 date: "2023-01-25"
 header-includes:
 - \usepackage{fancyhdr}
@@ -65,6 +65,7 @@ setwd("~/Documents/ENSAE/Stats_app/git") #cathu
 load("C:\\Users\\marie\\OneDrive\\Documents\\cours\\ensae\\stat app\\donnees.secretisees.delinquance.RData") # marie
 #load("~/Documents/ENSAE/Stats_app/Data/donnees.secretisees.delinquance.RData") #cathu
 load("C:/Users/Utilisateur/Desktop/donnees.secretisees.delinquance.RData") #clem
+# load("/Users/sklenard/Downloads/donnees.secretisees.delinquance.RData")# Gaby 
 
 ```
 
@@ -97,7 +98,6 @@ Liste des différents indicateurs de délinquance :
     - Vols sans violence contre des personnes ;
     - Vols violents sans arme.
 
- 
 
 ```{r chargement-contours-communes}
 # contours <- st_read("C:\\Users\\marie\\OneDrive\\Documents\\cours\\ensae\\stat app\\contoursGeographiques") # marie
@@ -110,7 +110,7 @@ contours <- st_read("contoursGeographiques") # vérifier qu'on a bien le dossier
 
 #depuis github :
 urlfile<-'https://raw.githubusercontent.com/marie678/test/main/table-appartenance-geo-communes-22.csv'
-zonages <- read.csv(urlfile, header=TRUE,sep=';',fileEncoding='cp1252') #création d'un fichier pour les zonages
+zonages <- read.csv(urlfile, header=TRUE,sep=';',fileEncoding='cp1252') #création d'un df pour les zonages
 liste_labels <- c('Code géographique','Libellé géographique','Département	Région','Arrondissement','Canton ville','Intercommunalité - Métropole',"Nature d'EPCI","Zone d'emploi 2020",'Unité urbaine 2020',"Tranche d'unité urbaine 2020 calculée sur la population 2017","Tranche détaillée d'unité urbaine 2020 calculée sur la population 2017","Aire d'attraction des villes 2020","Tranche d'aire d'attraction des villes 2020 calculée sur la population 2017","Tranche détaillée d'aire d'attraction des villes 2020 calculée sur la population 2017","Catégorie commune dans aire d'attraction des villes 2020","Bassin de vie 2012")
 
 ```
@@ -119,93 +119,41 @@ liste_labels <- c('Code géographique','Libellé géographique','Département	R�
 
 Maintenant on va créer des sous-bases par type de délinquance (variable classe) et par année (on enlève 2020 et 2021).
 
-Avec une fonction
+```{r fonction-découpage}
+df_1619 <- subset(t.del, t.del$annee %in% c(2016, 2017, 2018, 2019)) #on sélectionne les années
 
-```{r fonction-classes}
-donnees_joint_inf_1619 <- subset(t.del, t.del$annee %in% c(2016, 2017, 2018, 2019)) #on sélectionne les années
-
-decoupage_classe <- function(classe_del) {
-  donnees_joint_inf1 <- subset(donnees_joint_inf_1619, donnees_joint_inf_1619$classe == classe_del) #on sélectionne un type de délinquance
-  saveRDS(donnees_joint_inf1, file = paste(paste('del_merged',classe_del,sep = "_"),'rds',sep='.')) # on enregistre le sous df correspondant
+decoupage_classe_merge <- function(classe_del) {
+  df1 <- subset(df_1619, df_1619$classe == classe_del) #on sélectionne un type de délinquance
+  df_long <- melt(data = df1, id.vars=c('id',"annee","duree_debut_fait_date_enregistrement","classe","dept_serv"),variable.name='info commune', value.name='commune') # format wide to long
+  df_long <- as_tibble(df_long)
+  df_geo <- merge(x=contours,y=df_long, by.x='insee',by.y='commune', all.y=TRUE) #jointure avec les contours géo
+  df_geo$insee = str_remove(df_geo$insee, "^0+") #pr avoir le même format que zonages
+  df_merged <- merge(x=df_geo, y=zonages, by.x='insee', by.y='CODGEO', all.x=TRUE) #jointure avec les zonages insee
+  df_merged <- as_tibble(df_merged)
+  saveRDS(df_merged, file = paste(paste('del_merged',classe_del,sep = "_"),'rds',sep='.')) # on enregistre le sous df correspondant
 }
+
 
 liste_classe <- unique(t.del$classe) # on récupère une liste de toutes les classes de délinquance
-lapply(liste_classe, decoupage_classe) # on applique la fonction à chaque classe pour créer le df correspondant
-
-#A <- readRDS(file = "C:\\Users\\marie\\Documents\\GitHub\\stats_app\\del_merged_A.rds")
-
-# df_zonage1 <- merge(x=donnees_joint_inf1, y=zonages, by.x='insee', by.y='CODGEO', all.x=TRUE)
-#  saveRDS(df_zonage
-```
-
-Premières stats desc sur toute la base :
-
-```{r tableau-1-prop}
-tab1 <- table(t.del$classe, t.del$annee)
-prop.table(tab1)*100
-#en réflexion... objectif : faire des pourcentages
-```
-
-```{r tableau-2}
-table(t.del$dept_serv, t.del$classe)
-tab2 <- table(t.del$dept_serv, t.del$classe)
-```
-
-```{r barplot}
-barplot(table(t.del$classe), col = "#1b98e0", main = "Effectifs par classe de délinquance", xlab="Classe de délinquance", ylab = "Effectifs")
-```
-
-Maintenant on va créer des sous-bases par type de délinquance (variable classe) et par année (on enlève 2020 et 2021). 
-
-```{r sous-bases}
-donnees_joint_inf_1619 <- subset(df_zonage, df_zonage$annee %in% c(2016, 2017, 2018, 2019)) #on sélectionne les années
-
-
-# Délinquance de type A
-donnees_joint_inf_A <- subset(donnees_joint_inf_1619, donnees_joint_inf_1619$classe == "A") #on sélectionne un type de délinquance
-save(donnees_joint_inf_A, file = "del-merged-A.RData")
-
-# Délinquance de type B
-donnees_joint_inf_B <- subset(donnees_joint_inf_1619, donnees_joint_inf_1619$classe == "B") #on sélectionne un type de délinquance
-saveRDS(donnees_joint_inf_B, file = "del-merged-B.rds")
-
-
-```
-
-Avec une fonction
-```{r fonction-classes}
-donnees_joint_inf_1619 <- subset(df_zonage, df_zonage$annee %in% c(2016, 2017, 2018, 2019)) #on sélectionne les années
-
-decoupage_classe <- function(classe_del) {
-  donnees_joint_inf1 <- subset(donnees_joint_inf_1619, donnees_joint_inf_1619$classe == classe_del) #on sélectionne un type de délinquance
-  saveRDS(donnees_joint_inf1, file = paste(paste('del_merged',classe_del,sep = "_"),'rds',sep='.')) # on enregistre le sous df correspondant
-}
-
-liste_classe <- unique(donnees_del$classe) # on récupère une liste de toutes les classes de délinquance
-lapply(liste_classe, decoupage_classe) # on applique la fonction à chaque classe pour créer le df correspondant
-
-#A <- readRDS(file = "C:\\Users\\marie\\Documents\\GitHub\\stats_app\\del_merged_A.rds")
-
-# df_zonage1 <- merge(x=donnees_joint_inf1, y=zonages, by.x='insee', by.y='CODGEO', all.x=TRUE)
-#  saveRDS(df_zonage
-```
-
-Trucs en cours :
-
-
-```{r mosaicplot}
-#ici le mosaicplot est illisible : il faudrait créer une variable région
-#tab3 <- table(t.del$classe, t.del$region)
-mosaicplot(tab2, shade = T, las = 2, main = "Type de délinquance selon le département", xlab= "Départements", ylab="Classe de délinquance")
+lapply(liste_classe, decoupage_classe_merge) # on applique la fonction à chaque classe pour créer le df correspondant
 ```
 
 
-```{r boxplot}
-#pas d'intérêt ici mais comme ça on a le code pour en faire un si besoin
-boxplot(t.del$annee, main = "titre", ylab= "y")
+
+(code en dehors de la fonction si besoin ... :)
+On transforme le df en format long pour avoir une colonne 'info commune' (infraction, mec ou victime) et une colonne 'commune'
+```{r wide_to_long}
+t.del.A
+t.del.A_long <- melt(data = t.del.A, id.vars=c('id',"annee","duree_debut_fait_date_enregistrement","classe","dept_serv"),variable.name='info commune', value.name='commune')
+t.del.A_long <- as_tibble(t.del.A_long)
 ```
 
-```{r tapply}
-#tapply(t.del$, t.del$, , na.rm=TRUE)
-#pareil en réflexion
+On merge avec les contours géo et les zonages de l'insee !!
+```{r jointures}
+t.del.A_geo <- merge(x=contours,y=t.del.A_long, by.x='insee',by.y='commune', all.y=TRUE)
+t.del.A_geo$insee = str_remove(t.del.A_geo$insee, "^0+")
+t.del.A_merged <- merge(x=t.del.A_geo, y=zonages, by.x='insee', by.y='CODGEO', all.x=TRUE)
+t.del.A_merged <- as_tibble(t.del.A_merged)
+saveRDS(t.del.A_merged, file = "del_merged_A.rds")
+
 ```

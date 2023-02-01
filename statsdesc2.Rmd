@@ -64,11 +64,6 @@ load("~/Documents/ENSAE/Stats_app/Data/donnees.secretisees.delinquance.RData") #
 # load("/Users/sklenard/Downloads/donnees.secretisees.delinquance.RData")# Gaby 
 ```
 
-```{r chargement-contours-communes}
-contours <- st_read("C:\\Users\\marie\\OneDrive\\Documents\\cours\\ensae\\stat app\\contoursGeographiques") # marie
-contours <- st_read("C:\\Users\\Utilisateur\\Desktop\\contoursGeographiques") #Clem
-```
-
 Ce fichier contient un seul objet R, un tibble t.del, comprenant 6,5 millions de lignes et 8 colonnes :
     - id, un identifiant arbitraire.
     - annee, qui ne correspond pas à la vraie année enregistrée, elles ont toutes été permutées.
@@ -96,54 +91,41 @@ Liste des différents indicateurs de délinquance :
     - Vols de véhicules ;
     - Vols sans violence contre des personnes ;
     - Vols violents sans arme.
-    
-On merge avec les contours géographiques selon le zonage de l'infraction
-```{r merge-données-avec-contours-géographiques-selon-cog_inf}
-donnees_del <- t.del
-donnees_joint_inf <- merge(x=contours,y=t.del, by.x='insee',by.y='cog_com_22_inf', all.x=TRUE)
-save(donnees_joint_inf, file = "del_merged.RData")
-rm(t.del)
-```
 
 
 Premières stats desc sur toute la base :
 
-```{r stats-desc-toute-la-base}
-table(t.del, t.del$classe) ##Attention fait planter mon ordi (Clémence)
-# Erreur dans xtfrm.data.frame(x) : (converti depuis l'avis) impossible d’utiliser xtfrm sur un tableau de données (data frame) (Gabriel)
+```{r tableau-1-prop}
+tab1 <- table(t.del$classe, t.del$annee)
+prop.table(tab1)*100
+#en réflexion... objectif : faire des pourcentages
 ```
 
-Maintenant on va créer des sous-bases par type de délinquance (variable classe) et par année (on enlève 2020 et 2021). 
-
-```{r sous-bases}
-donnees_joint_inf_1619 <- subset(donnees_joint_inf, donnees_joint_inf$annee %in% c(2016, 2017, 2018, 2019)) #on sélectionne les années
-
-
-# Délinquance de type A
-donnees_joint_inf_A <- subset(donnees_joint_inf_1619, donnees_joint_inf_1619$classe == "A") #on sélectionne un type de délinquance
-save(donnees_joint_inf_A, file = "del-merged-A.RData")
-
-# Délinquance de type B
-donnees_joint_inf_B <- subset(donnees_joint_inf_1619, donnees_joint_inf_1619$classe == "B") #on sélectionne un type de délinquance
-saveRDS(donnees_joint_inf_B, file = "del-merged-B.rds")
-
-
+```{r tableau-2}
+table(t.del$dept_serv, t.del$classe)
+tab2 <- table(t.del$dept_serv, t.del$classe)
 ```
-Avec une fonction
-```{r fonction-classes}
-donnees_joint_inf_1619 <- subset(donnees_joint_inf, donnees_joint_inf$annee %in% c(2016, 2017, 2018, 2019)) #on sélectionne les années
 
-decoupage_classe <- function(classe_del) {
-  donnees_joint_inf1 <- subset(donnees_joint_inf_1619, donnees_joint_inf_1619$classe == classe_del) #on sélectionne un type de délinquance
-  saveRDS(donnees_joint_inf1, file = paste(paste('del_merged',classe_del,sep = "_"),'rds',sep='.')) # on enregistre le sous df correspondant
-}
+```{r barplot}
+barplot(table(t.del$classe), col = "#1b98e0", main = "Effectifs par classe de délinquance", xlab="Classe de délinquance", ylab = "Effectifs")
+```
 
-liste_classe <- unique(donnees_del$classe) # on récupère une liste de toutes les classes de délinquance
-lapply(liste_classe, decoupage_classe) # on applique la fonction à chaque classe pour créer le df correspondant
+Trucs en cours :
 
-#A <- readRDS(file = "C:\\Users\\marie\\Documents\\GitHub\\stats_app\\del_merged_A.rds")
-#A <- readRDS(file = "C:/Users/Utilisateur/Documents/GitHub/stats_app/del_merged_A.rds")#clem
 
+```{r mosaicplot}
+#ici le mosaicplot est illisible : il faudrait créer une variable région
+#tab3 <- table(t.del$classe, t.del$region)
+mosaicplot(tab2, shade = T, las = 2, main = "Type de délinquance selon le département", xlab= "Départements", ylab="Classe de délinquance")
 ```
 
 
+```{r boxplot}
+#pas d'intérêt ici mais comme ça on a le code pour en faire un si besoin
+boxplot(t.del$annee, main = "titre", ylab= "y")
+```
+
+```{r tapply}
+#tapply(t.del$, t.del$, , na.rm=TRUE)
+#pareil en réflexion
+```

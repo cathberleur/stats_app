@@ -57,48 +57,30 @@ library(reshape2)
 ```
 
 Le but étant d'alléger la base, penser à nettoyer le "global environment" avant de charger une sous-base. A exécuter après la feuille mise_en_forme_donnees (ou changer le lien de chargement des fichiers si ils sont enregistrés ailleurs pour ne pas les recréer inutilement à chaque fois)
-```{r, chargement-d-une-sous-base}
 
+```{r, chargement-d-une-sous-base}
 t.del.A <- readRDS("~/GitHub/stats_app/del_merged_A.rds")
 #t.del.A <- readRDS("C:\\Users\\marie\\OneDrive\\Documents\\cours\\ensae\\stat app\\sous df\\del_merged_A.rds")
+
+
+#A <- readRDS(file = "C:\\Users\\marie\\Documents\\GitHub\\stats_app\\del_merged_A.rds")
+#A <- readRDS(file = "C:/Users/Utilisateur/Documents/GitHub/stats_app/del_merged_A.rds")#clem
+```
+```
+
+on cherche quels zonages permettent au mieux de regrouper les trois adresses d'une observation :
+idée : (pas sûre que ce soit la manière la + ergonomique de faire)
+pour cela, on veut créer une indicatrice qui indique si les 3 communes appartiennent au même zonage ou non, pour chaque zonage
+on fait ensuite la somme pour avoir l'effectif / proportion
+
+idem avec 2 communes --> il faut faire infraction + mec et infraction + victime et? victime + mec ? (est-ce que toutes ces infos sont pertinentes ??)
+
+l'idéal est d'avoir une fonction qui prend en argument la sous-base pour qu'on puisse faire la même chose pour tous les types de délinquance, mais on commence sans fonction sur la sous-base O(la moins lourde)
+```{r essai}
+
 ```
 
 
-```{r stats-desc}
-table(t.del.A, t.del.A$dept_serv)
-#Error in t.del.A$dept_serv : $ operator is invalid for atomic vectors : je sais pas pouquoi ça marchepas... (clem)
-```
-On transforme le df en formant long pour avoir une colonne 'info commune' (infraction, mec ou victime) et une colonne 'commune'
-```{r wide_to_long}
-t.del.A
-t.del.A_long <- melt(data = t.del.A, id.vars=c('id',"annee","duree_debut_fait_date_enregistrement","classe","dept_serv"),variable.name='info commune', value.name='commune')
-t.del.A_long <- as_tibble(t.del.A_long)
-```
 
-On merge avec les contours géo et les zonages de l'insee !!
-```{r jointures}
-t.del.A_geo <- merge(x=contours,y=t.del.A_long, by.x='insee',by.y='commune', all.y=TRUE)
-t.del.A_geo$insee = str_remove(t.del.A_geo$insee, "^0+")
-t.del.A_merged <- merge(x=t.del.A_geo, y=zonages, by.x='insee', by.y='CODGEO', all.x=TRUE)
-t.del.A_merged <- as_tibble(t.del.A_merged)
-saveRDS(t.del.A_merged, file = "del_merged_A.rds")
-
-```
-
-On crée une fonction pour faire la même chose sur toutes les classes
-
-```{r}
-
-merge_zonages_contours <- function(df_del) {
-  df_del.long <- melt(data = df_del, id.vars=c('id',"annee","duree_debut_fait_date_enregistrement","classe","dept_serv"),variable.name='info commune', value.name='commune')
-  df_del.long <- as_tibble(df_del.long)
-  df_del_geo <- merge(x=contours,y=df_del.long, by.x='insee',by.y='commune', all.y=TRUE)
-  df_del_geo$insee = str_remove(df_del_geo$insee, "^0+")
-  df_del_merged <- merge(x=df_del_geo, y=zonages, by.x='insee', by.y='CODGEO', all.x=TRUE)
-  df_del_merged <- as_tibble(df_del_merged)
-  saveRDS(df_del_merged, file = paste(paste('del_merged',classe_del,sep = "_"),'rds',sep='.')) # on enregistre le sous df correspondant
-}
-
-```
 
 
