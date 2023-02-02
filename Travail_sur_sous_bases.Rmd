@@ -54,6 +54,7 @@ library(dplyr)
 library(tibble)
 library(data.table)
 library(reshape2)
+library(tidyr)
 ```
 
 Le but étant d'alléger la base, penser à nettoyer le "global environment" avant de charger une sous-base. A exécuter après la feuille mise_en_forme_donnees (ou changer le lien de chargement des fichiers si ils sont enregistrés ailleurs pour ne pas les recréer inutilement à chaque fois)
@@ -78,8 +79,22 @@ idem avec 2 communes --> il faut faire infraction + mec et infraction + victime 
 l'idéal est d'avoir une fonction qui prend en argument la sous-base pour qu'on puisse faire la même chose pour tous les types de délinquance, mais on commence sans fonction sur la sous-base O(la moins lourde)
 
 ```{r essai}
-t.del.O['indicEPCI'] = 1
-t.del.O <- t.del.O %>% select(-'indicEPCI')
+# en repassant la table en format wide ??
+# df_O_wide <- spread(data = t.del.O, key='id', value='info commune')
+# t.del.O['indicEPCI'] = 1
+# t.del.O <- t.del.O %>% select(-'indicEPCI')
+
+t.del.O['indicEPCI'] = 
+
+df_O_groupby <- group_by(t.del.O, t.del.O$id)# group_by selon l'id
+df_O_groupby$EPCI <- as.numeric(df_O_groupby$EPCI) # zonage en num (il faut tous les changer après)
+df_O_groupby_test <- mutate(df_O_groupby, liste_commune=sum(EPCI))
+# ok : dans liste_commune : somme des 3 zonages EPCI si les 3 communes sont renseignées, NA si une commune manquante
+df_O_groupby_test <- mutate(df_O_groupby_test, indicEPCI = sum(case_when(
+    ((df_O_groupby_test$liste_commune/3)==df_O_groupby_test$EPCI) ~ 1,
+     ((df_O_groupby_test$liste_commune/3)!=df_O_groupby_test$EPCI) ~ 0
+    )))
+# on peut comparer la somme/3 à EPCI des 3, si c'est égal alors on a le même sur les 3 --> indic = 1, sinon ils sont différents --> indic=0:
 
 
 ```
@@ -100,11 +115,23 @@ proportion_zonages <- function(type_zonage) {
     else if (((t.del.O[t.del.O$id == idf,type_zonage][1,]) == (t.del.O[t.del.O$id == idf,type_zonage][2,])) & ((t.del.O[t.del.O$id == idf,type_zonage][1,] == t.del.O[t.del.O$id == idf,type_zonage][3,])))  effectif = effectif+1
     # si les 3 communes sont les mêmes, on incrémente 
   }
-  cat(type_zonage,' : ',effectif)
+  cat(type_zonage,' : ',effectif,' (',(effectif/length(unique_id))*100,'%)\n')
 }
 
 liste_zonages <- colnames(t.del.O)[14:26] # on récupère une liste de tous les types de zonages (colonne arrondissement à la fin)
-lapply(liste_zonages, proportion_zonages) # 19h17
+lapply(liste_zonages, proportion_zonages) # 19h17 à 20h22
+# CV  :  2633
+# EPCI  :  7433
+# NATURE_EPCI  :  10255
+# ZE2020  :  9796
+# UU2020  :  7320
+# TUU2017  :  7945
+# TDUU2017  :  7742
+# AAV2020  :  11863
+# TAAV2017  :  12284
+# TDAAV2017  :  11958
+# CATEAAV2020  :  7336
+# BV2012  :  9692
 
 
 
