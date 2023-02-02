@@ -61,23 +61,42 @@ Le but étant d'alléger la base, penser à nettoyer le "global environment" ava
 ```{r, chargement-d-une-sous-base}
 t.del.A <- readRDS("~/GitHub/stats_app/del_merged_A.rds")
 #t.del.A <- readRDS("C:\\Users\\marie\\OneDrive\\Documents\\cours\\ensae\\stat app\\sous df\\del_merged_A.rds")
+t.del.O <- readRDS("~/GitHub/stats_app/del_merged_O.rds")
 
 
 #A <- readRDS(file = "C:\\Users\\marie\\Documents\\GitHub\\stats_app\\del_merged_A.rds")
 #A <- readRDS(file = "C:/Users/Utilisateur/Documents/GitHub/stats_app/del_merged_A.rds")#clem
 ```
-```
 
 on cherche quels zonages permettent au mieux de regrouper les trois adresses d'une observation :
 idée : (pas sûre que ce soit la manière la + ergonomique de faire)
 pour cela, on veut créer une indicatrice qui indique si les 3 communes appartiennent au même zonage ou non, pour chaque zonage
-on fait ensuite la somme pour avoir l'effectif / proportion
+(on fait ensuite la somme pour avoir l'effectif / proportion --> /3 car on a triplé les lignes en passant au format long)
 
 idem avec 2 communes --> il faut faire infraction + mec et infraction + victime et? victime + mec ? (est-ce que toutes ces infos sont pertinentes ??)
 
 l'idéal est d'avoir une fonction qui prend en argument la sous-base pour qu'on puisse faire la même chose pour tous les types de délinquance, mais on commence sans fonction sur la sous-base O(la moins lourde)
-```{r essai}
 
+```{r essai}
+t.del.O['indicEPCI'] = 1
+t.del.O <- t.del.O %>% select(-'indicEPCI')
+
+```
+
+Autre idée : pour un zonage donné, boucle sur les id (distincts) --> +1 si les 3 lignes correspondant au même id sont le même zonage --> on obtient l'effectif des infractions où les 3 communes sont dans le même zonage
+
+à transformer en fonction selon zonage après
+voir surtout si ça ne prend pas trop de temps à tourner ...
+```{r}
+unique_id <- unique(t.del.O$id)
+effectif_EPCI = 0
+#pb quand NA
+for (idf in unique_id){
+  if (((t.del.O[t.del.O$id == idf,'EPCI'][1,]) == (t.del.O[t.del.O$id == idf,'EPCI'][2,])) & ((t.del.O[t.del.O$id == idf,'EPCI'][1,] == t.del.O[t.del.O$id == idf,'EPCI'][3,])))  effectif_EPCI = effectif_EPCI+1
+}
+
+t.del.O[t.del.O$id == 4313218,'EPCI'][3,]
+if ((length(t.del.O[t.del.O$id == 4313218,'EPCI'])) == (3)) print('oui')
 ```
 
 
