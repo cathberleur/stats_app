@@ -1,6 +1,6 @@
 ---
 title: "Travail sur sous-bases d'1 type de délinquance"
-author: "Bracq"
+author: "Bracq, Meyer"
 date: "2023-01-25"
 header-includes:
 - \usepackage{fancyhdr}
@@ -35,7 +35,7 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 ```
 
 ```{r, include=FALSE}
-list.of.packages <- c("tidyverse", "haven", "readxl", "stats", "ggplot2", "ggcorrplot", "data.table", "dplyr", "corrplot", "stargazer", "Hmisc",'cartography','sf','rgdal','sp','xlsx')
+list.of.packages <- c("tidyverse", "haven", "readxl", "stats", "ggplot2", "ggcorrplot", "data.table", "dplyr", "corrplot", "stargazer", "Hmisc",'cartography','sf','rgdal','sp')
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages, repos = "http://cran.us.r-project.org")
 
@@ -81,22 +81,38 @@ l'idéal est d'avoir une fonction qui prend en argument la sous-base pour qu'on 
 t.del.O['indicEPCI'] = 1
 t.del.O <- t.del.O %>% select(-'indicEPCI')
 
+
 ```
 
-Autre idée : pour un zonage donné, boucle sur les id (distincts) --> +1 si les 3 lignes correspondant au même id sont le même zonage --> on obtient l'effectif des infractions où les 3 communes sont dans le même zonage
 
+
+Autre idée : pour un zonage donné, boucle sur les id (distincts) --> +1 si les 3 lignes correspondant au même id sont le même zonage --> on obtient l'effectif des infractions où les 3 communes sont dans le même zonage
+--> prend beaucoup de temps :(
 à transformer en fonction selon zonage après
 voir surtout si ça ne prend pas trop de temps à tourner ...
 ```{r}
 unique_id <- unique(t.del.O$id)
-effectif_EPCI = 0
-#pb quand NA
-for (idf in unique_id){
-  if (((t.del.O[t.del.O$id == idf,'EPCI'][1,]) == (t.del.O[t.del.O$id == idf,'EPCI'][2,])) & ((t.del.O[t.del.O$id == idf,'EPCI'][1,] == t.del.O[t.del.O$id == idf,'EPCI'][3,])))  effectif_EPCI = effectif_EPCI+1
+
+proportion_zonages <- function(type_zonage) {
+  effectif = 0
+  for (idf in unique_id){
+    if (is.na(t.del.O[t.del.O$id == idf,type_zonage][1,]) | is.na(t.del.O[t.del.O$id == idf,type_zonage][2,]) | is.na(t.del.O[t.del.O$id == idf,type_zonage][3,])) effectif = effectif #cas où les 3 communes ne sont pas renseignées
+    else if (((t.del.O[t.del.O$id == idf,type_zonage][1,]) == (t.del.O[t.del.O$id == idf,type_zonage][2,])) & ((t.del.O[t.del.O$id == idf,type_zonage][1,] == t.del.O[t.del.O$id == idf,type_zonage][3,])))  effectif = effectif+1
+    # si les 3 communes sont les mêmes, on incrémente 
+  }
+  cat(type_zonage,' : ',effectif)
 }
 
-t.del.O[t.del.O$id == 4313218,'EPCI'][3,]
-if ((length(t.del.O[t.del.O$id == 4313218,'EPCI'])) == (3)) print('oui')
+liste_zonages <- colnames(t.del.O)[14:26] # on récupère une liste de tous les types de zonages (colonne arrondissement à la fin)
+lapply(liste_zonages, proportion_zonages) # 19h17
+
+
+
+effectif_EPCI = 0
+effectif_EPCI #7433
+proportion_EPCI <- effectif_EPCI / length(unique_id)
+proportion_EPCI #0.1523
+
 ```
 
 
