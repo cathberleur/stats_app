@@ -69,6 +69,13 @@ t.del.O <- readRDS("~/GitHub/stats_app/del_merged_O.rds")
 #A <- readRDS(file = "C:/Users/Utilisateur/Documents/GitHub/stats_app/del_merged_A.rds")#clem
 ```
 
+```{r zonages-chr-to-num}
+
+liste_zonages <- colnames(t.del.O)[14:26]
+t.del.O[,liste_zonages] <- sapply(t.del.O[,liste_zonages], as.numeric)
+
+```
+
 on cherche quels zonages permettent au mieux de regrouper les trois adresses d'une observation :
 idée : (pas sûre que ce soit la manière la + ergonomique de faire)
 pour cela, on veut créer une indicatrice qui indique si les 3 communes appartiennent au même zonage ou non, pour chaque zonage
@@ -104,6 +111,8 @@ df_O$indicEPCI[is.na(df_O$indicEPCI)] <- 0 #remplace na par 0, ok car on fait la
 sum(df_O$indicEPCI)
 sum(df_O$indicEPCI)/3 # nombre d'obs pour lesquelles les 3 communes sont dans le même zonage EPCI
 # pourquoi pas un nombre entier ?
+# [1] 7437.333
+
 
 
 ```
@@ -122,6 +131,8 @@ df_O <- mutate(df_O, indicAAV2020 = case_when(
 df_O$indicAAV2020[is.na(df_O$indicAAV2020)] <- 0 #remplace na par 0, ok car on fait la somme
 sum(df_O$indicAAV2020)
 sum(df_O$indicAAV2020)/3 # nombre d'obs pour lesquelles les 3 communes sont dans le même zonage EPCI
+
+#[1] 9198
 
 # pas même résultats :(
 ```
