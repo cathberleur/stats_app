@@ -79,24 +79,51 @@ idem avec 2 communes --> il faut faire infraction + mec et infraction + victime 
 l'idéal est d'avoir une fonction qui prend en argument la sous-base pour qu'on puisse faire la même chose pour tous les types de délinquance, mais on commence sans fonction sur la sous-base O(la moins lourde)
 
 ```{r essai}
-# en repassant la table en format wide ??
-# df_O_wide <- spread(data = t.del.O, key='id', value='info commune')
-# t.del.O['indicEPCI'] = 1
-# t.del.O <- t.del.O %>% select(-'indicEPCI')
 
-t.del.O['indicEPCI'] = 
+# t.del.O <- t.del.O %>% select(-'indicEPCI')
 
 df_O_groupby <- group_by(t.del.O, t.del.O$id)# group_by selon l'id
 df_O_groupby$EPCI <- as.numeric(df_O_groupby$EPCI) # zonage en num (il faut tous les changer après)
-df_O_groupby_test <- mutate(df_O_groupby, liste_commune=sum(EPCI))
-# ok : dans liste_commune : somme des 3 zonages EPCI si les 3 communes sont renseignées, NA si une commune manquante
-df_O_groupby_test <- mutate(df_O_groupby_test, indicEPCI = sum(case_when(
-    ((df_O_groupby_test$liste_commune/3)==df_O_groupby_test$EPCI) ~ 1,
-     ((df_O_groupby_test$liste_commune/3)!=df_O_groupby_test$EPCI) ~ 0
-    )))
+df_O_groupby <- mutate(df_O_groupby, liste_commune=sum(EPCI)) 
+# dans liste_commune : somme des 3 zonages EPCI si les 3 communes sont renseignées, NA si une commune manquante
+
+#df_O_groupby_test <- mutate(df_O_groupby_test, indicEPCI = sum(case_when(
+#    ((df_O_groupby_test$liste_commune/3)==df_O_groupby_test$EPCI) ~ 1,
+#     ((df_O_groupby_test$liste_commune/3)!=df_O_groupby_test$EPCI) ~ 0
+#    ))) # très long aussi :(
 # on peut comparer la somme/3 à EPCI des 3, si c'est égal alors on a le même sur les 3 --> indic = 1, sinon ils sont différents --> indic=0:
 
+df_O <- ungroup(df_O_groupby)
+df_O <- mutate(df_O, indicEPCI = case_when(
+    ((df_O$liste_commune/3)==df_O$EPCI) ~ 1,
+     ((df_O$liste_commune/3)!=df_O$EPCI) ~ 0
+    ))
+# dans indicEPCI, 1 si les 3 appartiennent au même zonage EPCI, 0 sinon
 
+df_O$indicEPCI[is.na(df_O$indicEPCI)] <- 0 #remplace na par 0, ok car on fait la somme
+sum(df_O$indicEPCI)
+sum(df_O$indicEPCI)/3 # nombre d'obs pour lesquelles les 3 communes sont dans le même zonage EPCI
+# pourquoi pas un nombre entier ?
+
+
+```
+```{r essai-avec-autre-zonage}
+
+df_O_groupby$AAV2020 <- as.numeric(df_O_groupby$AAV2020) # zonage en num (il faut tous les changer après)
+df_O_groupby <- mutate(df_O_groupby, liste_commune=sum(AAV2020)) 
+
+df_O <- ungroup(df_O_groupby)
+df_O <- mutate(df_O, indicAAV2020 = case_when(
+    ((df_O$liste_commune/3)==df_O$AAV2020) ~ 1,
+     ((df_O$liste_commune/3)!=df_O$AAV2020) ~ 0
+    ))
+# dans indicEPCI, 1 si les 3 appartiennent au même zonage EPCI, 0 sinon
+
+df_O$indicAAV2020[is.na(df_O$indicAAV2020)] <- 0 #remplace na par 0, ok car on fait la somme
+sum(df_O$indicAAV2020)
+sum(df_O$indicAAV2020)/3 # nombre d'obs pour lesquelles les 3 communes sont dans le même zonage EPCI
+
+# pas même résultats :(
 ```
 
 
