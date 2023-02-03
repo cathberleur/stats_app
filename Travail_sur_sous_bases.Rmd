@@ -46,15 +46,15 @@ setwd("~/Documents/ENSAE/Stats_app")
 
 
 ```{r, charger-libraries}
-# library(sf)
+ library(sf)
 # library(rgdal)
 # library(cartography)
 # library(sp)
-# library(dplyr)
+ library(dplyr)
 # library(tibble)
 # library(data.table)
 # library(reshape2)
-# library(tidyr)
+ library(tidyr)
 ```
 
 Le but étant d'alléger la base, penser à nettoyer le "global environment" avant de charger une sous-base. A exécuter après la feuille mise_en_forme_donnees (ou changer le lien de chargement des fichiers si ils sont enregistrés ailleurs pour ne pas les recréer inutilement à chaque fois)
@@ -63,7 +63,6 @@ Le but étant d'alléger la base, penser à nettoyer le "global environment" ava
 t.del.A <- readRDS("~/GitHub/stats_app/del_merged_A.rds")
 #t.del.A <- readRDS("C:\\Users\\marie\\OneDrive\\Documents\\cours\\ensae\\stat app\\sous df\\del_merged_A.rds")
 t.del.O <- readRDS("~/GitHub/stats_app/del_merged_O.rds")
-
 
 #A <- readRDS(file = "C:\\Users\\marie\\Documents\\GitHub\\stats_app\\del_merged_A.rds")
 #A <- readRDS(file = "C:/Users/Utilisateur/Documents/GitHub/stats_app/del_merged_A.rds")#clem
@@ -183,17 +182,27 @@ proportion_EPCI #0.1523
 
 ```
 
-pivot table, id_cols = id, names_from=type (VIC, MEC, LIEU), values_from = nom_zonage (EPCI)
-Analyse factorielle sur table agrégée au niveau communal, merge avec decripteurs socio-démographiques
-analyse factorielle décrit les communes suivant les dimensions --> projeter autres variables, voir selon les axes, puis cherchez zb part des logements sociaux, ..
-AF : individu = commune, observation = nombre de victimes, nombre de mec, nombre de ...
---> permet de prendre en compte la mec d'un même fait et la diversité des faits
-on peut aussi compter les fois ou les 3 zonages sont différents
-par type de délinquance --> + efficace pour les classer (à pondérer par le fait que pas même nombre de communes dans chaque UU, AAV, etc...)
-ramener au nombre d'habitant par zonage pour pondérer / rééquilibre (on a population par commune (2020) et communes par zonage), aussi logement, surface, nbre de ménages, ...
-summarize(n(...))
-nvic = n()
-calcul de distance (mairie à mairie) --> relativise fait d'être dans le même AAV, faire une distribution, regarder les quantiles, ...
+#METHODE 3
+après discussion avec Aurélien, on retente de repasser le format long en wide après les jointures
+```{r methode-3}
+
+t.del.O['info commune'] <- as.character(t.del.O['info commune']) 
+
+# t.del.O <- t.del.O %>% select(-'indicEPCI')
+df_O <- as.data.frame(t.del.O)
 
 
+df_O_wide <- pivot_wider(data=t.del.O, names_from = 'info commune', id_cols = 'id', values_from = 'EPCI')
+
+df_O_wide['indic_EPCI'] <- case_when(
+  ((df_O_wide$cog_com_22_mec == df_O_wide$cog_com_22_vict) & ( df_O_wide$cog_com_22_mec == df_O_wide$cog_com_22_inf)) ~ 1,
+  TRUE ~ 0)
+
+unique_id <- unique(t.del.O$id)
+sum(df_O_wide$indic_EPCI)
+sum(df_O_wide$indic_EPCI)/length(unique_id)
+# 7433, 0.1523
+
+
+```
 
