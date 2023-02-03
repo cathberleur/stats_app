@@ -85,6 +85,7 @@ idem avec 2 communes --> il faut faire infraction + mec et infraction + victime 
 
 l'idéal est d'avoir une fonction qui prend en argument la sous-base pour qu'on puisse faire la même chose pour tous les types de délinquance, mais on commence sans fonction sur la sous-base O(la moins lourde)
 
+#METHODE 2
 ```{r essai}
 
 # t.del.O <- t.del.O %>% select(-'indicEPCI')
@@ -140,7 +141,7 @@ sum(df_O$indicAAV2020)/3 # nombre d'obs pour lesquelles les 3 communes sont dans
 ```
 
 
-
+#METHODE 1
 Autre idée : pour un zonage donné, boucle sur les id (distincts) --> +1 si les 3 lignes correspondant au même id sont le même zonage --> on obtient l'effectif des infractions où les 3 communes sont dans le même zonage
 --> prend beaucoup de temps :(
 à transformer en fonction selon zonage après
