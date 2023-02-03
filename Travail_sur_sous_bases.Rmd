@@ -203,6 +203,20 @@ sum(df_O_wide$indic_EPCI)
 sum(df_O_wide$indic_EPCI)/length(unique_id)
 # 7433, 0.1523
 
+```
+```{r essai-AAV2020}
+
+
+df_O_wide_AAV2020 <- pivot_wider(data=t.del.O, names_from = 'info commune', id_cols = 'id', values_from = 'AAV2020')
+
+df_O_wide_AAV2020['indic_AAV2020'] <- case_when(
+  ((df_O_wide_AAV2020$cog_com_22_mec == df_O_wide_AAV2020$cog_com_22_vict) & ( df_O_wide_AAV2020$cog_com_22_mec == df_O_wide_AAV2020$cog_com_22_inf)) ~ 1,
+  TRUE ~ 0)
+
+sum(df_O_wide_AAV2020$indic_AAV2020)
+sum(df_O_wide_AAV2020$indic_AAV2020)/length(unique_id)
+# 11863, 0.2430694
+
 
 ```
 
