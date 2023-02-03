@@ -181,7 +181,17 @@ proportion_EPCI #0.1523
 
 ```
 
-
+pivot table, id_cols = id, names_from=type (VIC, MEC, LIEU), values_from = nom_zonage (EPCI)
+Analyse factorielle sur table agrégée au niveau communal, merge avec decripteurs socio-démographiques
+analyse factorielle décrit les communes suivant les dimensions --> projeter autres variables, voir selon les axes, puis cherchez zb part des logements sociaux, ..
+AF : individu = commune, observation = nombre de victimes, nombre de mec, nombre de ...
+--> permet de prendre en compte la mec d'un même fait et la diversité des faits
+on peut aussi compter les fois ou les 3 zonages sont différents
+par type de délinquance --> + efficace pour les classer (à pondérer par le fait que pas même nombre de communes dans chaque UU, AAV, etc...)
+ramener au nombre d'habitant par zonage pour pondérer / rééquilibre (on a population par commune (2020) et communes par zonage), aussi logement, surface, nbre de ménages, ...
+summarize(n(...))
+nvic = n()
+calcul de distance (mairie à mairie) --> relativise fait d'être dans le même AAV, faire une distribution, regarder les quantiles, ...
 
 
 

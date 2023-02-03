@@ -115,6 +115,11 @@ liste_labels <- c('Code géographique','Libellé géographique','Département	R�
 
 ```
 
+```{r chargement-régions}
+regions <- read.csv('departements-region.csv') 
+```
+
+
 
 
 Maintenant on va créer des sous-bases par type de délinquance (variable classe) et par année (on enlève 2020 et 2021).
