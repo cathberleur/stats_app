@@ -54,7 +54,7 @@ setwd("~/Documents/ENSAE/Stats_app/git") #cathu
 # library(stringr)
 ```
 
-
+# Fichier complet
 
 ```{r chargement-dataset}
 
@@ -95,6 +95,13 @@ Liste des différents indicateurs de délinquance :
 
 Premières stats desc sur toute la base :
 
+```{r}
+
+
+
+```
+
+
 ```{r tableau-1-prop}
 tab1 <- table(t.del$classe, t.del$annee)
 prop.table(tab1)*100
@@ -129,3 +136,5 @@ boxplot(t.del$annee, main = "titre", ylab= "y")
 #tapply(t.del$, t.del$, , na.rm=TRUE)
 #pareil en réflexion
 ```
+
+# Sous base
