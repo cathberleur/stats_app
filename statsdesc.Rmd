@@ -144,3 +144,7 @@ Pour faire les listes de sous-bases il faut faire lapply(atteinte, avec un filte
 c'est les contours qui prennent de la place
 
 Merger par identifiant de commune et ne conserver qu'une des trois adresses en sommant par vict/mec/lien -> group_by puis summarize avec nvic = n()
+
+On peut faire ça sur 16-19 : par an ça ne bouge quasiment pas
+
+Analyse factorielle : ind = commune, observation = nombre de victimes de telle classe, etc.
