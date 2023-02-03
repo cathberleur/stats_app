@@ -46,15 +46,15 @@ setwd("~/Documents/ENSAE/Stats_app")
 
 
 ```{r, charger-libraries}
-library(sf)
-library(rgdal)
-library(cartography)
-library(sp)
-library(dplyr)
-library(tibble)
-library(data.table)
-library(reshape2)
-library(tidyr)
+# library(sf)
+# library(rgdal)
+# library(cartography)
+# library(sp)
+# library(dplyr)
+# library(tibble)
+# library(data.table)
+# library(reshape2)
+# library(tidyr)
 ```
 
 Le but étant d'alléger la base, penser à nettoyer le "global environment" avant de charger une sous-base. A exécuter après la feuille mise_en_forme_donnees (ou changer le lien de chargement des fichiers si ils sont enregistrés ailleurs pour ne pas les recréer inutilement à chaque fois)
@@ -116,6 +116,8 @@ sum(df_O$indicEPCI)/3 # nombre d'obs pour lesquelles les 3 communes sont dans le
 
 
 ```
+
+
 ```{r essai-avec-autre-zonage}
 
 df_O_groupby$AAV2020 <- as.numeric(df_O_groupby$AAV2020) # zonage en num (il faut tous les changer après)

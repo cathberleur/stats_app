@@ -105,12 +105,13 @@ Premières stats desc sur toute la base :
 ```{r tableau-1-prop}
 tab1 <- table(t.del$classe, t.del$annee)
 prop.table(tab1)*100
+cprop(tab1) 
 #en réflexion... objectif : faire des pourcentages
 ```
 
 ```{r tableau-2}
-table(t.del$dept_serv, t.del$classe)
 tab2 <- table(t.del$dept_serv, t.del$classe)
+lprop(tab2)
 ```
 
 ```{r barplot}
@@ -138,3 +139,8 @@ boxplot(t.del$annee, main = "titre", ylab= "y")
 ```
 
 # Sous base
+
+Pour faire les listes de sous-bases il faut faire lapply(atteinte, avec un filter)
+c'est les contours qui prennent de la place
+
+Merger par identifiant de commune et ne conserver qu'une des trois adresses en sommant par vict/mec/lien -> group_by puis summarize avec nvic = n()
