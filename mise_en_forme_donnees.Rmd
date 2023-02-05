@@ -62,9 +62,9 @@ setwd("~/Documents/ENSAE/Stats_app/git") #cathu
 
 ```{r chargement-dataset}
 
-load("C:\\Users\\marie\\OneDrive\\Documents\\cours\\ensae\\stat app\\donnees.secretisees.delinquance.RData") # marie
-#load("~/Documents/ENSAE/Stats_app/Data/donnees.secretisees.delinquance.RData") #cathu
-load("C:/Users/Utilisateur/Desktop/donnees.secretisees.delinquance.RData") #clem
+#load("C:\\Users\\marie\\OneDrive\\Documents\\cours\\ensae\\stat app\\donnees.secretisees.delinquance.RData") # marie
+load("~/Documents/ENSAE/Stats_app/Data/donnees.secretisees.delinquance.RData") #cathu
+#load("C:/Users/Utilisateur/Desktop/donnees.secretisees.delinquance.RData") #clem
 # load("/Users/sklenard/Downloads/donnees.secretisees.delinquance.RData")# Gaby 
 
 ```
@@ -115,6 +115,11 @@ liste_labels <- c('Code géographique','Libellé géographique','Département	R�
 
 ```
 
+```{r chargement-régions}
+regions <- read.csv('departements-region.csv') 
+```
+
+
 
 
 Maintenant on va créer des sous-bases par type de délinquance (variable classe) et par année (on enlève 2020 et 2021).
@@ -143,7 +148,7 @@ lapply(liste_classe, decoupage_classe_merge) # on applique la fonction à chaque
 (code en dehors de la fonction si besoin ... :)
 On transforme le df en format long pour avoir une colonne 'info commune' (infraction, mec ou victime) et une colonne 'commune'
 ```{r wide_to_long}
-t.del.A
+t.del.A <- readRDS("del_merged_A.rds")
 t.del.A_long <- melt(data = t.del.A, id.vars=c('id',"annee","duree_debut_fait_date_enregistrement","classe","dept_serv"),variable.name='info commune', value.name='commune')
 t.del.A_long <- as_tibble(t.del.A_long)
 ```

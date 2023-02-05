@@ -11,3 +11,4 @@ del-merged-1.RData
 *.RData
 *.rds
 *.Rda
+*.csv
