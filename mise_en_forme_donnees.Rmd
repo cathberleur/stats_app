@@ -117,12 +117,12 @@ liste_labels <- c('Code géographique','Libellé géographique','Département	R�
 
 ```{r chargement-régions}
 regions <- read.csv('departements-region.csv') 
+#Error in file(file, "rt") : impossible d'ouvrir la connexion sur mon ordinateur(clem)
+#c'est pour le mosaic plot dans statsdesc qu'on charge ça?
 ```
 
-
-
-
 Maintenant on va créer des sous-bases par type de délinquance (variable classe) et par année (on enlève 2020 et 2021).
+
 
 ```{r fonction-découpage}
 df_1619 <- subset(t.del, t.del$annee %in% c(2016, 2017, 2018, 2019)) #on sélectionne les années
