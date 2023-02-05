@@ -38,9 +38,6 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 
 Il faut d'abord créer une table avec les communes comme individus...
 
-Merger par identifiant de commune et ne conserver qu'une des trois adresses en sommant par vict/mec/lien -> group_by puis summarize avec nvic = n()
-
-
 ```{r création-base}
 df_com_inf <- merge(x=zonages, y=df_1619, by.x='CODGEO', by.y='cog_com_22_inf', all.x=TRUE)#on créé une base avec les communes comme identifiant avec les zonages
 df_facto_inf <- df_com_inf %>%
@@ -83,6 +80,9 @@ library(Factoshiny)
 library(explor)
 ```
 
+On a ici à la fois des variables quanti (nvict) et quali (zonages). 2 solutions : recoder ou AFMD
+
+#sol 1 : FAMD, Analyse Factorielle des Données Mixtes
 ```{r}
 rownames(df_facto_zon) <- paste(df_facto_zon$CODGEO)
 df_facto_zon <- df_facto_zon[,-1]
@@ -90,7 +90,19 @@ df_facto_zon <- df_facto_zon[,-1]
 # res <- FAMD(df_facto_zon)
 FAMDshiny(df_facto_zon)
 
-#ici le problème c'est qu'on a à la fois des variables quanti et quali d'où le FAMD, Analyse Factorielle des Données Mixtes
+#mon ordi supporte pas
+```
+
+#Sol 2 : recodage et ACM
+```{r creation-classes}
+df_facto_zon$nvictcl <- cut(df_facto_zon$nvict,  breaks = c(0, 10, 50, 100, 500, 1000, 5000, 10000, 50000), include.lowest = TRUE)
+df_facto_zon$ninfcl <- cut(df_facto_zon$ninf, breaks = c(0, 10, 50, 100, 500, 1000, 5000, 10000, 50000), include.lowest = TRUE)
+df_facto_zon$nmeccl <- cut(df_facto_zon$nmec, breaks = c(0, 10, 50, 100, 500, 1000, 5000, 10000, 50000), include.lowest = TRUE)
+df_facto_zon[ , c('sum.x', 'nmec', 'sum.y', 'ninf', 'sum', 'nvict')] <- list(NULL)#on supprime le reste
+```
+
+```{r ACM}
+
 ```
 
 
