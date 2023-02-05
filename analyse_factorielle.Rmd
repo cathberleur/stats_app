@@ -112,7 +112,7 @@ Factoshiny(resultat)
 ```
 
 Sans les zonages :
-```{r}
+```{r ACM-sans-zonages}
 rownames(df_facto) <- paste(df_facto$CODGEO)
 df_facto <- df_facto[,-1]
 df_facto$nvictcl <- cut(df_facto$nvict,  breaks = c(0, 10, 50, 100, 500, 1000, 5000, 10000, 50000), include.lowest = TRUE)
