@@ -87,7 +87,7 @@ On a ici à la fois des variables quanti (nvict) et quali (zonages). 2 solutions
 rownames(df_facto_zon) <- paste(df_facto_zon$CODGEO)
 df_facto_zon <- df_facto_zon[,-1]
 # Factoshiny(df_facto_zon)
-# res <- FAMD(df_facto_zon)
+res <- FAMD(df_facto_zon)
 FAMDshiny(df_facto_zon)
 
 #mon ordi supporte pas
@@ -102,10 +102,27 @@ df_facto_zon[ , c('sum.x', 'nmec', 'sum.y', 'ninf', 'sum', 'nvict')] <- list(NUL
 ```
 
 ```{r ACM}
+resultat <- MCA(df_facto_zon, quali.sup = c(1,2,3, 4, 5, 6, 7, 8, 9, 10, 11,12, 13, 14, 15, 16))
 
+#Erreur : impossible d'allouer un vecteur de taille 4.3 Go (prend trop de mémoire vive)
+
+
+explor(resultat)
+Factoshiny(resultat)
 ```
 
+Sans les zonages :
+```{r}
+rownames(df_facto) <- paste(df_facto$CODGEO)
+df_facto <- df_facto[,-1]
+df_facto$nvictcl <- cut(df_facto$nvict,  breaks = c(0, 10, 50, 100, 500, 1000, 5000, 10000, 50000), include.lowest = TRUE)
+df_facto$ninfcl <- cut(df_facto$ninf, breaks = c(0, 10, 50, 100, 500, 1000, 5000, 10000, 50000), include.lowest = TRUE)
+df_facto$nmeccl <- cut(df_facto$nmec, breaks = c(0, 10, 50, 100, 500, 1000, 5000, 10000, 50000), include.lowest = TRUE)
+df_facto[ , c('sum.x', 'nmec', 'sum.y', 'ninf', 'sum', 'nvict')] <- list(NULL)#on supprime le reste
+resultat <- MCA(df_facto_zon)
 
+#Erreur : impossible d'allouer un vecteur de taille 4.3 Go
+```
 
 
 
