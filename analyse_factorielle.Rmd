@@ -41,7 +41,7 @@ Il faut d'abord créer une table avec les communes comme individus...
 Merger par identifiant de commune et ne conserver qu'une des trois adresses en sommant par vict/mec/lien -> group_by puis summarize avec nvic = n()
 
 
-```{r}
+```{r création-base}
 df_com_inf <- merge(x=zonages, y=df_1619, by.x='CODGEO', by.y='cog_com_22_inf', all.x=TRUE)#on créé une base avec les communes comme identifiant avec les zonages
 df_facto_inf <- df_com_inf %>%
   group_by(CODGEO) %>%
@@ -67,6 +67,35 @@ df_facto <- merge(x=df_com_facto_mec_inf, y=df_facto_vict, by.x='CODGEO', by.y='
 #ça créé plein de bases qui servent à rien et des colonnes sum vides mais bon l'essentiel y est ^^
 
 ```
+
+```{r}
+#on ajoute les zonages qu'on a perdu en route
+df_facto_zon <- merge(x=df_facto, y=zonages, by.x='CODGEO', by.y='CODGEO', all.x=TRUE)
+```
+
+
+```{r chargement-packages}
+library(questionr)
+library(FactoMineR)
+library(dplyr)
+library(factoextra)
+library(Factoshiny)
+library(explor)
+```
+
+```{r}
+rownames(df_facto_zon) <- paste(df_facto_zon$CODGEO)
+df_facto_zon <- df_facto_zon[,-1]
+# Factoshiny(df_facto_zon)
+# res <- FAMD(df_facto_zon)
+FAMDshiny(df_facto_zon)
+
+#ici le problème c'est qu'on a à la fois des variables quanti et quali d'où le FAMD, Analyse Factorielle des Données Mixtes
+```
+
+
+
+
 
 
 
