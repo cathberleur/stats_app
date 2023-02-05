@@ -49,13 +49,13 @@ setwd("~/Documents/ENSAE/Stats_app/git") #cathu
 ```{r, charger-libraries}
 # ctrl + maj + c : passer la sélection en commentaire
 
-# library(sf)
-# library(rgdal)
-# library(cartography)
-# library(sp)
-# library(stringr)
-# library(dplyr)
-# library(questionr)
+library(sf)
+library(rgdal)
+library(cartography)
+library(sp)
+library(stringr)
+library(dplyr)
+library(questionr)
 ```
 
 
@@ -64,7 +64,7 @@ setwd("~/Documents/ENSAE/Stats_app/git") #cathu
 
 #load("C:\\Users\\marie\\OneDrive\\Documents\\cours\\ensae\\stat app\\donnees.secretisees.delinquance.RData") # marie
 load("~/Documents/ENSAE/Stats_app/Data/donnees.secretisees.delinquance.RData") #cathu
-#load("C:/Users/Utilisateur/Desktop/donnees.secretisees.delinquance.RData") #clem
+load("C:/Users/Utilisateur/Desktop/donnees.secretisees.delinquance.RData") #clem
 # load("/Users/sklenard/Downloads/donnees.secretisees.delinquance.RData")# Gaby 
 
 ```

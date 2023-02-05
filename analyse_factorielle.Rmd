@@ -42,9 +42,30 @@ Merger par identifiant de commune et ne conserver qu'une des trois adresses en s
 
 
 ```{r}
-df_com <- merge(x=zonages, y=df_1619, by.x='CODGEO', by.y='cog_com_22_inf', all.x=TRUE)
-df_com %>%
+df_com_inf <- merge(x=zonages, y=df_1619, by.x='CODGEO', by.y='cog_com_22_inf', all.x=TRUE)#on créé une base avec les communes comme identifiant avec les zonages
+
+
+df_facto_inf <- df_com_inf %>%
   group_by(CODGEO) %>%
   summarise(sum = sum(), ninf = n())
+#on compte le nombre d'infraction par commune
+
+#pareil pour les victimes
+df_com_vict <- merge(x=zonages, y=df_1619, by.x='CODGEO', by.y='cog_com_22_vict', all.x=TRUE)
+df_facto_vict <- df_com_vict %>%
+  group_by(CODGEO) %>%
+  summarise(sum = sum(), nvict = n())
+
+#pareil pour les mec
+df_com_mec <- merge(x=zonages, y=df_1619, by.x='CODGEO', by.y='cog_com_22_mec', all.x=TRUE)
+df_facto_mec <- df_com_mec %>%
+  group_by(CODGEO) %>%
+  summarise(sum = sum(), nmec = n())
+
+#on merge les trois tables
+df_com_facto_mec_inf <- merge(x=df_facto_mec, y=df_facto_inf, by.x='CODGEO', by.y='CODGEO', all.x=TRUE)
+
+df_facto <- merge(x=df_facto_mec_inf, y=df_facto_vict, by.x='CODGEO', by.y='CODGEO', all.x=TRUE)
+
 ```
 
