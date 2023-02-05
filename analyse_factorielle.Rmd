@@ -36,3 +36,15 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 
 ```
 
+Il faut d'abord créer une table avec les communes comme individus...
+
+Merger par identifiant de commune et ne conserver qu'une des trois adresses en sommant par vict/mec/lien -> group_by puis summarize avec nvic = n()
+
+
+```{r}
+df_com <- merge(x=zonages, y=df_1619, by.x='CODGEO', by.y='cog_com_22_inf', all.x=TRUE)
+df_com %>%
+  group_by(CODGEO) %>%
+  summarise(sum = sum(), ninf = n())
+```
+
