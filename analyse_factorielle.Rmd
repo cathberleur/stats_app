@@ -61,7 +61,7 @@ df_com_facto_mec_inf <- merge(x=df_facto_mec, y=df_facto_inf, by.x='CODGEO', by.
 
 df_facto <- merge(x=df_com_facto_mec_inf, y=df_facto_vict, by.x='CODGEO', by.y='CODGEO', all.x=TRUE)
 
-#ça créé plein de bases qui servent à rien et des colonnes sum vides mais bon l'essentiel y est ^^
+rm(df_1619, df_com_facto_mec_inf, df_com_mec, df_com_inf, df_com_vict, df_facto_mec, df_facto_inf, df_facto_vict, t.del)#on supprime toutes les bases qui servent à rien
 
 ```
 
