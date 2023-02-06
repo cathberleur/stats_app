@@ -82,6 +82,11 @@ library(explor)
 
 On a ici à la fois des variables quanti (nvict) et quali (zonages). 2 solutions : recoder ou AFMD
 
+```{r}
+memory.limit(size=20000) #sinon pas assez de mémoire vive
+```
+
+
 #sol 1 : FAMD, Analyse Factorielle des Données Mixtes
 ```{r}
 rownames(df_facto_zon) <- paste(df_facto_zon$CODGEO)
@@ -102,9 +107,6 @@ df_facto_zon[ , c('sum.x', 'nmec', 'sum.y', 'ninf', 'sum', 'nvict')] <- list(NUL
 ```
 
 ```{r ACM}
-
-df_facto_zon_echantillon <- df_facto_zon[1:500, ]
-df_facto_zon_echantillon <- df_facto_zon_echantillon[,17:19]
 resultat <- MCA(df_facto_zon, quali.sup = c(1,2,3, 4, 5, 6, 7, 8, 9, 10, 11,12, 13, 14, 15, 16))
 
 resultat <- MCA(df_facto_zon_echantillon)
