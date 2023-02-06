@@ -46,15 +46,15 @@ setwd("~/Documents/ENSAE/Stats_app")
 
 
 ```{r, charger-libraries}
-library(sf)
-library(rgdal)
-library(cartography)
-library(sp)
-library(dplyr)
-library(tibble)
-library(data.table)
-library(reshape2)
-library(tidyr)
+ library(sf)
+# library(rgdal)
+# library(cartography)
+# library(sp)
+ library(dplyr)
+# library(tibble)
+# library(data.table)
+# library(reshape2)
+ library(tidyr)
 ```
 
 Le but étant d'alléger la base, penser à nettoyer le "global environment" avant de charger une sous-base. A exécuter après la feuille mise_en_forme_donnees (ou changer le lien de chargement des fichiers si ils sont enregistrés ailleurs pour ne pas les recréer inutilement à chaque fois)
@@ -63,7 +63,6 @@ Le but étant d'alléger la base, penser à nettoyer le "global environment" ava
 t.del.A <- readRDS("~/GitHub/stats_app/del_merged_A.rds")
 #t.del.A <- readRDS("C:\\Users\\marie\\OneDrive\\Documents\\cours\\ensae\\stat app\\sous df\\del_merged_A.rds")
 t.del.O <- readRDS("~/GitHub/stats_app/del_merged_O.rds")
-
 
 #A <- readRDS(file = "C:\\Users\\marie\\Documents\\GitHub\\stats_app\\del_merged_A.rds")
 #A <- readRDS(file = "C:/Users/Utilisateur/Documents/GitHub/stats_app/del_merged_A.rds")#clem
@@ -85,6 +84,7 @@ idem avec 2 communes --> il faut faire infraction + mec et infraction + victime 
 
 l'idéal est d'avoir une fonction qui prend en argument la sous-base pour qu'on puisse faire la même chose pour tous les types de délinquance, mais on commence sans fonction sur la sous-base O(la moins lourde)
 
+#METHODE 2
 ```{r essai}
 
 # t.del.O <- t.del.O %>% select(-'indicEPCI')
@@ -116,6 +116,11 @@ sum(df_O$indicEPCI)/3 # nombre d'obs pour lesquelles les 3 communes sont dans le
 
 
 ```
+
+<<<<<<< HEAD
+=======
+
+>>>>>>> 1a5ddc8abd260b17e6cca86c988f450a061ede6e
 ```{r essai-avec-autre-zonage}
 
 df_O_groupby$AAV2020 <- as.numeric(df_O_groupby$AAV2020) # zonage en num (il faut tous les changer après)
@@ -138,7 +143,10 @@ sum(df_O$indicAAV2020)/3 # nombre d'obs pour lesquelles les 3 communes sont dans
 ```
 
 
-
+<<<<<<< HEAD
+=======
+#METHODE 1
+>>>>>>> 1a5ddc8abd260b17e6cca86c988f450a061ede6e
 Autre idée : pour un zonage donné, boucle sur les id (distincts) --> +1 si les 3 lignes correspondant au même id sont le même zonage --> on obtient l'effectif des infractions où les 3 communes sont dans le même zonage
 --> prend beaucoup de temps :(
 à transformer en fonction selon zonage après
@@ -180,7 +188,53 @@ proportion_EPCI #0.1523
 
 ```
 
+#METHODE 3
+après discussion avec Aurélien, on retente de repasser le format long en wide après les jointures
+```{r methode-3}
+
+t.del.O['info commune'] <- as.character(t.del.O['info commune']) 
+
+# t.del.O <- t.del.O %>% select(-'indicEPCI')
+df_O <- as.data.frame(t.del.O)
+
+##Compteur 
+1. Coder les individus
+
+df_O_wide <- pivot_wider(data=t.del.O, names_from = 'info commune', id_cols = 'id', values_from = 'EPCI')
+
+df_O_wide['indic_EPCI'] <- case_when(
+  ((df_O_wide$cog_com_22_mec == df_O_wide$cog_com_22_vict) & ( df_O_wide$cog_com_22_mec == df_O_wide$cog_com_22_inf)) ~ 1,
+  TRUE ~ 0)
+
+unique_id <- unique(t.del.O$id)
+sum(df_O_wide$indic_EPCI)
+sum(df_O_wide$indic_EPCI)/length(unique_id)
+# 7433, 0.1523
+
+```
+```{r essai-AAV2020}
+
+```{r}
+df
+unique_id <- unique(df_1619$id)
+for (idf in unique_id){
+  if df_1619$cog_com_22_inf == df_1619$cog_com_22_vict
+  
+  
+
+```
 
 
+df_O_wide_AAV2020 <- pivot_wider(data=t.del.O, names_from = 'info commune', id_cols = 'id', values_from = 'AAV2020')
 
+df_O_wide_AAV2020['indic_AAV2020'] <- case_when(
+  ((df_O_wide_AAV2020$cog_com_22_mec == df_O_wide_AAV2020$cog_com_22_vict) & ( df_O_wide_AAV2020$cog_com_22_mec == df_O_wide_AAV2020$cog_com_22_inf)) ~ 1,
+  TRUE ~ 0)
+
+sum(df_O_wide_AAV2020$indic_AAV2020)
+sum(df_O_wide_AAV2020$indic_AAV2020)/length(unique_id)
+# 11863, 0.2430694
+
+
+```
 
