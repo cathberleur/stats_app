@@ -1,0 +1,60 @@
+
+df1 <- subset(df_1619, df_1619$classe == "A")
+
+df_long <- melt(data = df1, id.vars=c('id',"annee","duree_debut_fait_date_enregistrement","classe","dept_serv"),variable.name='info commune', value.name='commune') # format wide to long
+
+df_long_trie <- arrange(df_long,id)
+#on a l'impression que pas mal de commune du lieu d'habitation du mis en cause n'est pas renseigné!
+
+str(df_long_trie)
+
+summary(df_long_trie)
+
+summary(df1)
+
+summary(df_1619$classe)
+
+unique(df_1619$classe)
+
+classe <- table(df_1619$classe)
+prop.table(classe)* 100
+
+frequence <- classe*100/sum(classe)
+
+barplot(frequence, 
+            horiz = TRUE,las=1, 
+            col = "purple", 
+            border = "white",
+            main ="Répartition des différents types d'atteinte",
+            xlab = "Fréquence (en %)")
+
+hdv2003$qualif[hdv2003$qualif == "Ouvrier specialise"] <- "Ouvrier"
+
+ 
+
+# Nombre d'atteintes pour lesquelles les 3 lieux sont dans la même commune:
+df_1619$indicatrice1 <- 0
+df_1619$indicatrice1[(df_1619$cog_com_22_inf == df_1619$cog_com_22_vict) & (df_1619$cog_com_22_inf == df_1619$cog_com_22_mec)] <-1
+
+sum(df_1619$indicatrice1)
+
+# Nombre d'atteintes pour lesquelles les 2 lieux (infraction et victime) sont dans la même commune:
+df_1619$indicatrice2 <- 0
+df_1619$indicatrice2[(df_1619$cog_com_22_inf == df_1619$cog_com_22_vict)] <-1
+
+sum(df_1619$indicatrice2)
+
+# Nombre d'atteintes pour lesquelles les 2 lieux (infraction et  ) sont dans la même commune:
+df_1619$indicatrice2 <- 0
+df_1619$indicatrice2[(df_1619$cog_com_22_inf == df_1619$cog_com_22_vict)] <-1
+
+sum(df_1619$indicatrice2)
+
+# on somme par type d'atteintes:
+tab1 <- table(df_1619$classe, df_1619$indicatrice1)
+prop.table(tab1)*100
+
+tab2 <- table(df_1619$classe, df_1619$indicatrice2)
+prop.table(tab2)*100
+
+
