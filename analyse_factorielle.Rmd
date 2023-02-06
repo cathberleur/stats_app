@@ -86,7 +86,7 @@ On a ici à la fois des variables quanti (nvict) et quali (zonages). 2 solutions
 ```{r}
 rownames(df_facto_zon) <- paste(df_facto_zon$CODGEO)
 df_facto_zon <- df_facto_zon[,-1]
-# Factoshiny(df_facto_zon)
+Factoshiny(df_facto_zon)
 res <- FAMD(df_facto_zon)
 FAMDshiny(df_facto_zon)
 
@@ -102,10 +102,18 @@ df_facto_zon[ , c('sum.x', 'nmec', 'sum.y', 'ninf', 'sum', 'nvict')] <- list(NUL
 ```
 
 ```{r ACM}
-resultat <- MCA(df_facto_zon, quali.sup = c(1,2,3, 4, 5, 6, 7, 8, 9, 10, 11,12, 13, 14, 15, 16))
+
+df_facto_zon_echantillon <- df_facto_zon[1:500, ]
+df_facto_zon_echantillon <- df_facto_zon_echantillon[,17:19]
+#resultat <- MCA(df_facto_zon, quali.sup = c(1,2,3, 4, 5, 6, 7, 8, 9, 10, 11,12, 13, 14, 15, 16))
+
+resultat <- MCA(df_facto_zon_echantillon)
 
 #Erreur : impossible d'allouer un vecteur de taille 4.3 Go (prend trop de mémoire vive)
 
+res.MCA<-MCA(df_facto_zon_echantillon,graph=FALSE)
+plot.MCA(res.MCA, choix='var',title="Graphe des variables")
+plot.MCA(res.MCA,title="Graphe de l'ACM",label =c('ind','var'))
 
 explor(resultat)
 Factoshiny(resultat)
