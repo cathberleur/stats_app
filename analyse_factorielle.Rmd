@@ -68,6 +68,8 @@ rm(df_1619, df_com_facto_mec_inf, df_com_mec, df_com_inf, df_com_vict, df_facto_
 ```{r}
 #on ajoute les zonages qu'on a perdu en route
 df_facto_zon <- merge(x=df_facto, y=zonages, by.x='CODGEO', by.y='CODGEO', all.x=TRUE)
+df_facto_zon[ , c('sum.x', 'sum.y', 'sum')] <- list(NULL)#on supprime le reste
+
 ```
 
 
@@ -103,7 +105,7 @@ FAMDshiny(df_facto_zon)
 df_facto_zon$nvictcl <- cut(df_facto_zon$nvict,  breaks = c(0, 10, 50, 100, 500, 1000, 5000, 10000, 50000), include.lowest = TRUE)
 df_facto_zon$ninfcl <- cut(df_facto_zon$ninf, breaks = c(0, 10, 50, 100, 500, 1000, 5000, 10000, 50000), include.lowest = TRUE)
 df_facto_zon$nmeccl <- cut(df_facto_zon$nmec, breaks = c(0, 10, 50, 100, 500, 1000, 5000, 10000, 50000), include.lowest = TRUE)
-df_facto_zon[ , c('sum.x', 'nmec', 'sum.y', 'ninf', 'sum', 'nvict')] <- list(NULL)#on supprime le reste
+df_facto_zon[ , c('nmec', 'ninf', 'nvict')] <- list(NULL)#on supprime le reste
 ```
 
 ```{r ACM}
