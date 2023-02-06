@@ -12,3 +12,4 @@ del-merged-1.RData
 *.rds
 *.Rda
 *.csv
+contoursGeographiques/communes-20220101-simpl04.dbf
