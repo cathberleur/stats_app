@@ -45,10 +45,10 @@ df_1619$indicatrice2[(df_1619$cog_com_22_inf == df_1619$cog_com_22_vict)] <-1
 sum(df_1619$indicatrice2)
 
 # Nombre d'atteintes pour lesquelles les 2 lieux (infraction et  ) sont dans la même commune:
-df_1619$indicatrice2 <- 0
-df_1619$indicatrice2[(df_1619$cog_com_22_inf == df_1619$cog_com_22_vict)] <-1
+#df_1619$indicatrice2 <- 0
+#df_1619$indicatrice2[(df_1619$cog_com_22_inf == df_1619$cog_com_22_vict)] <-1
 
-sum(df_1619$indicatrice2)
+#sum(df_1619$indicatrice2)
 
 # on somme par type d'atteintes:
 tab1 <- table(df_1619$classe, df_1619$indicatrice1)
