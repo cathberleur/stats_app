@@ -225,40 +225,61 @@ transformer méthode 3 en fonction
 liste_classe <- unique(t.del$classe) # on récupère une liste de toutes les classes de délinquance
 
 
-t.del.O['info commune'] <- as.character(t.del.O['info commune']) 
-t.del.A['info commune'] <- as.character(t.del.A['info commune']) 
-t.del.K['info commune'] <- as.character(t.del.K['info commune']) 
+#t.del.O['info commune'] <- as.character(t.del.O['info commune']) 
+#t.del.A['info commune'] <- as.character(t.del.A['info commune']) 
+#t.del.K['info commune'] <- as.character(t.del.K['info commune']) 
+#d <- c(t.del.O, t.del.A, t.del.K)
+#d <- lapply(d, as.data.frame)
+#df_O <- as.data.frame(t.del.O)
 
-d <- c(t.del.O, t.del.A, t.del.K)
-d <- lapply(d, as.data.frame)
-df_O <- as.data.frame(t.del.O)
+compteur_zonages <- function(zonage) {
+  df_wide <- pivot_wider(data=t.del.K, names_from = 'info commune', id_cols = 'id', values_from = zonage)
+  nom_colonne <- (paste('indic',zonage,sep = "_"))
+  df_wide[nom_colonne] <- case_when(
+  ((df_wide$cog_com_22_mec == df_wide$cog_com_22_vict) & ( df_wide$cog_com_22_mec == df_wide$cog_com_22_inf)) ~ 1,
+  TRUE ~ 0)
+  denominateur <- length(unique(t.del.K$id))
+  effectif <- sum(df_wide[nom_colonne])
+  proportion <- effectif/denominateur
 
+  cat(zonage, ' : ', effectif,', ', proportion*100, '%\n')
+  
+}
 
+liste_zonages <- colnames(t.del.O)[14:26] # on récupère une liste de tous les types de zonages (colonne arrondissement à la fin)
+lapply(liste_zonages, compteur_zonages) 
 
-df_O_wide <- pivot_wider(data=t.del.O, names_from = 'info commune', id_cols = 'id', values_from = 'EPCI')
+```
 
-df_O_wide['indic_EPCI'] <- case_when(
-  ((df_O_wide$cog_com_22_mec == df_O_wide$cog_com_22_vict) & ( df_O_wide$cog_com_22_mec == df_O_wide$cog_com_22_inf)) ~ 1,
+```{r}
+zonage <- 'EPCI'
+
+df_wide <- pivot_wider(data=t.del.K, names_from = 'info commune', id_cols = 'id', values_from = zonage)
+
+nom_colonne <- (paste('indic',zonage,sep = "_"))
+
+df_wide[nom_colonne] <- case_when(
+  ((df_wide$cog_com_22_mec == df_wide$cog_com_22_vict) & ( df_wide$cog_com_22_mec == df_wide$cog_com_22_inf)) ~ 1,
   TRUE ~ 0)
 
-unique_id <- unique(t.del.O$id)
-sum(df_O_wide$indic_EPCI)
-sum(df_O_wide$indic_EPCI)/length(unique_id)
-# 7433, 0.1523
+denominateur <- length(unique(df$id))
+  effectif <- sum(df_wide[nom_colonne])
+  proportion <- effectif/denominateur
 
-
-
-'''```{r}
-df
-unique_id <- unique(df_1619$id)
-for (idf in unique_id){
-  if df_1619$cog_com_22_inf == df_1619$cog_com_22_vict
-  '''
+  cat(zonage, ' : ', effectif,', ', proportion, '%\n')
   
+df_wide <- pivot_wider(data=t.del.K, names_from = 'info commune', id_cols = 'id', values_from = zonage)
+
+nom_colonne <- (paste('indic',zonage,sep = "_"))
+df_wide[nom_colonne] <- case_when(
+  ((df_wide$cog_com_22_mec == df_wide$cog_com_22_vict) & ( df_wide$cog_com_22_mec == df_wide$cog_com_22_inf)) ~ 1,
+  TRUE ~ 0)
+
+denominateur <- length(unique(t.del.K$id))
+effectif <- sum(df_wide[nom_colonne])
+proportion <- effectif/denominateur
+
+  cat(zonage, ' : ', effectif,', ', proportion, '%\n')
 
 ```
-
-
-```
-
 

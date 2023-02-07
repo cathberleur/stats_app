@@ -62,15 +62,10 @@ library(questionr)
 
 ```{r chargement-dataset}
 
-<<<<<<< Updated upstream
-#load("C:\\Users\\marie\\OneDrive\\Documents\\cours\\ensae\\stat app\\donnees.secretisees.delinquance.RData") # marie
+
+load("C:\\Users\\marie\\OneDrive\\Documents\\cours\\ensae\\stat app\\donnees.secretisees.delinquance.RData") # marie
 load("~/Documents/ENSAE/Stats_app/Data/donnees.secretisees.delinquance.RData") #cathu
 load("C:/Users/Utilisateur/Desktop/donnees.secretisees.delinquance.RData") #clem
-=======
-load("C:\\Users\\marie\\OneDrive\\Documents\\cours\\ensae\\stat app\\donnees.secretisees.delinquance.RData") # marie
-#load("~/Documents/ENSAE/Stats_app/Data/donnees.secretisees.delinquance.RData") #cathu
-#load("C:/Users/Utilisateur/Desktop/donnees.secretisees.delinquance.RData") #clem
->>>>>>> Stashed changes
 # load("/Users/sklenard/Downloads/donnees.secretisees.delinquance.RData")# Gaby 
 
 ```
