@@ -96,6 +96,7 @@ pour cela, on créee une indicatrice qui indique si les 3 communes appartiennent
 
 idem avec 2 communes --> il faut faire infraction + mec et infraction + victime et? victime + mec ? (est-ce que toutes ces infos sont pertinentes ??)
 
+il faut encore ajouter une partie pour les comparaison 2 à 2, peut être que le plus simple est de refaire 2 autres fonctions similaires pour ne pas trop se compliquer la vie ?
 
 #METHODE 3
 après discussion avec Aurélien, on retente de repasser le format long en wide après les jointures
