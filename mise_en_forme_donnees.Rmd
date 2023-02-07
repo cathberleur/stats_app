@@ -62,9 +62,15 @@ library(questionr)
 
 ```{r chargement-dataset}
 
+<<<<<<< Updated upstream
 #load("C:\\Users\\marie\\OneDrive\\Documents\\cours\\ensae\\stat app\\donnees.secretisees.delinquance.RData") # marie
 load("~/Documents/ENSAE/Stats_app/Data/donnees.secretisees.delinquance.RData") #cathu
 load("C:/Users/Utilisateur/Desktop/donnees.secretisees.delinquance.RData") #clem
+=======
+load("C:\\Users\\marie\\OneDrive\\Documents\\cours\\ensae\\stat app\\donnees.secretisees.delinquance.RData") # marie
+#load("~/Documents/ENSAE/Stats_app/Data/donnees.secretisees.delinquance.RData") #cathu
+#load("C:/Users/Utilisateur/Desktop/donnees.secretisees.delinquance.RData") #clem
+>>>>>>> Stashed changes
 # load("/Users/sklenard/Downloads/donnees.secretisees.delinquance.RData")# Gaby 
 
 ```
@@ -130,6 +136,7 @@ df_1619 <- subset(t.del, t.del$annee %in% c(2016, 2017, 2018, 2019)) #on sélect
 decoupage_classe_merge <- function(classe_del) {
   df1 <- subset(df_1619, df_1619$classe == classe_del) #on sélectionne un type de délinquance
   df_long <- melt(data = df1, id.vars=c('id',"annee","duree_debut_fait_date_enregistrement","classe","dept_serv"),variable.name='info commune', value.name='commune') # format wide to long
+  df_long['info commune'] <- as.character(df_long['info commune'])
   df_long <- as_tibble(df_long)
   df_geo <- merge(x=contours,y=df_long, by.x='insee',by.y='commune', all.y=TRUE) #jointure avec les contours géo
   df_geo$insee = str_remove(df_geo$insee, "^0+") #pr avoir le même format que zonages
@@ -162,3 +169,4 @@ t.del.A_merged <- as_tibble(t.del.A_merged)
 saveRDS(t.del.A_merged, file = "del_merged_A.rds")
 
 ```
+
