@@ -101,7 +101,7 @@ Liste des différents indicateurs de délinquance :
 
 ```{r chargement-contours-communes}
 # contours <- st_read("C:\\Users\\marie\\OneDrive\\Documents\\cours\\ensae\\stat app\\contoursGeographiques") # marie
-# contours <- st_read("C:\\Users\\Utilisateur\\Desktop\\contoursGeographiques") #Clem
+contours <- st_read("C:\\Users\\Utilisateur\\Desktop\\contoursGeographiques") #Clem
 
 contours <- st_read("contoursGeographiques") # vérifier qu'on a bien le dossier git comme working directory -> permet d'avoir toustes la même ligne de code pour charger les contours
 ```

@@ -69,6 +69,7 @@ rm(df_1619, df_com_facto_mec_inf, df_com_mec, df_com_inf, df_com_vict, df_facto_
 #on ajoute les zonages qu'on a perdu en route
 df_facto_zon <- merge(x=df_facto, y=zonages, by.x='CODGEO', by.y='CODGEO', all.x=TRUE)
 df_facto_zon[ , c('sum.x', 'sum.y', 'sum')] <- list(NULL)#on supprime le reste
+rm(df_facto)
 
 ```
 
