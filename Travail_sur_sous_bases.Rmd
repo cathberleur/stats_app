@@ -51,7 +51,7 @@ setwd("~/Documents/ENSAE/Stats_app")
 # library(cartography)
 # library(sp)
  library(dplyr)
-# library(tibble)
+ library(tibble)
 # library(data.table)
 # library(reshape2)
  library(tidyr)
@@ -63,9 +63,8 @@ Le but étant d'alléger la base, penser à nettoyer le "global environment" ava
 t.del.A <- readRDS("~/GitHub/stats_app/del_merged_A.rds")
 #t.del.A <- readRDS("C:\\Users\\marie\\OneDrive\\Documents\\cours\\ensae\\stat app\\sous df\\del_merged_A.rds")
 t.del.O <- readRDS("~/GitHub/stats_app/del_merged_O.rds")
+t.del.K <- readRDS("~/GitHub/stats_app/del_merged_K.rds")
 
-#A <- readRDS(file = "C:\\Users\\marie\\Documents\\GitHub\\stats_app\\del_merged_A.rds")
-#A <- readRDS(file = "C:/Users/Utilisateur/Documents/GitHub/stats_app/del_merged_A.rds")#clem
 ```
 
 ```{r zonages-chr-to-num}
@@ -192,7 +191,9 @@ proportion_EPCI #0.1523
 après discussion avec Aurélien, on retente de repasser le format long en wide après les jointures
 ```{r methode-3}
 
+liste_classe
 t.del.O['info commune'] <- as.character(t.del.O['info commune']) 
+
 
 # t.del.O <- t.del.O %>% select(-'indicEPCI')
 df_O <- as.data.frame(t.del.O)
@@ -237,4 +238,34 @@ sum(df_O_wide_AAV2020$indic_AAV2020)/length(unique_id)
 
 
 ```
+transformer méthode 3 en fonction
+```{r fonction-effectifs}
+liste_classe <- unique(t.del$classe) # on récupère une liste de toutes les classes de délinquance
+
+
+t.del.O['info commune'] <- as.character(t.del.O['info commune']) 
+t.del.A['info commune'] <- as.character(t.del.A['info commune']) 
+t.del.K['info commune'] <- as.character(t.del.K['info commune']) 
+
+d <- c(t.del.O, t.del.A, t.del.K)
+d <- lapply(d, as.data.frame)
+df_O <- as.data.frame(t.del.O)
+
+
+
+df_O_wide <- pivot_wider(data=t.del.O, names_from = 'info commune', id_cols = 'id', values_from = 'EPCI')
+
+df_O_wide['indic_EPCI'] <- case_when(
+  ((df_O_wide$cog_com_22_mec == df_O_wide$cog_com_22_vict) & ( df_O_wide$cog_com_22_mec == df_O_wide$cog_com_22_inf)) ~ 1,
+  TRUE ~ 0)
+
+unique_id <- unique(t.del.O$id)
+sum(df_O_wide$indic_EPCI)
+sum(df_O_wide$indic_EPCI)/length(unique_id)
+# 7433, 0.1523
+
+
+
+```
+
 
