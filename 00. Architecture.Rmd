@@ -38,9 +38,22 @@ Ce document vise à organiser et rassembler tous les fichiers du projet de Stata
 
 ### Paramètres
 
+### Packages
+
 ```{r packages, include=FALSE}
-#Packages
 source("01.packages.R")
 ```
 
 
+### Bases de données
+
+```{r chargement-base délinquance}
+load("C:\\Users\\marie\\OneDrive\\Documents\\cours\\ensae\\stat app\\donnees.secretisees.delinquance.RData") # marie
+load("~/Documents/ENSAE/Stats_app/Data/donnees.secretisees.delinquance.RData") #cathu
+load("C:/Users/Utilisateur/Desktop/donnees.secretisees.delinquance.RData") #clem
+# load("/Users/sklenard/Downloads/donnees.secretisees.delinquance.RData")# Gaby
+```
+
+```{r bases de données, include=FALSE}
+source("02.bases.R")
+```
