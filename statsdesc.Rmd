@@ -138,6 +138,29 @@ boxplot(t.del$annee, main = "titre", ylab= "y")
 #pareil en réflexion
 ```
 
+compte le nombre de communes non renseigné pour les 3 adresses
+```{r}
+# length((t.del$cog_com_22_inf))
+# length(t.del$cog_com_22_vict)
+# values(t.del$cog_com_22_mec)
+# table(t.del$cog_com_22_inf)
+# length(t.del[is.na(t.del$cog_com_22_inf)==TRUE,])
+# length(t.del[is.na(t.del$cog_com_22_vict)==TRUE,])
+# length(t.del[is.na(t.del$cog_com_22_mec),])
+
+#sum(is.na(t.del$cog_com_22_inf))
+#sum(is.na(t.del$cog_com_22_vict))
+#sum(is.na(t.del$cog_com_22_mec))
+
+
+cat( 'Il y a ', sum(is.na(t.del$cog_com_22_inf)), ' communes non renseignées dans la colonne infraction. (', (sum(is.na(t.del$cog_com_22_inf))/length(t.del$cog_com_22_inf))*100,'%) \n')
+cat( 'Il y a ', sum(is.na(t.del$cog_com_22_vict)), ' communes non renseignées dans la colonne victime. (',(sum(is.na(t.del$cog_com_22_vict))/length(t.del$cog_com_22_vict))*100 ,'%) \n')
+cat( 'Il y a ', sum(is.na(t.del$cog_com_22_mec)), ' communes non renseignées dans la colonne mise en cause. (', (sum(is.na(t.del$cog_com_22_mec))/length(t.del$cog_com_22_mec))*100,'%) \n')
+
+
+
+```
+
 
 =======
 # Sous base
@@ -150,4 +173,3 @@ Merger par identifiant de commune et ne conserver qu'une des trois adresses en s
 On peut faire ça sur 16-19 : par an ça ne bouge quasiment pas
 
 Analyse factorielle : ind = commune, observation = nombre de victimes de telle classe, etc.
->>>>>>> dfe5fe8786ec63711e2e7f456960b2e21160c010
