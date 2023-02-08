@@ -1,0 +1,6 @@
+## Installation
+list_packages <- c("ggplot2", "Rcpp")
+new_packages <- list_packages[!(list_packages %in% installed.packages()[,"Package"])]
+if(length(new_packages)) install.packages(new_packages)
+
+## Chargement
