@@ -10,7 +10,7 @@ fr_comm <- st_read("C:\\Users\\marie\\OneDrive\\Documents\\cours\\ensae\\stat ap
 #plot(fr_comm)
 head(fr_comm)
 #plot(fr_comm['wikipedia'])
-ggplot() + geom_sf(data = fr_comm)
+ggplot() + geom_sf(data = contours)
 
 ## on veut juste la france continentale pour y voir plus clair
 
@@ -19,8 +19,8 @@ ggplot() + geom_sf(data = fr_comm)
 #fr_continent <- depf[depf$name == 'France',]
 
 #en "coupant" la carte
-fr_cont_cropped <- st_crop(fr_comm, xmin = -20, xmax = 40, ymin = 30, ymax = 55)
-ggplot() + geom_sf(data = fr_cont_cropped) + theme_bw() + coord_sf(expand = FALSE)
+contours_cropped <- st_crop(contours, xmin = -20, xmax = 40, ymin = 30, ymax = 55)
+ggplot() + geom_sf(data = contours_cropped) + theme_bw() + coord_sf(expand = FALSE)
 
 # en coupant le fond de carte mais avec toutes les données (mieux pour garder la projection?, idem pour nous je pense car slmt france)
 ggplot() + geom_sf(data = fr_comm) +

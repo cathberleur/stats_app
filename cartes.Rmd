@@ -40,21 +40,33 @@ On va essayer de faire une carte avec la base créée pour l'ACM.
 #install.packages('ggplot')
 library(sf)
 library(ggplot2)
+library(geometry)
 #library(ggplot)
 sf_use_s2(FALSE) #turns off spherical geometry
+
 ```
 
 
 ```{r}
 
-df_facto_carto <- merge(x = df_facto_zon, y = contours, by.x = 'CODGEO', by.y = 'insee')
-ggplot() + geom_sf(data = contours)
-fr_cont_cropped <- st_crop(contours, xmin = -20, xmax = 40, ymin = 30, ymax = 55)
-ggplot() + geom_sf(data = fr_cont_cropped) + theme_bw() + coord_sf(expand = FALSE)
+df_facto_carto <- merge(x = contours, y = df_facto_zon, by.y = 'CODGEO', by.x = 'insee')
+contours_cropped <- st_crop(contours, xmin = -20, xmax = 40, ymin = 30, ymax = 55)
+#ggplot() + geom_sf(data = contours_cropped) + theme_bw() + coord_sf(expand = FALSE)
+
+ggplot() + geom_sf(data = contours) +
+  coord_sf(xlim = c(-7, 10)
+           , ylim = c(40, 52), expand = FALSE) +
+  theme_bw() # juste les contours
+
+ggplot() + geom_sf(data = df_facto_carto) +
+  coord_sf(xlim = c(-7, 10), ylim = c(40, 52), expand = FALSE) +
+  theme_bw()# contours joints à nos données, pourquoi il manque des régions ?
 
 
-df_facto_carto <- merge(x = df_facto_zon, y = fr_cont_cropped, by.x = 'CODGEO', by.y = 'insee')
+
+# df_facto_carto <- merge(x = df_facto_zon, y = fr_cont_cropped, by.x = 'CODGEO', by.y = 'insee')
 ```
+pour les drom com il faudrait (?) changer les coordonnées (couper ailleurs)
 
 ```{r}
 as.numeric(unlist(df_facto_carto))
@@ -62,14 +74,7 @@ plot(df_facto_carto)
 ```
 
 
-
-
 ```{r}
 plot(df_facto_carto$geometry)
 ggplot(df_facto_carto) + geom_sf()
 ```
-
-
-
-
-
