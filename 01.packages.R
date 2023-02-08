@@ -3,7 +3,6 @@ list_packages <- c("tidyverse", "readxl", "ggplot2", "data.table", "dplyr", "sta
 new_packages <- list_packages[!(list_packages %in% installed.packages()[,"Package"])]
 if(length(new_packages)) install.packages(new_packages)
 
-
 ## Chargement
 library(tidyverse)
 library(readxl)
@@ -22,6 +21,3 @@ library(FactoMineR)
 library(factoextra)
 library(Factoshiny)
 library(explor)
-
-
-
