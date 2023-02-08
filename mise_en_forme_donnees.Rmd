@@ -35,7 +35,7 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 ```
 
 ```{r, include=FALSE}
-list.of.packages <- c("tidyverse", "sf", "readxl", "rgdal", "ggplot2", "data.table", "dplyr", "stargazer", "cartography","sf","rgdal","sp","readr", "sp", "stringr", "questionr")
+list.of.packages <- c("tidyverse", "sf", "readxl", "rgdal", "ggplot2", "data.table", "dplyr", "stargazer", "cartography","sf","rgdal","sp","readr", "sp", "stringr", "questionr",'geometry')
 
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages, repos = "http://cran.us.r-project.org")
@@ -62,7 +62,10 @@ library(questionr)
 
 ```{r chargement-dataset}
 
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 load("C:\\Users\\marie\\OneDrive\\Documents\\cours\\ensae\\stat app\\donnees.secretisees.delinquance.RData") # marie
 load("~/Documents/ENSAE/Stats_app/Data/donnees.secretisees.delinquance.RData") #cathu
 load("C:/Users/Utilisateur/Desktop/donnees.secretisees.delinquance.RData") #clem
@@ -101,8 +104,11 @@ Liste des différents indicateurs de délinquance :
 
 
 ```{r chargement-contours-communes}
+<<<<<<< Updated upstream
 # contours <- st_read("C:\\Users\\marie\\OneDrive\\Documents\\cours\\ensae\\stat app\\contoursGeographiques") # marie
 # contours <- st_read("C:\\Users\\Utilisateur\\Desktop\\contoursGeographiques") #Clem
+=======
+>>>>>>> Stashed changes
 
 contours <- st_read("contoursGeographiques") # vérifier qu'on a bien le dossier git comme working directory -> permet d'avoir toustes la même ligne de code pour charger les contours
 ```
