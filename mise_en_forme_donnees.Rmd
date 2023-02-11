@@ -62,15 +62,13 @@ library(questionr)
 
 ```{r chargement-dataset}
 
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
 load("C:\\Users\\marie\\OneDrive\\Documents\\cours\\ensae\\stat app\\donnees.secretisees.delinquance.RData") # marie
 load("~/Documents/ENSAE/Stats_app/Data/donnees.secretisees.delinquance.RData") #cathu
 load("C:/Users/Utilisateur/Desktop/donnees.secretisees.delinquance.RData") #clem
 # load("/Users/sklenard/Downloads/donnees.secretisees.delinquance.RData")# Gaby 
 
+load("M:/Commun/BESTRP/Territoires/Zonage.StatApp/test.code/donnees.secretisees.delinquance.RData")#chemin pour le SSMSI.
+load("M:/Commun/BESTRP/Territoires/Zonage.StatApp/test.code/t.init.RData")#chemin pour le SSMSI (vraie base!)
 ```
 
 
@@ -104,13 +102,12 @@ Liste des différents indicateurs de délinquance :
 
 
 ```{r chargement-contours-communes}
-<<<<<<< Updated upstream
-# contours <- st_read("C:\\Users\\marie\\OneDrive\\Documents\\cours\\ensae\\stat app\\contoursGeographiques") # marie
-# contours <- st_read("C:\\Users\\Utilisateur\\Desktop\\contoursGeographiques") #Clem
-=======
->>>>>>> Stashed changes
 
 contours <- st_read("contoursGeographiques") # vérifier qu'on a bien le dossier git comme working directory -> permet d'avoir toustes la même ligne de code pour charger les contours
+
+
+contours <- st_read("M:/Commun/BESTRP/Territoires/Zonage.StatApp/test.code/stats_app-main/stats_app-main/contoursGeographiques") #ssmsi
+
 ```
 
 ```{r chargement-zonages-insee}
@@ -119,6 +116,8 @@ contours <- st_read("contoursGeographiques") # vérifier qu'on a bien le dossier
 urlfile<-'https://raw.githubusercontent.com/marie678/test/main/table-appartenance-geo-communes-22.csv'
 zonages <- read.csv(urlfile, header=TRUE,sep=';',fileEncoding='cp1252') #création d'un df pour les zonages
 liste_labels <- c('Code géographique','Libellé géographique','Département	Région','Arrondissement','Canton ville','Intercommunalité - Métropole',"Nature d'EPCI","Zone d'emploi 2020",'Unité urbaine 2020',"Tranche d'unité urbaine 2020 calculée sur la population 2017","Tranche détaillée d'unité urbaine 2020 calculée sur la population 2017","Aire d'attraction des villes 2020","Tranche d'aire d'attraction des villes 2020 calculée sur la population 2017","Tranche détaillée d'aire d'attraction des villes 2020 calculée sur la population 2017","Catégorie commune dans aire d'attraction des villes 2020","Bassin de vie 2012")
+
+zonages <- read.csv("M:/Commun/BESTRP/Territoires/Zonage.StatApp/test.code/stats_app-main/stats_app-main/table-appartenance-geo-communes-22.csv",sep=';',fileEncoding='cp1252')
 
 ```
 
