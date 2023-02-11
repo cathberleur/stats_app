@@ -3,17 +3,20 @@ list_packages <- c("tidyverse", "readxl", "ggplot2", "data.table", "dplyr", "sta
 new_packages <- list_packages[!(list_packages %in% installed.packages()[,"Package"])]
 if(length(new_packages)) install.packages(new_packages)
 
+.libPaths("M:\\Perso\\KMilin\\Logiciel R\\packages\\4.0")#chemin ssmsi
+.libPaths()
+
 ## Chargement
-library(tidyverse)
+library(tidyverse)#?chec ssmsi
 library(readxl)
 library(ggplot2)
 library(data.table)
 library(dplyr)
-library(stargazer)
+library(stargazer)#?chec ssmsi
 library(cartography)
 library(sf)
 library(rgdal)
-library(readr)
+library(readr)#?chec ssmsi
 library(sp)
 library(stringr)
 library(questionr)
