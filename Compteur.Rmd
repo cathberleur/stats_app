@@ -28,8 +28,6 @@ barplot(frequence,
             main ="Répartition des différents types d'atteinte",
             xlab = "Fréquence (en %)")
 
-hdv2003$qualif[hdv2003$qualif == "Ouvrier specialise"] <- "Ouvrier"
-
  
 
 # Nombre d'atteintes pour lesquelles les 3 lieux sont dans la même commune:
@@ -42,19 +40,23 @@ sum(df_1619$indicatrice1)
 df_1619$indicatrice2 <- 0
 df_1619$indicatrice2[(df_1619$cog_com_22_inf == df_1619$cog_com_22_vict)] <-1
 
-sum(df_1619$indicatrice2)
+sum(df_1619$indicatrice2) #6 163 562
 
 # Nombre d'atteintes pour lesquelles les 2 lieux (infraction et  ) sont dans la même commune:
-#df_1619$indicatrice2 <- 0
-#df_1619$indicatrice2[(df_1619$cog_com_22_inf == df_1619$cog_com_22_vict)] <-1
+df_1619$indicatrice2 <- 0
+df_1619$indicatrice2[(df_1619$cog_com_22_inf == df_1619$cog_com_22_vict)] <-1
 
-#sum(df_1619$indicatrice2)
+sum(df_1619$indicatrice2)# 1108366
 
 # on somme par type d'atteintes:
 tab1 <- table(df_1619$classe, df_1619$indicatrice1)
-prop.table(tab1)*100
+tb1 <- prop.table(tab1)*100
+copie(tb1)
 
 tab2 <- table(df_1619$classe, df_1619$indicatrice2)
-prop.table(tab2)*100
+tb2 <- prop.table(tab2)*100
+copie(tb2)
 
-
+tab3 <- table(df_1619$classe, df_1619$indicatrice3)
+tb3 <- prop.table(tab3)*100
+copie(tb3)
