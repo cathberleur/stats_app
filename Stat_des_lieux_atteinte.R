@@ -10,6 +10,7 @@ library(readxl)
 library(questionr)
 library(forcats)
 library(data.table)
+library(openxlsx)
 
 # 2) Chargement des données:
 
@@ -207,8 +208,10 @@ del1619_dt[ , communes_atteinte := data.table::fcase(
 #g: autres cas.
 
 # 1er tableau de fréquences selon le type d'atteinte:
-tab_com <- table(del1619_dt$classe2, del1619_dt$communes_atteinte)
-lprop(tab_com) # pourcentages en lignes (=types d'atteinte)
+tab_communes <- table(del1619_dt$classe2, del1619_dt$communes_atteinte)
+ptab_communes <- lprop(tab_communes) # pourcentages en lignes (=types d'atteinte)
+ptab_communes
+
 
 # 2) Codage de la variable catégorielle "ZE_atteinte":
 # Cette variable catégorielle classe chaque atteinte suivant que les 3 lieux (inf/vict/mec) s'inscrivent
@@ -241,7 +244,8 @@ del1619_dt[ , ZE_atteinte := data.table::fcase(
 
 # 1er tableau de fréquences selon le type d'atteinte:
 tab_ZE <- table(del1619_dt$classe2, del1619_dt$ZE_atteinte)
-lprop(tab_ZE) # pourcentages en lignes (=types d'atteinte)
+ptab_ZE <- lprop(tab_ZE) # pourcentages en lignes (=types d'atteinte)
+ptab_ZE
 
 # 3) Codage de la variable catégorielle "UU_atteinte":
 # Cette variable catégorielle classe chaque atteinte suivant que les 3 lieux (inf/vict/mec) s'inscrivent
@@ -274,7 +278,9 @@ del1619_dt[ , UU_atteinte := data.table::fcase(
 
 # 1er tableau de fréquences selon le type d'atteinte:
 tab_UU <- table(del1619_dt$classe2, del1619_dt$UU_atteinte)
-lprop(tab_UU) # pourcentages en lignes (=types d'atteinte)
+ptab_UU <- lprop(tab_UU) # pourcentages en lignes (=types d'atteinte)
+ptab_UU
+
 
 # 4) Codage de la variable catégorielle "AAV_atteinte":
 # Cette variable catégorielle classe chaque atteinte suivant que les 3 lieux (inf/vict/mec) s'inscrivent
@@ -307,9 +313,55 @@ del1619_dt[ , AAV_atteinte := data.table::fcase(
 
 # 1er tableau de fréquences selon le type d'atteinte:
 tab_AAV <- table(del1619_dt$classe2, del1619_dt$AAV_atteinte)
-lprop(tab_AAV) # pourcentages en lignes (=types d'atteinte)
+ptab_AAV <- lprop(tab_AAV) # pourcentages en lignes (=types d'atteinte)
+ptab_AAV
 
 # 5) Grille de densité: TODO?
+
+# Export Excel des tableaux pour chaque type de zonage (au format .xlsx):
+
+# a) Mise au format des tableaux pour l'export:
+
+# Transformation des tableaux en data.frame:
+ptab_communes <- as.data.frame(ptab_communes)
+ptab_ZE <- as.data.frame(ptab_ZE)
+ptab_UU <- as.data.frame(ptab_UU)
+ptab_AAV <- as.data.frame(ptab_AAV)
+
+# Mise en format "wide":
+ptab_communes<- ptab_communes %>% pivot_wider(names_from =Var2,values_from = Freq )
+ptab_ZE<- ptab_ZE %>% pivot_wider(names_from =Var2,values_from = Freq )
+ptab_UU<- ptab_UU %>% pivot_wider(names_from =Var2,values_from = Freq )
+ptab_AAV<- ptab_AAV %>% pivot_wider(names_from =Var2,values_from = Freq )
+
+# On renomme certaines variables:
+ptab_communes = rename(ptab_communes, "Type_atteintes" = "Var1")
+ptab_ZE = rename(ptab_ZE, "Type_atteintes" = "Var1")
+ptab_UU = rename(ptab_UU, "Type_atteintes" = "Var1")
+ptab_AAV = rename(ptab_AAV, "Type_atteintes" = "Var1")
+
+# Préparation d'une section "lisez-moi":
+modalites_lieux_atteintes=c("a","b","c","d","e","f","g")
+label_atteintes=c("les 3 lieux renseignés (inf/vict/mec) se situent dans le même zonage",
+                  "seuls 2 des 3 lieux renseignés (inf/vict) se situent dans le même zonage",
+                  "seuls 2 des 3 lieux renseignés (vict/mec) se situent dans le même zonage",
+                  "seuls 2 des 3 lieux renseignés (inf/mec) se situent dans le même zonage",
+                  "les 3 lieux renseignés (inf/vict/mec) se situent dans des zonages distincts",
+                  "les 2 lieux renseignés (inf/vict) se situent dans des zonages distincts et le lieu du mec n'est pas renseigné",
+                  "autres cas")
+
+lisez_moi = data.frame(modalites_lieux_atteintes, label_atteintes)
+
+# Nombre d'atteintes dans la sous-base 2016-2019 selon le type:
+nb_atteintes_1619 <- table(t.del1619$classe2)
+nb_atteintes_1619
+
+nb_atteintes_1619 <- as.data.frame(nb_atteintes_1619)
+
+# b) Export au format .xlsx:
+dataset_names <- list('lisez_moi' = lisez_moi,'nombre_atteintes' = nb_atteintes_1619,'communes' = ptab_communes, 'ZE' = ptab_ZE,'UU' = ptab_ZE,'AAV' = ptab_ZE)
+write.xlsx(dataset_names, file = '/Users/sklenard/Documents/Statapp//lieux_atteintes2016_19_zonages.xlsx')
+
 
 
 
