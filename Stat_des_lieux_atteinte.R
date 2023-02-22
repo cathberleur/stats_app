@@ -17,12 +17,18 @@ library(openxlsx)
 # a) Fichier géolocalisé (secrétisé) du SSMSI des communes de commission des actes de
 # délinquance, des communes des victimes et des communes des mis an cause:
 load("/Users/sklenard/Downloads/donnees.secretisees.delinquance.RData") # Fichier t.del (tibble)
+load("C:\\Users\\marie\\OneDrive\\Documents\\cours\\ensae\\stat app\\donnees.secretisees.delinquance.RData") # marie
 
 # b) Table de passage communes -> zonages de l'Insee:
 chemin <-"/Users/sklenard/Documents/GitHub/stats_app/table-appartenance-geo-communes-22_v2022-09-27.xlsx"
 
 t.zonages <- readxl::read_excel(path = chemin, sheet = "COM",skip=5) # création d'un tibble.
 names(t.zonages)
+
+#urlfile<-'https://raw.githubusercontent.com/marie678/test/main/table-appartenance-geo-communes-22.csv'
+#zonages <- read.csv(urlfile, header=TRUE,sep=';',fileEncoding='cp1252') #création d'un df pour les zonages
+#t.zonages <- as_tibble(zonages)
+#rm(zonages)
 
 # c) Contours géographiques des différents zonages (utiles pour les fonds de carte):
 # TODO!
@@ -31,7 +37,7 @@ names(t.zonages)
 
 # Checks sur les 3 variables de jointure (code commune des 3 lieux caractéristiques d'une atteinte:
 # lieu de l'atteinte, lieu d'habitation de la victime, lieu d'habitation du mis en cause.
-sum(is.na(t.del$cog_com_22_inf)) # 39 957 valeurs manquantes
+sum(is.na(t.del$cog_com_22_inf)) # 39 157 valeurs manquantes
 sum(is.na(t.del$cog_com_22_vict)) # 518 354 valeurs manquantes
 sum(is.na(t.del$cog_com_22_mec)) # 5 178 917 valeurs manquantes
 
