@@ -149,23 +149,19 @@ df_num <- select_if(df_facto_zon, is.numeric)
 # Centrer et réduire les données
 df_scaled <- scale(df_num, center = TRUE, scale = TRUE)
 
-# Initialiser la PCA incrémentale
-pca <- prcomp(df_scaled, center = TRUE, scale. = TRUE, retx = FALSE)
-pca$n <- 0
+# Transposer les données pour avoir les observations en colonne
+df_t <- t(df_scaled)
 
-incremental_pca <- function(pca, new_obs) {
-  pca$xbar <- (pca$n * pca$xbar + new_obs) / (pca$n + 1)
-  pca$sdev <- sqrt((pca$n * pca$sdev^2 + colSums((new_obs - pca$xbar)^2)) / (pca$n + 1))
-  pca$rotation <- svd(scale(data, center = pca$xbar, scale = pca$sdev), nu = 0)$v[, 1:pca$rank]
-  pca$center <- pca$xbar
-  pca$scale <- pca$sdev
-  pca$n <- pca$n + 1
-  
-  return(pca)
-}
-result <- Reduce(incremental_pca, as.data.frame(t(df_scaled)), init = pca)
-# Extraire les composantes principales
-pc <- pca$transform(df_scaled)
+# Initialiser la PCA incrémentale avec la première observation
+init_obs <- df_t[, 1:3]
+xbar <- colMeans(init_obs)
+init_pca <- list(xbar = colMeans(init_obs), n = 3)
+
+# Appliquer la PCA incrémentale aux autres observations
+result <- Reduce(incremental_pca, df_t[, -1], init = pca)
+
+# Vérifier les résultats
+summary(result)
 
 # Analyser les résultats
 fviz_pca_var(pca, addlabels = TRUE)
