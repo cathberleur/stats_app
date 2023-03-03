@@ -139,4 +139,39 @@ resultat <- MCA(df_facto_zon)
 
 
 
+```{r}
+library(pracma)
+library(factoextra)
+library(stats)
+
+#on garde que les colonnes num
+df_num <- select_if(df_facto_zon, is.numeric)
+# Centrer et réduire les données
+df_scaled <- scale(df_num, center = TRUE, scale = TRUE)
+
+# Initialiser la PCA incrémentale
+pca <- prcomp(df_scaled, center = TRUE, scale. = TRUE, retx = FALSE)
+pca$n <- 0
+
+incremental_pca <- function(pca, new_obs) {
+  pca$xbar <- (pca$n * pca$xbar + new_obs) / (pca$n + 1)
+  pca$sdev <- sqrt((pca$n * pca$sdev^2 + colSums((new_obs - pca$xbar)^2)) / (pca$n + 1))
+  pca$rotation <- svd(scale(data, center = pca$xbar, scale = pca$sdev), nu = 0)$v[, 1:pca$rank]
+  pca$center <- pca$xbar
+  pca$scale <- pca$sdev
+  pca$n <- pca$n + 1
+  
+  return(pca)
+}
+result <- Reduce(incremental_pca, as.data.frame(t(df_scaled)), init = pca)
+# Extraire les composantes principales
+pc <- pca$transform(df_scaled)
+
+# Analyser les résultats
+fviz_pca_var(pca, addlabels = TRUE)
+fviz_pca_ind(pc, habillage = variable_to_color_by)
+explor(pc)
+Factoshiny(pc)
+
+```
 
