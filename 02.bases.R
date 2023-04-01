@@ -9,6 +9,10 @@ liste_labels <- c('Code géographique','Libellé géographique','Département	Région
 
 zonages <- read.csv("M:/Commun/BESTRP/Territoires/Zonage.StatApp/test.code/stats_app-main/stats_app-main/table-appartenance-geo-communes-22.csv",sep=';',fileEncoding='cp1252')#ssmsi?
 
+
+# Grille de densité (ajoutée par Kevin Milin)
+load("~/GitHub/stats_app/grille.densité.rdata")
+
 ## chargement base
 #chez nous, données secrétisées:
 load("C:\\Users\\marie\\OneDrive\\Documents\\cours\\ensae\\stat app\\donnees.secretisees.delinquance.RData") # marie
