@@ -33,10 +33,13 @@ cat( 'Il y a ', sum(is.na(t.del$cog_com_22_vict)), ' communes non renseignées da
 cat( 'Il y a ', sum(is.na(t.del$cog_com_22_mec)), ' communes non renseignées dans la colonne mise en cause. (', (sum(is.na(t.del$cog_com_22_mec))/length(t.del$cog_com_22_mec))*100,'%) \n')
 
 ## Mosaicplot par région
-df <- merge(x=t.del, y=zonages, by.x='cog_com_22_inf', by.y='CODGEO', all.x=TRUE)
-tab3 <- table(df$classe, df$REG)
-mosaicplot(tab3, shade = T, las = 2, main = "Type de délinquance selon la région", xlab= "Régions", ylab="Classe de délinquance")
+# df <- merge(x=t.del, y=zonages, by.x='cog_com_22_inf', by.y='CODGEO', all.x=TRUE)
+# tab3 <- table(df$classe, df$REG)
+# mosaicplot(tab3, shade = T, las = 2, main = "Type de délinquance selon la région", xlab= "Classe de délinquance", ylab="Classe de délinquance")
+# ici on visualise les fréquences des régions/classe (sdelon l'aire du carré) mais c'est pas hyper lisible
+# peut-être que ce sera intéressant de faire un test d'indépendance de deux variables type département et classe?
 
 ### Statistiques descriptives sur les zonages
 
 ## variances inter/intra
+

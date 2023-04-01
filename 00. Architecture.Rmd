@@ -47,7 +47,6 @@ source("01.packages.R")
 
 ### Bases de données
 
-
 Ce fichier contient un seul objet R, un tibble t.del, comprenant 6,5 millions de lignes et 8 colonnes :
     - id, un identifiant arbitraire.
     - annee, qui ne correspond pas à la vraie année enregistrée, elles ont toutes été permutées.
@@ -79,3 +78,14 @@ Liste des différents indicateurs de délinquance :
 ```{r bases de données, include=FALSE}
 source("02.bases.R")
 ```
+
+
+### Statistiques Descriptives
+```{r stat desc, include=FALSE}
+source("03.Statsdesc.R")
+```
+
+
+### ACP
+
+### Cartes
