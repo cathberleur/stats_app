@@ -4,4 +4,4 @@ for(tab in ltabUuq){
 }
 names(ltabUuq.exemple) = names(ltabUuq)
 
-save(ltabUuq.exemple,file = "./études et publications/interstatanalyse 2023/cartes/exemple.données.RData")
+save(ltabUuq.exemple,file = "~/GitHub/stats_app/Kevin/exemple.donn�es.RData")

@@ -1,4 +1,3 @@
-source("M:/Commun/BESTRP/Territoires/Données communales/études et publications/interstatanalyse 2023/cartes/scripts/0.environnement.R",encoding = "UTF-8")
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Partie 2 : Création des cartes
@@ -8,7 +7,7 @@ source("M:/Commun/BESTRP/Territoires/Données communales/études et publications
 
   # Données avec la classification construite
 
-load(file = "./études et publications/interstatanalyse 2023/cartes/donnees_cartes_20230120.RData")
+load("~/GitHub/stats_app/Kevin/exemple.donn�es.RData")
 
 ltabUuq
 ltabAavq
@@ -132,7 +131,7 @@ for(i in 1:length(ltab)){
     
   # Création du fichier d'enregistrement
   
-  png(filename=paste("./études et publications/interstatanalyse 2023/cartes/",nom.classe,"_",Sys.Date(),".png",sep=""),width=5600,height=5000)
+  png(filename=paste("~/GitHub/stats_app/Kevin/exemple.donn�es.RData,nom.classe","_",Sys.Date(),".png",sep=""),width=5600,height=5000)
   
     # France métropole 
   
