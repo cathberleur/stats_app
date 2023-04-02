@@ -46,7 +46,7 @@ zonage_ZE_2020_dt_mec <- zonage_ZE_2020_dt
 names(zonage_ZE_2020_dt_mec) <-paste0(names(zonage_ZE_2020_dt_mec),"_mec")
 
 # Contours géographiques des ZE 2020 (au 1er janvier 2022):
-contours_ZE_2020 <- st_read("ze2020_2022")
+# contours_ZE_2020 <- st_read("ze2020_2022")
 
 # c) Fichier sur le zonage "bassin de vie" (BV 2022 au 1er janvier 2022):
 t.zonage_BV_2022 <- readxl::read_excel(path = "BV2022_au_01-01-2022.xlsx", sheet = "Composition_communale",skip=5) # création d'un tibble.
@@ -63,8 +63,8 @@ zonage_BV_2022_dt_mec <- zonage_BV_2022_dt
 names(zonage_BV_2022_dt_mec) <-paste0(names(zonage_BV_2022_dt_mec),"_mec")
 
 # Contours géographiques des BV 2022 (au 1er janvier 2022):
-contours_BV_2022 <- st_read("bv2022_2022")
-contours_com_BV_2022 <- st_read("com_bv2022_2022")
+#contours_BV_2022 <- st_read("bv2022_2022")
+#contours_com_BV_2022 <- st_read("com_bv2022_2022")
 
 # Compléter avec les autres zonages d'étude...
 
