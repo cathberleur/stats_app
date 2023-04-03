@@ -5,7 +5,7 @@
 # en local où se trouvent l'ensemble des fichiers R.data, .xlsx, .csv etc à charger et ce sera aussi l'endroit où seront
 # stockées les différentes sorties):
 
-setwd("/Users/sklenard/Documents/Statapp/WD_Gabriel")
+setwd("/Users/sklenard/Documents/Statapp/WD_Gabriel") # à modifier par chaque utilisateur.
 
 # 0) Chargement des librairies utiles:
 library(tibble)
@@ -66,10 +66,9 @@ names(zonage_BV_2022_dt_mec) <-paste0(names(zonage_BV_2022_dt_mec),"_mec")
 #contours_BV_2022 <- st_read("bv2022_2022")
 #contours_com_BV_2022 <- st_read("com_bv2022_2022")
 
-# Compléter avec les autres zonages d'étude...
+# Compléter avec les autres zonages d'étude...(privilégier ceux qui réalisent une partition du territoire français)
 
 # Ajout des zonages administratifs (département, région, EPCI, etc.):
-# Dans cet exemple, il faut remplacer "mon_IDEP" par votre IDEP
 
 regions <- read_delim("v_region_2023.csv", 
                       locale = locale(encoding ="UTF-8"),
@@ -80,6 +79,7 @@ names(regions)
 
 # Charger les données socio-démographiques relatives aux communes (Insee):
 
+# - Base "comparateur des communes":
 t.infos_communes <- readxl::read_excel(path = "base_cc_comparateur.xlsx", sheet = "COM",skip=5) # création d'un tibble.
 # conversion de certaines variables caractères en numérique:
 t.infos_communes$NBMENFISC20 <- as.numeric(t.infos_communes$NBMENFISC20)
@@ -89,6 +89,13 @@ t.infos_communes$TP6020 <- as.numeric(t.infos_communes$TP6020)
 
 infos_communes_dt <- as.data.table(t.infos_communes)
 names(infos_communes_dt)
+
+# - Base du dossier complet (https://www.insee.fr/fr/statistiques/5359146):
+# Près de 1900 indicateurs au niveau communal!
+# Info très riche sur le profil démographique et socio-économique de chaque commune
+# Mais il faudra sélectionner les indicateurs les plus pertinents pour nous!
+
+# TODO !
 
 # 2) Construction de la base d'étude:
 
