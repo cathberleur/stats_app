@@ -114,6 +114,9 @@ head(del2016_2021_dt_reg)
 
 
 # On récupère le fichier des libellés des régions
+# Téléchargez le fichier csv sous https://www.insee.fr/fr/information/6800675 et enregistrez-le
+# dans votre WD.
+
 regions <- read_delim("v_region_2023.csv",show_col_types = FALSE)
 regions_dt <- as.data.table(regions)
 regions_dt <- regions_dt[ , .(REG,LIBELLE)]
@@ -129,6 +132,9 @@ del2016_2021_dt_reg <-
 head(del2016_2021_dt_reg)
 
 # On récupère les indicateurs de dispersion du revenu par UC de Filosofi (Insee) par région en 2020:
+# Téléchargez le zip sous https://www.insee.fr/fr/statistiques/6692220 dézippez et enregistrez le fichier
+# FILO2020_DISP_REG.xlsx dans votre WD.
+
 t.infos_disp_rev_reg<- readxl::read_excel(path = "FILO2020_DISP_REG.xlsx", sheet = "ENSEMBLE",skip=5) # création d'un tibble.
 infos_disp_rev_reg_dt <- as.data.table(t.infos_disp_rev_reg)
 # On fait la jointure avec ce fichier:

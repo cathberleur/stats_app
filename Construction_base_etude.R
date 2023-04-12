@@ -23,6 +23,9 @@ library(sf)
 
 # a) Fichier "flouté" des atteintes géolocalisées (source: SSMSI):
 
+# Enregistrez au préalable dans votre WD le fichier donnees.secretisees.delinquance.RData
+# mis à disposition par le SSMSI.
+
 load("donnees.secretisees.delinquance.RData") # Fichier t.del (tibble)
 # Etant donné la volumétrie, on le transforme en un fichier data.table:
 del2016_2021_dt <- as.data.table(t.del)
@@ -33,6 +36,13 @@ names(del2016_2021_dt)
 # b) Fichier "Table d'appartenance géographique des communes" (source: Insee):
 # Ce fichier relie chaque commune à ses différents zonages statistiques et administratifs.
 # Nous avons retenu la version du fichier la plus récente (mise en ligne en 2023).
+
+# Vous pouvez télécharger le fichier depuis https://www.insee.fr/fr/information/2028028
+# et enregistrez le fichier dézippé dans wotre WD ;)
+
+# Pour le fichier sur les bassins de vie, vous pouvez télécharger le fichier sous
+# https://www.insee.fr/fr/information/6676988 et ensuite enregistrer le fichier dézippé
+# dans votre WD ;)
 
 # - Les communes:
 t.communes_zonages <- readxl::read_excel(path = "table-appartenance-geo-communes-23.xlsx", sheet = "COM",skip=5) # création d'un tibble.
@@ -66,6 +76,7 @@ names(communes_zonages_dt_mec) <-paste0(names(communes_zonages_dt_mec),"_mec")
 
 
 # c) Fichier sur la grille de densité en 4 modalités (mix de la grille de densité d'Eurostat et des AAV de l'Insee):
+# Enregistrez au préalable dans votre WD le fichier grille.densité.Rdata mis à disposition par Kevin sur Osmose
 load("grille.densité.rdata") # Fichier t.del (tibble)
 tab.dens <- tab.dens %>% rename(code_commune = `code commune`, GRD = gri.den)
 # Etant donné la volumétrie, on le transforme en un fichier data.table:
@@ -84,6 +95,9 @@ communes_grille_densite_dt_mec <- communes_grille_densite_dt
 names(communes_grille_densite_dt_mec) <-paste0(names(communes_grille_densite_dt_mec),"_mec")
 
 # d) Fichier sur le zonage de l'ANCT: les centralités
+# Enregistrez au préalable dans votre WD le fichier Excel 202009_data_etudescentralites_inrae_anct.xlsx
+# mis à disposition sous Osmose.
+
 t.communes_centralites <- readxl::read_excel(path = "202009_data_etudescentralites_inrae_anct.xlsx", sheet = "Table") # création d'un tibble.
 communes_centralites_dt <- as.data.table(t.communes_centralites)
 communes_centralites_dt <-communes_centralites_dt[ , .(DC,P_NP5CLA,Tag_Centralite,SCORE,R_SCORE,
@@ -103,6 +117,8 @@ communes_centralites_dt_mec <- communes_centralites_dt
 names(communes_centralites_dt_mec) <-paste0(names(communes_centralites_dt_mec),"_mec")
 
 # e) Fichier "Comparateur des communes" de l'Insee: https://www.insee.fr/fr/statistiques/2521169#consulter
+# Pensez à télécharger le fichier base_cc_comparateur.xlsx et à l'enregistrer dans votre WD.
+
 # Indicateurs socio-démographiques relatifs aux communes:
 
 t.infos_communes <- readxl::read_excel(path = "base_cc_comparateur.xlsx", sheet = "COM",skip=5) # création d'un tibble.
