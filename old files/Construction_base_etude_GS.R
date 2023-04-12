@@ -1,12 +1,6 @@
 
 # Construction de la base d'étude:
 
-# Mon Working Directory (WD): à préciser par chaque utilisateur du programme (il s'agit du dossier créé sur votre ordi
-# en local où se trouvent l'ensemble des fichiers R.data, .xlsx, .csv etc à charger et ce sera aussi l'endroit où seront
-# stockées les différentes sorties):
-
-setwd("/Users/sklenard/Documents/Statapp/WD_Gabriel") # à modifier par chaque utilisateur.
-
 # 0) Chargement des librairies utiles:
 library(tibble)
 library(dplyr)
@@ -24,7 +18,7 @@ library(sf)
 
 # a) Fichier "flouté" des atteintes géolocalisées (source: SSMSI):
 
-load("donnees.secretisees.delinquance.RData") # Fichier t.del (tibble)
+load("/Users/sklenard/Downloads/donnees.secretisees.delinquance.RData") # Fichier t.del (tibble)
 # Etant donné la volumétrie, on le transforme en un fichier data.table:
 del2016_2021_dt <- as.data.table(t.del)
 # suppression du fichier "tibble" (on ne travaillera a priori qu'en data.table):
@@ -32,7 +26,8 @@ rm(t.del)
 names(del2016_2021_dt)
 
 # b) Fichier sur le zonage "zone d'emploi" (ZE 2020 au 1er janvier 2022):
-t.zonage_ZE_2020 <- readxl::read_excel(path = "ZE2020_au_01-01-2022.xlsx", sheet = "Composition_communale",skip=5) # création d'un tibble.
+chemin_ZE_2020 <-"/Users/sklenard/Documents/GitHub/stats_app/ZE2020_au_01-01-2022.xlsx"
+t.zonage_ZE_2020 <- readxl::read_excel(path = chemin_ZE_2020, sheet = "Composition_communale",skip=5) # création d'un tibble.
 zonage_ZE_2020_dt <- as.data.table(t.zonage_ZE_2020)
 names(zonage_ZE_2020_dt)
 # On renomme les variables selon les 3 lieux associés à l'atteinte:
@@ -46,10 +41,11 @@ zonage_ZE_2020_dt_mec <- zonage_ZE_2020_dt
 names(zonage_ZE_2020_dt_mec) <-paste0(names(zonage_ZE_2020_dt_mec),"_mec")
 
 # Contours géographiques des ZE 2020 (au 1er janvier 2022):
-# contours_ZE_2020 <- st_read("ze2020_2022")
+contours_ZE_2020 <- st_read("/Users/sklenard/Documents/Statapp/ze2020_2022")
 
 # c) Fichier sur le zonage "bassin de vie" (BV 2022 au 1er janvier 2022):
-t.zonage_BV_2022 <- readxl::read_excel(path = "BV2022_au_01-01-2022.xlsx", sheet = "Composition_communale",skip=5) # création d'un tibble.
+chemin_BV_2022 <-"/Users/sklenard/Documents/GitHub/stats_app/BV2022_au_01-01-2022.xlsx"
+t.zonage_BV_2022 <- readxl::read_excel(path = chemin_BV_2022, sheet = "Composition_communale",skip=5) # création d'un tibble.
 zonage_BV_2022_dt <- as.data.table(t.zonage_BV_2022)
 names(zonage_BV_2022_dt)
 # On renomme les variables selon les 3 lieux associés à l'atteinte:
@@ -63,24 +59,25 @@ zonage_BV_2022_dt_mec <- zonage_BV_2022_dt
 names(zonage_BV_2022_dt_mec) <-paste0(names(zonage_BV_2022_dt_mec),"_mec")
 
 # Contours géographiques des BV 2022 (au 1er janvier 2022):
-#contours_BV_2022 <- st_read("bv2022_2022")
-#contours_com_BV_2022 <- st_read("com_bv2022_2022")
+contours_BV_2022 <- st_read("/Users/sklenard/Documents/Statapp/bv2022_2022")
+contours_com_BV_2022 <- st_read("/Users/sklenard/Documents/Statapp/com_bv2022_2022")
 
-# Compléter avec les autres zonages d'étude...(privilégier ceux qui réalisent une partition du territoire français)
+# Compléter avec les autres zonages d'étude...
 
 # Ajout des zonages administratifs (département, région, EPCI, etc.):
+# Dans cet exemple, il faut remplacer "mon_IDEP" par votre IDEP
 
-regions <- read_delim("v_region_2023.csv", 
-                      locale = locale(encoding ="UTF-8"),
-                      col_types = cols(REG = col_character()))
+regions <- read_delim("/Users/sklenard/Documents/Statapp/v_region_2023.csv", 
+                       locale = locale(encoding ="UTF-8"),
+                       col_types = cols(REG = col_character()))
 
 names(regions)
 
 
 # Charger les données socio-démographiques relatives aux communes (Insee):
 
-# - Base "comparateur des communes":
-t.infos_communes <- readxl::read_excel(path = "base_cc_comparateur.xlsx", sheet = "COM",skip=5) # création d'un tibble.
+chemin_comparateur <-"/Users/sklenard/Documents/Statapp/base_cc_comparateur.xlsx"
+t.infos_communes <- readxl::read_excel(path = chemin_comparateur, sheet = "COM",skip=5) # création d'un tibble.
 # conversion de certaines variables caractères en numérique:
 t.infos_communes$NBMENFISC20 <- as.numeric(t.infos_communes$NBMENFISC20)
 t.infos_communes$PIMP20 <- as.numeric(t.infos_communes$PIMP20)
@@ -89,13 +86,6 @@ t.infos_communes$TP6020 <- as.numeric(t.infos_communes$TP6020)
 
 infos_communes_dt <- as.data.table(t.infos_communes)
 names(infos_communes_dt)
-
-# - Base du dossier complet (https://www.insee.fr/fr/statistiques/5359146):
-# Près de 1900 indicateurs au niveau communal!
-# Info très riche sur le profil démographique et socio-économique de chaque commune
-# Mais il faudra sélectionner les indicateurs les plus pertinents pour nous!
-
-# TODO !
 
 # 2) Construction de la base d'étude:
 
@@ -181,7 +171,7 @@ del2016_2021_dt7[ , classe2 := data.table::fcase(
 # a) pour chaque atteinte, on teste si les 3 lieux s'inscrivent dans la même commune ou pas:
 
 del2016_2021_dt7[ , a_3_memes_communes := data.table::fcase(
-  (cog_com_22_inf == cog_com_22_vict) & (cog_com_22_vict == cog_com_22_mec), "oui",
+    (cog_com_22_inf == cog_com_22_vict) & (cog_com_22_vict == cog_com_22_mec), "oui",
   default ="non")
 ]
 
@@ -242,46 +232,46 @@ sous_base_analyse1 <- del2016_2021_dt7[(is.na(cog_com_22_inf)==FALSE) & (is.na(c
 sous_base_analyse1$compteur <-1
 
 test1 <- sous_base_analyse1[ , .(
-  Nb_atteintes = sum(compteur, na.rm = TRUE),
-  Nb_atteintes_cambr = sum(compteur*(classe2 == "Cambriolages de logement"), na.rm = TRUE),
-  Nb_atteintes_blessures_famil = sum(compteur*(classe2 == "Coups et blessures volontaires dans la sphère familiale"), na.rm = TRUE),
-  Nb_atteintes_blessures_horsfamil = sum(compteur*(classe2 == "Coups et blessures volontaires en dehors de la sphère familiale"), na.rm = TRUE),
-  Nb_atteintes_destr_degrad = sum(compteur*(classe2 == "Destructions et dégradations"), na.rm = TRUE),
-  Nb_atteintes_homic = sum(compteur*(classe2 == "Homicides"), na.rm = TRUE),
-  Nb_atteintes_viol_sex = sum(compteur*(classe2 == "Violences sexuelles"), na.rm = TRUE),
-  Nb_atteintes_vols_armes = sum(compteur*(classe2 == "Vols avec armes"), na.rm = TRUE),
-  Nb_atteintes_vols_acces_vehic = sum(compteur*(classe2 == "Vols d'accessoires sur véhicules"), na.rm = TRUE),
-  Nb_atteintes_vols_ds_vehic = sum(compteur*(classe2 == "Vols dans les véhicules"), na.rm = TRUE),
-  Nb_atteintes_vols_de_vehic = sum(compteur*(classe2 == "Vols de véhicules"), na.rm = TRUE),
-  Nb_atteintes_vols_sansviol = sum(compteur*(classe2 == "Vols sans violence contre des personnes"), na.rm = TRUE),
-  Nb_atteintes_vols_violants_sansarme = sum(compteur*(classe2 == "Vols violents sans arme"), na.rm = TRUE),
-  Nb_atteintes_1ZE = sum(compteur*(a_3_memes_ZE == "oui"), na.rm = TRUE),
-  Nb_atteintes_cambr_1ZE = sum(compteur*(classe2 == "Cambriolages de logement" & a_3_memes_ZE == "oui"), na.rm = TRUE),
-  Nb_atteintes_blessures_famil_1ZE = sum(compteur*(classe2 == "Coups et blessures volontaires dans la sphère familiale" & a_3_memes_ZE == "oui"), na.rm = TRUE),
-  Nb_atteintes_blessures_horsfamil_1ZE = sum(compteur*(classe2 == "Coups et blessures volontaires en dehors de la sphère familiale" & a_3_memes_ZE == "oui"), na.rm = TRUE),
-  Nb_atteintes_destr_degrad_1ZE = sum(compteur*(classe2 == "Destructions et dégradations" & a_3_memes_ZE == "oui"), na.rm = TRUE),
-  Nb_atteintes_homic_1ZE = sum(compteur*(classe2 == "Homicides" & a_3_memes_ZE == "oui"), na.rm = TRUE),
-  Nb_atteintes_viol_sex_1ZE = sum(compteur*(classe2 == "Violences sexuelles" & a_3_memes_ZE == "oui"), na.rm = TRUE),
-  Nb_atteintes_vols_armes_1ZE = sum(compteur*(classe2 == "Vols avec armes" & a_3_memes_ZE == "oui"), na.rm = TRUE),
-  Nb_atteintes_vols_acces_vehic_1ZE = sum(compteur*(classe2 == "Vols d'accessoires sur véhicules" & a_3_memes_ZE == "oui"), na.rm = TRUE),
-  Nb_atteintes_vols_ds_vehic_1ZE = sum(compteur*(classe2 == "Vols dans les véhicules" & a_3_memes_ZE == "oui"), na.rm = TRUE),
-  Nb_atteintes_vols_de_vehic_1ZE = sum(compteur*(classe2 == "Vols de véhicules" & a_3_memes_ZE == "oui"), na.rm = TRUE),
-  Nb_atteintes_vols_sansviol_1ZE = sum(compteur*(classe2 == "Vols sans violence contre des personnes" & a_3_memes_ZE == "oui"), na.rm = TRUE),
-  Nb_atteintes_vols_violants_sansarme_1ZE = sum(compteur*(classe2 == "Vols violents sans arme" & a_3_memes_ZE == "oui"), na.rm = TRUE),
-  Nb_atteintes_1BV = sum(compteur*(a_3_memes_BV == "oui"), na.rm = TRUE),
-  Nb_atteintes_cambr_1BV = sum(compteur*(classe2 == "Cambriolages de logement" & a_3_memes_BV == "oui"), na.rm = TRUE),
-  Nb_atteintes_blessures_famil_1BV = sum(compteur*(classe2 == "Coups et blessures volontaires dans la sphère familiale" & a_3_memes_BV == "oui"), na.rm = TRUE),
-  Nb_atteintes_blessures_horsfamil_1BV = sum(compteur*(classe2 == "Coups et blessures volontaires en dehors de la sphère familiale" & a_3_memes_BV == "oui"), na.rm = TRUE),
-  Nb_atteintes_destr_degrad_1BV = sum(compteur*(classe2 == "Destructions et dégradations" & a_3_memes_BV == "oui"), na.rm = TRUE),
-  Nb_atteintes_homic_1BV = sum(compteur*(classe2 == "Homicides" & a_3_memes_BV == "oui"), na.rm = TRUE),
-  Nb_atteintes_viol_sex_1BV = sum(compteur*(classe2 == "Violences sexuelles" & a_3_memes_BV == "oui"), na.rm = TRUE),
-  Nb_atteintes_vols_armes_1BV = sum(compteur*(classe2 == "Vols avec armes" & a_3_memes_BV == "oui"), na.rm = TRUE),
-  Nb_atteintes_vols_acces_vehic_1BV = sum(compteur*(classe2 == "Vols d'accessoires sur véhicules" & a_3_memes_BV == "oui"), na.rm = TRUE),
-  Nb_atteintes_vols_ds_vehic_1BV = sum(compteur*(classe2 == "Vols dans les véhicules" & a_3_memes_BV == "oui"), na.rm = TRUE),
-  Nb_atteintes_vols_de_vehic_1BV = sum(compteur*(classe2 == "Vols de véhicules" & a_3_memes_BV == "oui"), na.rm = TRUE),
-  Nb_atteintes_vols_sansviol_1BV = sum(compteur*(classe2 == "Vols sans violence contre des personnes" & a_3_memes_BV == "oui"), na.rm = TRUE),
-  Nb_atteintes_vols_violants_sansarme_1BV = sum(compteur*(classe2 == "Vols violents sans arme" & a_3_memes_BV == "oui"), na.rm = TRUE)),
-  by = .(cog_com_22_inf)]
+                                 Nb_atteintes = sum(compteur, na.rm = TRUE),
+                                 Nb_atteintes_cambr = sum(compteur*(classe2 == "Cambriolages de logement"), na.rm = TRUE),
+                                 Nb_atteintes_blessures_famil = sum(compteur*(classe2 == "Coups et blessures volontaires dans la sphère familiale"), na.rm = TRUE),
+                                 Nb_atteintes_blessures_horsfamil = sum(compteur*(classe2 == "Coups et blessures volontaires en dehors de la sphère familiale"), na.rm = TRUE),
+                                 Nb_atteintes_destr_degrad = sum(compteur*(classe2 == "Destructions et dégradations"), na.rm = TRUE),
+                                 Nb_atteintes_homic = sum(compteur*(classe2 == "Homicides"), na.rm = TRUE),
+                                 Nb_atteintes_viol_sex = sum(compteur*(classe2 == "Violences sexuelles"), na.rm = TRUE),
+                                 Nb_atteintes_vols_armes = sum(compteur*(classe2 == "Vols avec armes"), na.rm = TRUE),
+                                 Nb_atteintes_vols_acces_vehic = sum(compteur*(classe2 == "Vols d'accessoires sur véhicules"), na.rm = TRUE),
+                                 Nb_atteintes_vols_ds_vehic = sum(compteur*(classe2 == "Vols dans les véhicules"), na.rm = TRUE),
+                                 Nb_atteintes_vols_de_vehic = sum(compteur*(classe2 == "Vols de véhicules"), na.rm = TRUE),
+                                 Nb_atteintes_vols_sansviol = sum(compteur*(classe2 == "Vols sans violence contre des personnes"), na.rm = TRUE),
+                                 Nb_atteintes_vols_violants_sansarme = sum(compteur*(classe2 == "Vols violents sans arme"), na.rm = TRUE),
+                             Nb_atteintes_1ZE = sum(compteur*(a_3_memes_ZE == "oui"), na.rm = TRUE),
+                             Nb_atteintes_cambr_1ZE = sum(compteur*(classe2 == "Cambriolages de logement" & a_3_memes_ZE == "oui"), na.rm = TRUE),
+                             Nb_atteintes_blessures_famil_1ZE = sum(compteur*(classe2 == "Coups et blessures volontaires dans la sphère familiale" & a_3_memes_ZE == "oui"), na.rm = TRUE),
+                             Nb_atteintes_blessures_horsfamil_1ZE = sum(compteur*(classe2 == "Coups et blessures volontaires en dehors de la sphère familiale" & a_3_memes_ZE == "oui"), na.rm = TRUE),
+                             Nb_atteintes_destr_degrad_1ZE = sum(compteur*(classe2 == "Destructions et dégradations" & a_3_memes_ZE == "oui"), na.rm = TRUE),
+                             Nb_atteintes_homic_1ZE = sum(compteur*(classe2 == "Homicides" & a_3_memes_ZE == "oui"), na.rm = TRUE),
+                             Nb_atteintes_viol_sex_1ZE = sum(compteur*(classe2 == "Violences sexuelles" & a_3_memes_ZE == "oui"), na.rm = TRUE),
+                             Nb_atteintes_vols_armes_1ZE = sum(compteur*(classe2 == "Vols avec armes" & a_3_memes_ZE == "oui"), na.rm = TRUE),
+                             Nb_atteintes_vols_acces_vehic_1ZE = sum(compteur*(classe2 == "Vols d'accessoires sur véhicules" & a_3_memes_ZE == "oui"), na.rm = TRUE),
+                             Nb_atteintes_vols_ds_vehic_1ZE = sum(compteur*(classe2 == "Vols dans les véhicules" & a_3_memes_ZE == "oui"), na.rm = TRUE),
+                             Nb_atteintes_vols_de_vehic_1ZE = sum(compteur*(classe2 == "Vols de véhicules" & a_3_memes_ZE == "oui"), na.rm = TRUE),
+                             Nb_atteintes_vols_sansviol_1ZE = sum(compteur*(classe2 == "Vols sans violence contre des personnes" & a_3_memes_ZE == "oui"), na.rm = TRUE),
+                             Nb_atteintes_vols_violants_sansarme_1ZE = sum(compteur*(classe2 == "Vols violents sans arme" & a_3_memes_ZE == "oui"), na.rm = TRUE),
+                             Nb_atteintes_1BV = sum(compteur*(a_3_memes_BV == "oui"), na.rm = TRUE),
+                             Nb_atteintes_cambr_1BV = sum(compteur*(classe2 == "Cambriolages de logement" & a_3_memes_BV == "oui"), na.rm = TRUE),
+                             Nb_atteintes_blessures_famil_1BV = sum(compteur*(classe2 == "Coups et blessures volontaires dans la sphère familiale" & a_3_memes_BV == "oui"), na.rm = TRUE),
+                             Nb_atteintes_blessures_horsfamil_1BV = sum(compteur*(classe2 == "Coups et blessures volontaires en dehors de la sphère familiale" & a_3_memes_BV == "oui"), na.rm = TRUE),
+                             Nb_atteintes_destr_degrad_1BV = sum(compteur*(classe2 == "Destructions et dégradations" & a_3_memes_BV == "oui"), na.rm = TRUE),
+                             Nb_atteintes_homic_1BV = sum(compteur*(classe2 == "Homicides" & a_3_memes_BV == "oui"), na.rm = TRUE),
+                             Nb_atteintes_viol_sex_1BV = sum(compteur*(classe2 == "Violences sexuelles" & a_3_memes_BV == "oui"), na.rm = TRUE),
+                             Nb_atteintes_vols_armes_1BV = sum(compteur*(classe2 == "Vols avec armes" & a_3_memes_BV == "oui"), na.rm = TRUE),
+                             Nb_atteintes_vols_acces_vehic_1BV = sum(compteur*(classe2 == "Vols d'accessoires sur véhicules" & a_3_memes_BV == "oui"), na.rm = TRUE),
+                             Nb_atteintes_vols_ds_vehic_1BV = sum(compteur*(classe2 == "Vols dans les véhicules" & a_3_memes_BV == "oui"), na.rm = TRUE),
+                             Nb_atteintes_vols_de_vehic_1BV = sum(compteur*(classe2 == "Vols de véhicules" & a_3_memes_BV == "oui"), na.rm = TRUE),
+                             Nb_atteintes_vols_sansviol_1BV = sum(compteur*(classe2 == "Vols sans violence contre des personnes" & a_3_memes_BV == "oui"), na.rm = TRUE),
+                             Nb_atteintes_vols_violants_sansarme_1BV = sum(compteur*(classe2 == "Vols violents sans arme" & a_3_memes_BV == "oui"), na.rm = TRUE)),
+                             by = .(cog_com_22_inf)]
 head(test1)
 
 # On calcule pour chaque commune et chaque type d'atteinte: la proportion (en %) d'atteintes dont le triplet de lieux

@@ -1,0 +1,4 @@
+
+# Statistiques descriptives:
+
+# Nombre de
