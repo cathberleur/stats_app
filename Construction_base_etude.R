@@ -5,6 +5,7 @@
 # stockées les différentes sorties):
 
 setwd("/Users/sklenard/Documents/Statapp/WD_Gabriel") # à modifier par chaque utilisateur.
+setwd("C:\\Users\\marie\\OneDrive\\Documents\\cours\\ensae\\stat app")
 
 # 0) Chargement des librairies utiles:
 library(tibble)
@@ -105,7 +106,7 @@ communes_centralites_dt <-communes_centralites_dt[ , .(DC,P_NP5CLA,Tag_Centralit
                                                        R_HC_REPORT_ARCX)]
 names(communes_centralites_dt)
 # ce zonage a été développé par l'ANCT (Inrae) dans le cadre d'une étude intitulée:
-# Centralités : comment les identifier et quels rôles dans les dynamiques territoirales ?
+# Centralités : comment les identifier et quels rôles dans les dynamiques territoriales ?
 
 communes_centralites_dt_inf <- communes_centralites_dt
 names(communes_centralites_dt_inf) <-paste0(names(communes_centralites_dt_inf),"_inf")
@@ -144,7 +145,7 @@ names(infos_communes_dt)
 # Appariement du fichier du SSMSI (atteintes géolocalisées en France entre 2016 et 2021) 
 # avec le fichier des zonages administratifs et statistiques (cf. supra b)).
 # L'appariement s'effectue via 3 merge du type left-join en prenant successivement comme clé de jointure
-#les 3 codes communes associés à chaque atteinte (commune du lieu de l'infraction, commune de la victime,
+# les 3 codes communes associés à chaque atteinte (commune du lieu de l'infraction, commune de la victime,
 # commune du mis en cause):
 
 del2016_2021_dt2 <- 
