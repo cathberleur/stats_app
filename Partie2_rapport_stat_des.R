@@ -307,18 +307,10 @@ library(rgdal)
 library(sf)
 library(terra)
 library(cartography)
-contours_reg_fr<- readOGR(dsn = "contours_regions", layer = "regions_2015_metropole_region", verbose =FALSE)
-# ça ne marche pas!
 
-contours_reg_fr <- st_read("regions-20180101-shp",layer = "regions-20180101")
 contours_dep_fr <- st_read("contoursGeographiques",layer = "departements-20220101-simpl04")
 contours_com_fr <- st_read("contoursGeographiques",layer = "communes-20220101-simpl04")
-
-str(contours_reg_fr)
-names(contours_reg_fr)
-contours_reg_fr$code_insee
-contours_reg_fr$nom[contours_reg_fr$code_insee=="84"]
-plot(contours_reg_fr)
+plot(contours_dep_fr)
 
 #C) Matrices de corrélation:
 

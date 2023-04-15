@@ -132,6 +132,16 @@ t.infos_communes$TP6020 <- as.numeric(t.infos_communes$TP6020)
 infos_communes_dt <- as.data.table(t.infos_communes)
 names(infos_communes_dt)
 
+infos_communes_dt_inf <- infos_communes_dt
+names(infos_communes_dt_inf) <-paste0(names(infos_communes_dt_inf),"_inf")
+
+infos_communes_dt_vict <- infos_communes_dt
+names(infos_communes_dt_vict) <-paste0(names(infos_communes_dt_vict),"_vict")
+
+infos_communes_dt_mec <- infos_communes_dt
+names(infos_communes_dt_mec) <-paste0(names(infos_communes_dt_mec),"_mec")
+
+
 # f) Base du dossier complet (https://www.insee.fr/fr/statistiques/5359146):
 # Près de 1900 indicateurs au niveau communal!
 # Info très riche sur le profil démographique et socio-économique de chaque commune
@@ -217,6 +227,33 @@ del2016_2021_dt10 <-
         by.y = "DC_mec",
         all.x = TRUE)
 rm(del2016_2021_dt9)
+# del2016_2021_dt11 <- 
+#   merge(x = del2016_2021_dt10,
+#         y = infos_communes_dt_inf,
+#         by.x = "cog_com_22_inf",
+#         by.y = "CODGEO_inf",
+#         all.x = TRUE)
+# rm(del2016_2021_dt10)
+# del2016_2021_dt12 <- 
+#   merge(x = del2016_2021_dt11,
+#         y = infos_communes_dt_vict,
+#         by.x = "cog_com_22_vict",
+#         by.y = "CODGEO_vict",
+#         all.x = TRUE)
+# rm(del2016_2021_dt11)
+# del2016_2021_dt13 <- 
+#   merge(x = del2016_2021_dt12,
+#         y = infos_communes_dt_mec,
+#         by.x = "cog_com_22_mec",
+#         by.y = "CODGEO_mec",
+#         all.x = TRUE)
+# rm(del2016_2021_dt12)
+
+
+
+
+
+
 
 # TODO: enrichir la base avec des indicateurs démographiques, morphologiques, socio-économiques sur les
 # communes et les différents zonages.
@@ -239,8 +276,8 @@ del2016_2021_dt10[ , classe2 := data.table::fcase(
   classe=="K", "Destructions et dégradations",
   classe=="R","Vols dans les véhicules",
   classe=="B","Cambriolages de logement",
-  classe=="X","Coups et blessures volontaires en dehors de la sphère familiale",
-  classe=="T","Vols de véhicules", 
+  classe=="X","Vols de véhicules",
+  classe=="T","Coups et blessures volontaires en dehors de la sphère familiale", 
   classe=="V","Coups et blessures volontaires dans la sphère familiale",
   classe=="S","Vols d'accessoires sur véhicules",
   classe=="G","Vols violents sans arme",
@@ -351,6 +388,21 @@ del2016_2021_dt10[ , a_3_memes_CENTR := data.table::fcase(
 
 # on crée un compteur:
 del2016_2021_dt10$compteur <-1
+
+head(del2016_2021_dt10)
+
+################################################################################################
+
+# On cherche à déterminer le nombre de I, de V, de M au sein des différentes communes:
+
+
+
+
+
+
+
+
+
 
 
 ###################################################################################################

@@ -1,4 +1,5 @@
 
+
 # Partie 1 du rapport Statapp: les données
 
 # 1.1 Les données de la base géolocalisée des atteintes du SSMSI:
@@ -66,31 +67,35 @@ data_tableau1[ , compteur_Neant := data.table::fcase(
   default =0)
 ]
 
+head(data_tableau1)
+
 tableau1 <- data_tableau1[ , .(
   Nb_atteintes = sum(compteur, na.rm = TRUE),
-  Nb_atteintes_IVM = sum(compteur_IVM_non_na, na.rm = TRUE),
-  Nb_atteintes_IV = sum(compteur_IV_non_na, na.rm = TRUE),
-  Nb_atteintes_IM = sum(compteur_IM_non_na, na.rm = TRUE),
-  Nb_atteintes_VM = sum(compteur_VM_non_na, na.rm = TRUE),
+  Nb_atteintes_Neant = sum(compteur_Neant, na.rm = TRUE),
   Nb_atteintes_I = sum(compteur_I_non_na, na.rm = TRUE),
   Nb_atteintes_V = sum(compteur_V_non_na, na.rm = TRUE),
   Nb_atteintes_M = sum(compteur_M_non_na, na.rm = TRUE),
-  Nb_atteintes_Neant = sum(compteur_Neant, na.rm = TRUE)),
+  Nb_atteintes_IV = sum(compteur_IV_non_na, na.rm = TRUE),
+  Nb_atteintes_IM = sum(compteur_IM_non_na, na.rm = TRUE),
+  Nb_atteintes_VM = sum(compteur_VM_non_na, na.rm = TRUE),
+  Nb_atteintes_IVM = sum(compteur_IVM_non_na, na.rm = TRUE)),
   by = .(classe2)]
 
 tableau1 <- as.data.frame(tableau1)
-tableau1$IVM <- round(tableau1$Nb_atteintes_IVM/tableau1$Nb_atteintes*100,2)
-tableau1$IV <- round(tableau1$Nb_atteintes_IV/tableau1$Nb_atteintes*100,2)
-tableau1$IM <- round(tableau1$Nb_atteintes_IM/tableau1$Nb_atteintes*100,2)
-tableau1$VM <- round(tableau1$Nb_atteintes_VM/tableau1$Nb_atteintes*100,2)
+tableau1$Neant <- round(tableau1$Nb_atteintes_Neant/tableau1$Nb_atteintes*100,2)
 tableau1$I <- round(tableau1$Nb_atteintes_I/tableau1$Nb_atteintes*100,2)
 tableau1$V <- round(tableau1$Nb_atteintes_V/tableau1$Nb_atteintes*100,2)
 tableau1$M <- round(tableau1$Nb_atteintes_M/tableau1$Nb_atteintes*100,2)
-tableau1$Neant <- round(tableau1$Nb_atteintes_Neant/tableau1$Nb_atteintes*100,2)
+tableau1$IV <- round(tableau1$Nb_atteintes_IV/tableau1$Nb_atteintes*100,2)
+tableau1$IM <- round(tableau1$Nb_atteintes_IM/tableau1$Nb_atteintes*100,2)
+tableau1$VM <- round(tableau1$Nb_atteintes_VM/tableau1$Nb_atteintes*100,2)
+tableau1$IVM <- round(tableau1$Nb_atteintes_IVM/tableau1$Nb_atteintes*100,2)
 
 tableau1 <- tableau1[order(tableau1$Nb_atteintes,decreasing = TRUE),]
-tableau1 <- subset(tableau1, select=c(classe2, Nb_atteintes,IVM,IV,IM,VM,I,V,M,Neant))
+tableau1 <- subset(tableau1, select=c(classe2, Nb_atteintes,Neant,I,V,M,IV,IM,VM,IVM))
 
+# Export CSV du tableau 1:
+write.csv(tableau1, "/Users/sklenard/Documents/Statapp/Figures-Rapport Statapp//Tableau1.csv", row.names=FALSE)
 
 # Export final des tableaux de la partie 1 du Rapport au format .xlsx:
 #dataset_names <- list('lisez_moi' = lisez_moi,'nombre_atteintes' = nb_atteintes_1619,'communes' = ptab_communes, 'ZE' = ptab_ZE,'UU' = ptab_ZE,'AAV' = ptab_ZE)
