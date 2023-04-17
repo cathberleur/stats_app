@@ -332,54 +332,83 @@ del2016_2021_dt10[ , a_3_memes_cv := data.table::fcase(
 
 # 2) Zonages statistiques:
 
-# a) pour chaque atteinte, on teste si les 3 lieux s'inscrivent dans la même zone d'emploi (ZE) ou pas:
+# a) pour chaque atteinte, on teste si le couple (I,V) / le triplet de communes (I,V,M) s'inscrit dans la même zone d'emploi (ZE) ou pas:
 
-del2016_2021_dt10[ , a_3_memes_ZE := data.table::fcase(
+del2016_2021_dt10[ , IV_ds_meme_ZE := data.table::fcase(
+  (ZE2020_inf == ZE2020_vict), "oui",
+  default ="non")
+]
+
+del2016_2021_dt10[ , IVM_ds_meme_ZE := data.table::fcase(
   (ZE2020_inf == ZE2020_vict) & (ZE2020_vict == ZE2020_mec), "oui",
   default ="non")
 ]
 
-# b) pour chaque atteinte, on teste si les 3 lieux s'inscrivent dans le même bassin de vie (BV) ou pas:
+# b) pour chaque atteinte, on teste si le couple (I,V) / le triplet de communes (I,V,M) s'inscrit dans le même bassin de vie (BV) ou pas:
 
-del2016_2021_dt10[ , a_3_memes_BV := data.table::fcase(
+del2016_2021_dt10[ , IV_ds_meme_BV := data.table::fcase(
+  (BV2022_inf == BV2022_vict), "oui",
+  default ="non")
+]
+
+del2016_2021_dt10[ , IVM_ds_meme_BV := data.table::fcase(
   (BV2022_inf == BV2022_vict) & (BV2022_vict == BV2022_mec), "oui",
   default ="non")
 ]
 
-# c) pour chaque atteinte, on teste si les 3 lieux s'inscrivent dans la même unité urbaine (UU) ou pas:
+# c) pour chaque atteinte, on teste si le couple (I,V) / le triplet de communes (I,V,M) s'inscrit dans la même unité urbaine (UU) ou pas:
 
-del2016_2021_dt10[ , a_3_memes_UU := data.table::fcase(
+del2016_2021_dt10[ , IV_ds_meme_UU := data.table::fcase(
+  !(UU2020_inf =="01000") & (UU2020_inf == UU2020_vict), "oui",
+  default ="non")
+]
+
+del2016_2021_dt10[ , IVM_ds_meme_UU := data.table::fcase(
   !(UU2020_inf =="01000") & (UU2020_inf == UU2020_vict) & (UU2020_vict == UU2020_mec), "oui",
   default ="non")
 ]
-# note: pour éviter de classer en "oui" des atteintes dont les 3 lieux seraient tous les classés en 01000
+# note: pour éviter de classer en "oui" des atteintes dont les 3 communes seraient tous classées en 01000
 # (i.e hors UU), on rajoute la condition qui assure que l'infraction ait bien eu lieu dans une UU. 
-# En effet, le zonage UU ne constitue pas une partition du territoire français.
+# En effet, le zonage UU ne constitue pas une partition du territoire français (il y a donc une classe résiduelle "hors UU").
 
-# d) pour chaque atteinte, on teste si les 3 lieux s'inscrivent dans la même aire d'attraction des villes (AAV)
-# ou pas:
+# d) pour chaque atteinte, on teste si le couple (I,V) / le triplet de communes (I,V,M) s'inscrit dans la même aire d'attraction
+#des villes (AAV) ou pas:
 
-del2016_2021_dt10[ , a_3_memes_AAV := data.table::fcase(
+del2016_2021_dt10[ , IV_ds_meme_AAV := data.table::fcase(
+  !(AAV2020_inf =="000") & (AAV2020_inf == AAV2020_vict), "oui",
+  default ="non")
+]
+
+del2016_2021_dt10[ , IVM_ds_meme_AAV := data.table::fcase(
   !(AAV2020_inf =="000") & (AAV2020_inf == AAV2020_vict) & (AAV2020_vict == AAV2020_mec), "oui",
   default ="non")
 ]
-# note: pour éviter de classer en "oui" des atteintes dont les 3 lieux seraient tous les classés en 000
+# note: pour éviter de classer en "oui" des atteintes dont les 3 communes seraient tous classées en 000
 # (i.e hors AAV), on rajoute la condition qui assure que l'infraction ait bien eu lieu dans une AAV. 
-# En effet, le zonage AAV ne constitue pas une partition du territoire français.
+# En effet, le zonage AAV ne constitue pas une partition du territoire français (il y a donc une classe résiduelle "hors AAV").
 
-
-# e) pour chaque atteinte, on teste si les 3 lieux s'inscrivent dans la même grille de densité 
+# e) pour chaque atteinte, on teste si le couple (I,V) / le triplet de communes (I,V,M) s'inscrit dans la même grille de densité 
 # (mix de la grille communale de densité et de AAV) ou pas:
 
-del2016_2021_dt10[ , a_3_memes_GD := data.table::fcase(
+del2016_2021_dt10[ , IV_ds_meme_GD := data.table::fcase(
+  (TYPE_inf == TYPE_vict), "oui",
+  default ="non")
+]
+
+del2016_2021_dt10[ , IVM_ds_meme_GD := data.table::fcase(
   (TYPE_inf == TYPE_vict) & (TYPE_vict == TYPE_mec), "oui",
   default ="non")
 ]
 
-# f) pour chaque atteinte, on teste si les 3 lieux s'inscrivent dans le même niveau de centralité 
-# de la commune (cf. étude de l'INRIA sur les centralités) ou pas:
+# f) pour chaque atteinte, on teste si le couple (I,V) / le triplet de communes (I,V,M) s'inscrit dans le même niveau de centralité 
+# de la commune (cf. étude de l'INRAE sur les centralités) ou pas:
 
-del2016_2021_dt10[ , a_3_memes_CENTR := data.table::fcase(
+del2016_2021_dt10[ , IV_ds_meme_CENTR := data.table::fcase(
+  (P_NP5CLA_inf == P_NP5CLA_vict), "oui",
+  default ="non")
+]
+
+del2016_2021_dt10[ , IVM_ds_meme_CENTR := data.table::fcase(
   (P_NP5CLA_inf == P_NP5CLA_vict) & (P_NP5CLA_vict == P_NP5CLA_mec), "oui",
   default ="non")
 ]
@@ -390,19 +419,6 @@ del2016_2021_dt10[ , a_3_memes_CENTR := data.table::fcase(
 del2016_2021_dt10$compteur <-1
 
 head(del2016_2021_dt10)
-
-################################################################################################
-
-# On cherche à déterminer le nombre de I, de V, de M au sein des différentes communes:
-
-
-
-
-
-
-
-
-
 
 
 ###################################################################################################
