@@ -10,116 +10,214 @@ library(factoextra)
 library(FactoInvestigate)
 library(Factoshiny)
 
-# on se base sur les tableaux générés dans le programme "Partie2_rapport_stat_des.R":
-#source("Partie2_rapport_stat_des.R")
+# Stratégie 1: on travaille au niveau communal sur le nombre d'infractions (I) et le nombre de victimes (V) rapportés au
+# d'habitants de la commune.
 
-# A) ACP sur les régions (individus) et les proportions d'atteintes (on balaie ici tous les types d'atteintes)
-# dont le triplet de lieux s'inscrit dans un même zonage (variables):
+# A) On réalise une ACP à partir du tibble "del2016_2021_com_IV" généré dans le script "Partie2_rapport_stat_des.R":
+# Il s'agit d'un tableau de données avec en lignes les communes et en colonnes le nombre d'infractions (I) et
+# de victimes pour 1000 habitants.
 
-# 1) Dans une même zone d'emploi (ZE):
+# calcul du nombre d'infractions I et du nombre de victimes V pour 1000 habitants au niveau de la commune:
+# on se restreint aux atteintes pour lesquelles les commune de I et de V sont renseignées (on perd environ 60 000 atteintes
+# sur 6,5 millions)
 
-# a) On sélectionne les variables de la forme "Prop_type_atteinte_1ZE" comme variables actives:
+# on reprend le code de la partie 2 et on le complète pour les besoins de l'ACP:
+del2016_2021_dt_com_I <- del2016_2021_dt10[(is.na(cog_com_22_inf)==FALSE) & (is.na(cog_com_22_vict)==FALSE), .(
+  Nb_I = sum(compteur, na.rm = TRUE),
+  Nb_I_cambr = sum(compteur*(classe2 == "Cambriolages de logement"), na.rm = TRUE),
+  Nb_I_blessures_famil = sum(compteur*(classe2 == "Coups et blessures volontaires dans la sphère familiale"), na.rm = TRUE),
+  Nb_I_blessures_horsfamil = sum(compteur*(classe2 == "Coups et blessures volontaires en dehors de la sphère familiale"), na.rm = TRUE),
+  Nb_I_destr_degrad = sum(compteur*(classe2 == "Destructions et dégradations"), na.rm = TRUE),
+  Nb_I_homic = sum(compteur*(classe2 == "Homicides"), na.rm = TRUE),
+  Nb_I_viol_sex = sum(compteur*(classe2 == "Violences sexuelles"), na.rm = TRUE),
+  Nb_I_vols_armes = sum(compteur*(classe2 == "Vols avec armes"), na.rm = TRUE),
+  Nb_I_vols_acces_vehic = sum(compteur*(classe2 == "Vols d'accessoires sur véhicules"), na.rm = TRUE),
+  Nb_I_vols_ds_vehic = sum(compteur*(classe2 == "Vols dans les véhicules"), na.rm = TRUE),
+  Nb_I_vols_de_vehic = sum(compteur*(classe2 == "Vols de véhicules"), na.rm = TRUE),
+  Nb_I_vols_sansviol = sum(compteur*(classe2 == "Vols sans violence contre des personnes"), na.rm = TRUE),
+  Nb_I_vols_violants_sansarme = sum(compteur*(classe2 == "Vols violents sans arme"), na.rm = TRUE)),
+  by = .(cog_com_22_inf)]
 
-tab_prop_del_1ZE_reg_acp <- del2016_2021_tb_reg %>% select(LIBELLE,ends_with("1ZE") & starts_with("Prop"))
+del2016_2021_dt_com_V <- del2016_2021_dt10[(is.na(cog_com_22_inf)==FALSE) & (is.na(cog_com_22_vict)==FALSE), .(
+  Nb_V = sum(compteur, na.rm = TRUE),
+  Nb_V_cambr = sum(compteur*(classe2 == "Cambriolages de logement"), na.rm = TRUE),
+  Nb_V_blessures_famil = sum(compteur*(classe2 == "Coups et blessures volontaires dans la sphère familiale"), na.rm = TRUE),
+  Nb_V_blessures_horsfamil = sum(compteur*(classe2 == "Coups et blessures volontaires en dehors de la sphère familiale"), na.rm = TRUE),
+  Nb_V_destr_degrad = sum(compteur*(classe2 == "Destructions et dégradations"), na.rm = TRUE),
+  Nb_V_homic = sum(compteur*(classe2 == "Homicides"), na.rm = TRUE),
+  Nb_V_viol_sex = sum(compteur*(classe2 == "Violences sexuelles"), na.rm = TRUE),
+  Nb_V_vols_armes = sum(compteur*(classe2 == "Vols avec armes"), na.rm = TRUE),
+  Nb_V_vols_acces_vehic = sum(compteur*(classe2 == "Vols d'accessoires sur véhicules"), na.rm = TRUE),
+  Nb_V_vols_ds_vehic = sum(compteur*(classe2 == "Vols dans les véhicules"), na.rm = TRUE),
+  Nb_V_vols_de_vehic = sum(compteur*(classe2 == "Vols de véhicules"), na.rm = TRUE),
+  Nb_V_vols_sansviol = sum(compteur*(classe2 == "Vols sans violence contre des personnes"), na.rm = TRUE),
+  Nb_V_vols_violants_sansarme = sum(compteur*(classe2 == "Vols violents sans arme"), na.rm = TRUE)),
+  by = .(cog_com_22_vict)]
 
-# Comme les libellés des variables sont très longs et risquent de mal s'afficher sur le cercle de 
-# corrélation, on renomme les variables actives avec des libellés plus courts:
-tab_prop_del_1ZE_reg_acp <- tab_prop_del_1ZE_reg_acp %>% 
-  rename(P_cambr_1ZE=Prop_atteintes_cambr_1ZE,
-         P_bless_fam_1ZE=Prop_atteintes_blessures_famil_1ZE,
-         P_bless_hfam_1ZE=Prop_atteintes_blessures_horsfamil_1ZE,
-         P_destr_degrad_1ZE=Prop_atteintes_destr_degrad_1ZE,
-         P_homic_1ZE=Prop_atteintes_homic_1ZE,
-         P_viol_sex_1ZE=Prop_atteintes_viol_sex_1ZE,
-         P_vol_armes_1ZE=Prop_atteintes_vols_armes_1ZE,
-         P_vol_access_veh_1ZE=Prop_atteintes_vols_acces_vehic_1ZE,
-         P_vol_ds_veh_1ZE=Prop_atteintes_vols_ds_vehic_1ZE,
-         P_vol_de_veh_1ZE=Prop_atteintes_vols_de_vehic_1ZE,
-         P_vol_sansviol_1ZE=Prop_atteintes_vols_sansviol_1ZE,
-         P_vol_viol_sansarme_1ZE=Prop_atteintes_vols_violants_sansarme_1ZE)
-         
-tab_prop_del_1ZE_reg_acp_df <- as.data.frame(tab_prop_del_1ZE_reg_acp)
+# on apparie ces 2 fichiers avec le fichier "communes_zonages" reliant chaque commune aux différents zonages
+# administratifs et d'étude de l'Insee:
 
-# on transforme la variable "LIBELLE" en row.names:
-rownames(tab_prop_del_1ZE_reg_acp_df) <- tab_prop_del_1ZE_reg_acp_df[,1]
-tab_prop_del_1ZE_reg_acp_df[,1] <- NULL
+# warning: on fait une jointure à gauche de communes_zonages_dt, de sorte à avoir l'ensemble des communes
+# répertoriées par l'Insee récemment (population de référence):
 
-summary(tab_prop_del_1ZE_reg_acp_df)
+del2016_2021_dt_com_I <- 
+  merge(x = communes_zonages_dt,
+        y = del2016_2021_dt_com_I,
+        by.x = "CODGEO",
+        by.y = "cog_com_22_inf",
+        all.x = TRUE)
+del2016_2021_dt_com_IV <- 
+  merge(x = del2016_2021_dt_com_I,
+        y = del2016_2021_dt_com_V,
+        by.x = "CODGEO",
+        by.y = "cog_com_22_vict",
+        all.x = TRUE)
+rm(del2016_2021_dt_com_I)
+rm(del2016_2021_dt_com_V)
 
-res_acp_del_1ZE_reg <- PCA(tab_prop_del_1ZE_reg_acp_df, scale.unit = TRUE, ncp = 5, graph = TRUE)
-summary(res_acp_del_1ZE_reg)
+# on apparie ce fichier avec les infos socio-éco et démo sur les communes:
 
-dimdesc(res_acp_del_1ZE_reg)
+del2016_2021_dt_com_IV <- 
+  merge(x = del2016_2021_dt_com_IV,
+        y = infos_communes_dt,
+        by.x = "CODGEO",
+        by.y = "CODGEO",
+        all.x = TRUE)
 
-plot(res_acp_del_1ZE_reg,select="cos2 0.7")
+names(del2016_2021_dt_com_IV)
 
-res = PCAshiny(tab_prop_del_1ZE_reg_acp_df)
+del2016_2021_com_IV <- as_tibble(del2016_2021_dt_com_IV)
 
-# b) On sélectionne les variables de la forme "Prop_type_atteinte_1ZE" et "Prop_type_atteinte_pop"
-# (proportion d'atteintes pour 1000 habitants) comme variables actives:
+# On calcule les 26 ratios "nombre d'infractions pour 1000 habitants" au niveau communal:
+# On se restreint aux communes ayant au moins une infraction et une victime sur la période 2016-2021
+data_com_IV_acp <- del2016_2021_com_IV %>% 
+                                       filter(P19_POP>1 & Nb_I>0 & Nb_V>0) %>%
+                                       mutate(I=Nb_I/P19_POP*1000,V=Nb_V/P19_POP*1000,
+                                              I_cambr=Nb_I_cambr/P19_POP*1000,V_cambr=Nb_V_cambr/P19_POP*1000,
+                                              I_blessures_famil=Nb_I_blessures_famil/P19_POP*1000,V_blessures_famil=Nb_V_blessures_famil/P19_POP*1000,
+                                              I_blessures_horsfamil=Nb_I_blessures_horsfamil/P19_POP*1000,V_blessures_horsfamil=Nb_V_blessures_horsfamil/P19_POP*1000,
+                                              I_destr_degrad=Nb_I_destr_degrad/P19_POP*1000,V_destr_degrad=Nb_V_destr_degrad/P19_POP*1000,
+                                              I_homic=Nb_I_homic/P19_POP*1000,V_homic=Nb_V_homic/P19_POP*1000,
+                                              I_viol_sex=Nb_I_viol_sex/P19_POP*1000,V_viol_sex=Nb_V_viol_sex/P19_POP*1000,
+                                              I_vols_armes=Nb_I_vols_armes/P19_POP*1000,V_vols_armes=Nb_V_vols_armes/P19_POP*1000,
+                                              I_vols_acces_vehic=Nb_I_vols_acces_vehic/P19_POP*1000,V_vols_acces_vehic=Nb_V_vols_acces_vehic/P19_POP*1000,
+                                              I_vols_ds_vehic=Nb_I_vols_ds_vehic/P19_POP*1000,V_vols_ds_vehic=Nb_V_vols_ds_vehic/P19_POP*1000,
+                                              I_vols_de_vehic=Nb_I_vols_de_vehic/P19_POP*1000,V_vols_de_vehic=Nb_V_vols_de_vehic/P19_POP*1000,
+                                              I_vols_sansviol=Nb_I_vols_sansviol/P19_POP*1000,V_vols_sansviol=Nb_V_vols_sansviol/P19_POP*10000,
+                                              I_vols_violants_sansarme=Nb_I_vols_violants_sansarme/P19_POP*1000,V_vols_violants_sansarme=Nb_V_vols_violants_sansarme/P19_POP*1000
+                                             ) %>%
+                                       select(CODGEO,I,V,I_cambr,V_cambr,I_blessures_famil,V_blessures_famil,
+                                              I_blessures_horsfamil,V_blessures_horsfamil,I_destr_degrad,V_destr_degrad,
+                                              I_homic,V_homic,I_viol_sex,V_viol_sex,I_vols_armes,V_vols_armes,
+                                              I_vols_acces_vehic,V_vols_acces_vehic,I_vols_ds_vehic,V_vols_ds_vehic,
+                                              I_vols_de_vehic,V_vols_de_vehic,I_vols_sansviol,V_vols_sansviol,
+                                              I_vols_violants_sansarme,V_vols_violants_sansarme) %>%
+                                      column_to_rownames(var="CODGEO")
 
-tab_prop_del_1ZE_reg_acp2 <- del2016_2021_tb_reg %>% select(LIBELLE,ends_with("1ZE") & starts_with("Prop"),ends_with("pop") & starts_with("Prop")) %>% select(-Prop_atteintes_1ZE,-Prop_atteintes_pop)
+summary(data_com_IV_acp)
 
-# Comme les libellés des variables sont très longs et risquent de mal s'afficher sur le cercle de 
-# corrélation, on renomme les variables actives avec des libellés plus courts:
-tab_prop_del_1ZE_reg_acp2 <- tab_prop_del_1ZE_reg_acp2 %>% 
-                             rename(P_cambr_1ZE=Prop_atteintes_cambr_1ZE,
-                                    P_bless_fam_1ZE=Prop_atteintes_blessures_famil_1ZE,
-                                    P_bless_hfam_1ZE=Prop_atteintes_blessures_horsfamil_1ZE,
-                                    P_destr_degrad_1ZE=Prop_atteintes_destr_degrad_1ZE,
-                                    P_homic_1ZE=Prop_atteintes_homic_1ZE,
-                                    P_viol_sex_1ZE=Prop_atteintes_viol_sex_1ZE,
-                                    P_vol_armes_1ZE=Prop_atteintes_vols_armes_1ZE,
-                                    P_vol_access_veh_1ZE=Prop_atteintes_vols_acces_vehic_1ZE,
-                                    P_vol_ds_veh_1ZE=Prop_atteintes_vols_ds_vehic_1ZE,
-                                    P_vol_de_veh_1ZE=Prop_atteintes_vols_de_vehic_1ZE,
-                                    P_vol_sansviol_1ZE=Prop_atteintes_vols_sansviol_1ZE,
-                                    P_vol_viol_sansarme_1ZE=Prop_atteintes_vols_violants_sansarme_1ZE,
-                                    P_cambr_pop=Prop_atteintes_cambr_pop,
-                                    P_bless_fam_pop=Prop_atteintes_blessures_famil_pop,
-                                    P_bless_hfam_pop=Prop_atteintes_blessures_horsfamil_pop,
-                                    P_destr_degrad_pop=Prop_atteintes_destr_degrad_pop,
-                                    P_homic_pop=Prop_atteintes_homic_pop,
-                                    P_viol_sex_pop=Prop_atteintes_viol_sex_pop,
-                                    P_vol_armes_pop=Prop_atteintes_vols_armes_pop,
-                                    P_vol_access_veh_pop=Prop_atteintes_vols_acces_vehic_pop,
-                                    P_vol_ds_veh_pop=Prop_atteintes_vols_ds_vehic_pop,
-                                    P_vol_de_veh_pop=Prop_atteintes_vols_de_vehic_pop,
-                                    P_vol_sansviol_pop=Prop_atteintes_vols_sansviol_pop,
-                                    P_vol_viol_sansarme_pop=Prop_atteintes_vols_violants_sansarme_pop
-                                    )
+# On réalise l'ACP sur ce tableau de données:
 
-tab_prop_del_1ZE_reg_acp2_df <- as.data.frame(tab_prop_del_1ZE_reg_acp2)
+# res_acp_data_com_IV_acp <- PCA(data_com_IV_acp, scale.unit = TRUE, ncp = 5, graph = TRUE)
+# summary(res_acp_data_com_IV_acp)
+# R ne supporte pas cette ACP (trop de lignes dans le tableau, trop de valeurs nulles?...)
 
-# on transforme la variable "LIBELLE" en row.names:
-rownames(tab_prop_del_1ZE_reg_acp2_df) <- tab_prop_del_1ZE_reg_acp2_df[,1]
-tab_prop_del_1ZE_reg_acp2_df[,1] <- NULL
+# B) On relance l'ACP sur un tableau plus réduit en entrée:
+# Pour ce faire on impose des contraintes supplémentaires sur les communes sélectionnées:
+# On crée un jeu de contrainte de stricte positivité sur les nombres de I et de V quelque
+# soit le type d'atteintes:
 
-summary(tab_prop_del_1ZE_reg_acp2_df)
+data_com_IV_acp2 <- del2016_2021_com_IV %>% 
+  filter(P19_POP>1 & Nb_I>0 & Nb_V>0 &
+           Nb_I_cambr>0 & Nb_V_cambr>0 & Nb_I_blessures_famil>0 & Nb_V_blessures_famil>0 &
+           Nb_I_blessures_horsfamil>0 & Nb_V_blessures_horsfamil>0 & Nb_I_destr_degrad>0 &
+           Nb_V_destr_degrad>0 & Nb_I_homic>0 & Nb_V_homic>0 & Nb_I_viol_sex>0 & Nb_V_viol_sex>0 &
+           Nb_I_vols_armes>0 & Nb_V_vols_armes>0 & Nb_I_vols_acces_vehic>0 & Nb_V_vols_acces_vehic>0 &
+           Nb_I_vols_ds_vehic>0 & Nb_V_vols_ds_vehic>0 & Nb_I_vols_de_vehic>0 & Nb_V_vols_de_vehic>0 &
+           Nb_I_vols_sansviol>0 & Nb_V_vols_sansviol>0 & Nb_I_vols_violants_sansarme>0 &
+           Nb_V_vols_violants_sansarme>0) %>%
+  mutate(I=Nb_I/P19_POP*1000,V=Nb_V/P19_POP*1000,
+         I_cambr=Nb_I_cambr/P19_POP*1000,V_cambr=Nb_V_cambr/P19_POP*1000,
+         I_blessures_famil=Nb_I_blessures_famil/P19_POP*1000,V_blessures_famil=Nb_V_blessures_famil/P19_POP*1000,
+         I_blessures_horsfamil=Nb_I_blessures_horsfamil/P19_POP*1000,V_blessures_horsfamil=Nb_V_blessures_horsfamil/P19_POP*1000,
+         I_destr_degrad=Nb_I_destr_degrad/P19_POP*1000,V_destr_degrad=Nb_V_destr_degrad/P19_POP*1000,
+         I_homic=Nb_I_homic/P19_POP*1000,V_homic=Nb_V_homic/P19_POP*1000,
+         I_viol_sex=Nb_I_viol_sex/P19_POP*1000,V_viol_sex=Nb_V_viol_sex/P19_POP*1000,
+         I_vols_armes=Nb_I_vols_armes/P19_POP*1000,V_vols_armes=Nb_V_vols_armes/P19_POP*1000,
+         I_vols_acces_vehic=Nb_I_vols_acces_vehic/P19_POP*1000,V_vols_acces_vehic=Nb_V_vols_acces_vehic/P19_POP*1000,
+         I_vols_ds_vehic=Nb_I_vols_ds_vehic/P19_POP*1000,V_vols_ds_vehic=Nb_V_vols_ds_vehic/P19_POP*1000,
+         I_vols_de_vehic=Nb_I_vols_de_vehic/P19_POP*1000,V_vols_de_vehic=Nb_V_vols_de_vehic/P19_POP*1000,
+         I_vols_sansviol=Nb_I_vols_sansviol/P19_POP*1000,V_vols_sansviol=Nb_V_vols_sansviol/P19_POP*10000,
+         I_vols_violants_sansarme=Nb_I_vols_violants_sansarme/P19_POP*1000,V_vols_violants_sansarme=Nb_V_vols_violants_sansarme/P19_POP*1000
+  ) %>%
+  select(CODGEO,LIBGEO.x,DEP.x,I,V,I_cambr,V_cambr,I_blessures_famil,V_blessures_famil,
+         I_blessures_horsfamil,V_blessures_horsfamil,I_destr_degrad,V_destr_degrad,
+         I_homic,V_homic,I_viol_sex,V_viol_sex,I_vols_armes,V_vols_armes,
+         I_vols_acces_vehic,V_vols_acces_vehic,I_vols_ds_vehic,V_vols_ds_vehic,
+         I_vols_de_vehic,V_vols_de_vehic,I_vols_sansviol,V_vols_sansviol,
+         I_vols_violants_sansarme,V_vols_violants_sansarme) %>%
+  column_to_rownames(var="CODGEO")
+# Après filtrage, tableau de 1016 communes (au lieu des 34 638 initiales!)
+summary(data_com_IV_acp2)
 
-res_acp_del_1ZE_reg2 <- PCA(tab_prop_del_1ZE_reg_acp2_df, scale.unit = TRUE, ncp = 5, graph = TRUE)
-summary(res_acp_del_1ZE_reg)
+res_acp_data_com_IV_acp2 <- PCA(data_com_IV_acp2[3:28], scale.unit = TRUE, ncp = 5, graph = TRUE)
+summary(res_acp_data_com_IV_acp2)
 
-dimdesc(res_acp_del_1ZE_reg)
+dimdesc(res_acp_data_com_IV_acp2)
 
-plot(res_acp_del_1ZE_reg,select="cos2 0.7")
+plot(res_acp_data_com_IV_acp2,select="cos2 0.7")
 
-res = PCAshiny(tab_prop_del_1ZE_reg_acp2_df)
+res = PCAshiny(data_com_IV_acp2)
+# Cette ACP a bien tourné ;)
 
-# c) On sélectionne les variables de la forme "Prop_type_atteinte_1ZE" et "Prop_type_atteinte_pop"
-# (proportion d'atteintes pour 1000 habitants) comme variables actives et on rajoute des variables
-# illustratives pour mieux interpréter les axes (caractéristiques socio-démo-éco des régions):
+# Interprétation des résultats de l'ACP 
 
-# Ajout des variables supplémentaires suivantes:
-# densité de la population (nb d'habitants au km2)
-# indicateur de dispersion des revenus des ménages/niveaux de vie (écart inter-décile, indice de Gini...)
-# liste à compléter (TOTO!)
+# Les communes 97358 et 97 208 sont très en haut à droite par rapport au reste du nuage.
+# on zoome dessus:
+zoom_outliers <- data_com_IV_acp2 %>% rownames_to_column(var="CODGEO") %>% filter(CODGEO %in% c("97358","97208"))
+# Il s'agit de deux communes guyannaises qui semblent se distinguer par un niveau global de délinquance
+# pour 1000 habitants très élevé, avec une "spécialisation" dans les homicides" et les "vols violents"
+
+# question: faut-il se restreindre à la métropole dans l'étude?
+# C) On peut refaire l'ACP en se restreignant à la seule métropole...
+
+data_com_IV_acp2_metro <- data_com_IV_acp2 %>% filter(!DEP.x %in% c("971","972","973","974","976"))
+summary(data_com_IV_acp2_metro)
+
+res_acp_data_com_IV_acp3 <- PCA(data_com_IV_acp2_metro[3:28], scale.unit = TRUE, ncp = 5, graph = TRUE)
+summary(res_acp_data_com_IV_acp3)
+
+dimdesc(res_acp_data_com_IV_acp3)
+
+plot(res_acp_data_com_IV_acp3,select="cos2 0.7")
+
+res = PCAshiny(data_com_IV_acp3)
+
+
+# Stratégie 2:
+
+# On fait toujours l'ACP en prenant les communes comme individus mais on modifie nos variables actives 
+# on prend les nombres de I pour 1000 habitants par type d'atteinte (mesure de l'intensité de la délinquance)
+# et on rajoute la structure des atteintes par type dans chaque commune (mesure la "spécialisation" de la commune
+# dans telle ou telle atteinte)
+# une variable de distance moyenne/médiane entre commune I et V pourrait être  pas mal pour mesurer
+# la concentration spatiale de la délinquance
+
+
+# Stratégie 3: 
+# On fait l'ACP en prennant toujours les communes comme individus mais on se restreint ici aux seules atteintes physiques
+# pour lesquelles le triplet de communes (I,V,M) est bien renseigné
 
 
 
+# Stratégie 4:
+# On fait une ACP sur les communes
+# et on prend comme variables actives: la part des atteintes associées à un couple (I,V) inscrit dans un même zonage (6 zonages possibles)
+# et on peut rajouter une variable de spécialisation du type: la part de l'atteinte la plus présente dans
+# la commune...
 
-# B) ACP sur les régions (individus) et les proportions d'atteintes (pour un type d'atteinte donné)
-# dont le triplet de lieux s'inscrit dans un même zonage (on balaie ici les différents types de zonage):
+
+
 
 
 
