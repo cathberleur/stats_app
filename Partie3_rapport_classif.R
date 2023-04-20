@@ -10,8 +10,10 @@ library(factoextra)
 library(FactoInvestigate)
 library(Factoshiny)
 
-# Stratégie 1: on travaille au niveau communal sur le nombre d'infractions (I) et le nombre de victimes (V) rapportés au
-# d'habitants de la commune.
+library(corrplot)
+
+# Stratégie 1: on réalise une ACP en prenant les communes comme individus et en choisissant comme variables actives
+# le nombre d'infractions (I) et le nombre de victimes (V) rapportés au nombre d'habitants de la commune.
 
 # A) On réalise une ACP à partir du tibble "del2016_2021_com_IV" généré dans le script "Partie2_rapport_stat_des.R":
 # Il s'agit d'un tableau de données avec en lignes les communes et en colonnes le nombre d'infractions (I) et
@@ -120,12 +122,13 @@ summary(data_com_IV_acp)
 
 # res_acp_data_com_IV_acp <- PCA(data_com_IV_acp, scale.unit = TRUE, ncp = 5, graph = TRUE)
 # summary(res_acp_data_com_IV_acp)
-# R ne supporte pas cette ACP (trop de lignes dans le tableau, trop de valeurs nulles?...)
 
-# B) On relance l'ACP sur un tableau plus réduit en entrée:
-# Pour ce faire on impose des contraintes supplémentaires sur les communes sélectionnées:
-# On crée un jeu de contrainte de stricte positivité sur les nombres de I et de V quelque
-# soit le type d'atteintes:
+# IMPORTANT: R ne supporte pas cette ACP (trop de lignes dans le tableau, trop de valeurs nulles?...)
+
+# B) On relance l'ACP sur un tableau plus réduit en termes de lignes:
+# Pour ce faire, on impose des contraintes supplémentaires sur les communes retenues:
+# on crée un jeu de contraintes de stricte positivité sur les nombres de I et de V pour tous
+# les types d'atteintes:
 
 data_com_IV_acp2 <- del2016_2021_com_IV %>% 
   filter(P19_POP>1 & Nb_I>0 & Nb_V>0 &
@@ -167,11 +170,49 @@ dimdesc(res_acp_data_com_IV_acp2)
 
 plot(res_acp_data_com_IV_acp2,select="cos2 0.7")
 
-res = PCAshiny(data_com_IV_acp2)
+res = PCAshiny(data_com_IV_acp2[3:28])
 # Cette ACP a bien tourné ;)
 
 # Interprétation des résultats de l'ACP 
+# L'ACP est normée (les variables actives ont été centrées-réduites)
 
+# Le plan factoriel constitués des deux premiers axes expliquent 90,5% de l'inertie totale.
+# -> on se limitera donc à l'interprétation des deux premiers axes factoriels.
+
+# Interprétation du 1er axe factoriel: 81,3% de l'inertie totale
+# Les 26 variables actives sont corrélées fortement et positivement au premier facteur.
+# Etant ainsi liées à une même variable, elles sont toutes liées entre elles 
+# (voir matrice de corrélations):
+mcor <- cor(data_com_IV_acp2[3:28])
+corrplot(mcor, type="upper", order="hclust", tl.col="black", tl.srt=45)
+# On peut néanmoins remarquer que deux types d'atteintes sont moins corrélées avec les autres:
+# les homicides et les vols violents avec armes.
+# Il s'agit de deux atteintes parmi les plus violentes et qui recquièrent l'usage d'armes.
+# Ce sont ces deux atteintes qui contribuent le moins au premier axe (même si leur corrélation au premier
+# facteur reste supérieure à 0,6)
+
+# Ce premier axe factoriel reflète classiquement un "effet taille" -> il exprime que certains individus ont de grandes
+# valeurs pour l'ensemble des variables et d'autres de petites valeurs pour l'ensemble des variables.
+# Cela indique que certaines communes ont des niveaux de délinquances/habitant (que ce soit en termes de I ou de V)
+# globalement plus élevés quelque soit le type d'atteinte considéré.
+# On va trouver le plus à droite du premier axe les communes qui ont un niveau de délinquance le plus élevé dans tous 
+# les types d'infractions et au contraire à gauche les communes avec un niveau de délinquance le moins élevé.
+
+# Par ailleurs, on constate que pour chaque type d'atteinte, les nombres de I et de V pour 1000 habitants sont très corrélés.
+# Il ne semble pas y avoir de grande différences..., comme si lieu de domiciliation de la victime et lieu de l'infraction
+# étaient peu dissociés au niveau communal... on a l'impression que la délinquance esr très concentrée spatialement dans 
+# la dimension (I,V)
+# Mais est-ce que ce résultat est vraiment robuste? ne pourrai-il pas être brouillé par le fait que l'on pourrait avoir une
+# commune qui affiche des nombre de I et de V très proches, sans qu'il s'agisse des mêmes atteintes...
+# et le problème est que l'on ne tient pas réellement compte des zonages d'étude.
+# cf. stratégie 4 et 5 pour essayer d'y voir plus clair et améliorer l'analyse
+
+# Interprétation du 2eme axe factoriel: 9,2% de l'inertie totale
+# Ce second axe factoriel semble opposer les commune avec un niveau élevé d'atteintes physiques très violents (homicides et
+# vols avec armes) aux communes avec un niveau faible de ces atteintes.
+# Les variables "nombre d'homicides" et "nombre de vols avec armes" sont corrélées aux second axe avec un coeff de corrélation
+# supérieur à 0.5
+# WARNING: 
 # Les communes 97358 et 97 208 sont très en haut à droite par rapport au reste du nuage.
 # on zoome dessus:
 zoom_outliers <- data_com_IV_acp2 %>% rownames_to_column(var="CODGEO") %>% filter(CODGEO %in% c("97358","97208"))
@@ -207,6 +248,7 @@ res = PCAshiny(data_com_IV_acp3)
 # Stratégie 3: 
 # On fait l'ACP en prennant toujours les communes comme individus mais on se restreint ici aux seules atteintes physiques
 # pour lesquelles le triplet de communes (I,V,M) est bien renseigné
+# on considère les variables actives suivantes: le nombre de I, de V et de M pour 1000 habitants.
 
 
 
