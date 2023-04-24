@@ -362,6 +362,15 @@ resACP1 = PCAshiny(data_acp1_shiny)
 
 # Code R à retenir pour réaliser les différentes étapes de cette ACP (en vue du rapport):
 
+#sortie des clusters
+classif <- HCPC(res, graph = FALSE, nb.clust = 4) #, consol=TRUE
+plot(classif)
+classif$data.clust
+names(classif$data.clust)
+clust <- classif$data.clust[,73]
+Facto_num <- cbind(Facto_num, clust)
+write.csv(Facto_num, "tab.csv", sep=",")
+
 # à insérer ici...
 
 # Interprétation des résultats de l'ACP n°1:
