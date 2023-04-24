@@ -242,7 +242,7 @@ plot(res_acp_data_com_IV_acp3,select="cos2 0.7")
 # on prend les nombres de I pour 1000 habitants par type d'atteinte (mesure de l'intensité de la délinquance)
 # et on rajoute la structure des atteintes par type dans chaque commune (mesure la "spécialisation" de la commune
 # dans telle ou telle atteinte)
-# une variable de distance moyenne/médiane entre commune I et V pourrait être  pas mal pour mesurer
+# Option: une variable de distance moyenne/médiane entre commune I et V pourrait être  pas mal pour mesurer
 # la concentration spatiale de la délinquance
 
 
@@ -527,20 +527,104 @@ del2016_2021_IV_meme_zonage$P__vols_violants_sansarme_1CENTR <-del2016_2021_IV_m
 del2016_2021_IV_meme_zonage$P_a_biens_1CENTR <-del2016_2021_IV_meme_zonage$Nb_atteintes_biens_1CENTR/del2016_2021_IV_meme_zonage$Nb_atteintes_biens*100
 del2016_2021_IV_meme_zonage$P_a_physiques_1CENTR <-del2016_2021_IV_meme_zonage$Nb_atteintes_physiques_1CENTR/del2016_2021_IV_meme_zonage$Nb_atteintes_physiques*100
 
-# On ajoute enfin des variables mesurant au niveau communal le nombre d'atteintes pour 1000 habitants:
+# On ajoute enfin des variables mesurant au niveau communal le nombre d'atteintes (biens/physiques) pour 1000 habitants:
 del2016_2021_IV_meme_zonage$P_a_biens_1000hbts <-del2016_2021_IV_meme_zonage$Nb_atteintes_biens/del2016_2021_IV_meme_zonage$P19_POP*1000
 del2016_2021_IV_meme_zonage$P_a_physiques_1000hbts <-del2016_2021_IV_meme_zonage$Nb_atteintes_physiques/del2016_2021_IV_meme_zonage$P19_POP*1000
+
+del2016_2021_IV_meme_zonage$P_a_biens_1ZE_1000hbts <-del2016_2021_IV_meme_zonage$Nb_atteintes_biens_1ZE/del2016_2021_IV_meme_zonage$P19_POP*1000
+del2016_2021_IV_meme_zonage$P_a_physiques_1ZE_1000hbts <-del2016_2021_IV_meme_zonage$Nb_atteintes_physiques_1ZE/del2016_2021_IV_meme_zonage$P19_POP*1000
+
+del2016_2021_IV_meme_zonage$P_a_biens_1BV_1000hbts <-del2016_2021_IV_meme_zonage$Nb_atteintes_biens_1BV/del2016_2021_IV_meme_zonage$P19_POP*1000
+del2016_2021_IV_meme_zonage$P_a_physiques_1BV_1000hbts <-del2016_2021_IV_meme_zonage$Nb_atteintes_physiques_1BV/del2016_2021_IV_meme_zonage$P19_POP*1000
+
+del2016_2021_IV_meme_zonage$P_a_biens_1GD_1000hbts <-del2016_2021_IV_meme_zonage$Nb_atteintes_biens_1GD/del2016_2021_IV_meme_zonage$P19_POP*1000
+del2016_2021_IV_meme_zonage$P_a_physiques_1GD_1000hbts <-del2016_2021_IV_meme_zonage$Nb_atteintes_physiques_1GD/del2016_2021_IV_meme_zonage$P19_POP*1000
+
+del2016_2021_IV_meme_zonage$P_a_biens_1UU_1000hbts <-del2016_2021_IV_meme_zonage$Nb_atteintes_biens_1UU/del2016_2021_IV_meme_zonage$P19_POP*1000
+del2016_2021_IV_meme_zonage$P_a_physiques_1UU_1000hbts <-del2016_2021_IV_meme_zonage$Nb_atteintes_physiques_1UU/del2016_2021_IV_meme_zonage$P19_POP*1000
+
+del2016_2021_IV_meme_zonage$P_a_biens_1AAV_1000hbts <-del2016_2021_IV_meme_zonage$Nb_atteintes_biens_1AAV/del2016_2021_IV_meme_zonage$P19_POP*1000
+del2016_2021_IV_meme_zonage$P_a_physiques_1AAV_1000hbts <-del2016_2021_IV_meme_zonage$Nb_atteintes_physiques_1AAV/del2016_2021_IV_meme_zonage$P19_POP*1000
+
+del2016_2021_IV_meme_zonage$P_a_biens_1CENTR_1000hbts <-del2016_2021_IV_meme_zonage$Nb_atteintes_biens_1CENTR/del2016_2021_IV_meme_zonage$P19_POP*1000
+del2016_2021_IV_meme_zonage$P_a_physiques_1CENTR_1000hbts <-del2016_2021_IV_meme_zonage$Nb_atteintes_physiques_1CENTR/del2016_2021_IV_meme_zonage$P19_POP*1000
+
 # Passage en log:
 del2016_2021_IV_meme_zonage$l_P_a_biens_1000hbts <-log(del2016_2021_IV_meme_zonage$P_a_biens_1000hbts)
 del2016_2021_IV_meme_zonage$l_P_a_physiques_1000hbts <-log(del2016_2021_IV_meme_zonage$P_a_physiques_1000hbts)
 
+del2016_2021_IV_meme_zonage$l_P_a_biens_1ZE_1000hbts <-log(del2016_2021_IV_meme_zonage$P_a_biens_1ZE_1000hbts)
+del2016_2021_IV_meme_zonage$l_P_a_physiques_1ZE_1000hbts <-log(del2016_2021_IV_meme_zonage$P_a_physiques_1ZE_1000hbts)
+
+del2016_2021_IV_meme_zonage$l_P_a_biens_1BV_1000hbts <-log(del2016_2021_IV_meme_zonage$P_a_biens_1BV_1000hbts)
+del2016_2021_IV_meme_zonage$l_P_a_physiques_1_BV_1000hbts <-log(del2016_2021_IV_meme_zonage$P_a_physiques_1BV_1000hbts)
+
+del2016_2021_IV_meme_zonage$l_P_a_biens_1GD_1000hbts <-log(del2016_2021_IV_meme_zonage$P_a_biens_1GD_1000hbts)
+del2016_2021_IV_meme_zonage$l_P_a_physiques_1GD_1000hbts <-log(del2016_2021_IV_meme_zonage$P_a_physiques_1GD_1000hbts)
+
+del2016_2021_IV_meme_zonage$l_P_a_biens_1UU_1000hbts <-log(del2016_2021_IV_meme_zonage$P_a_biens_1UU_1000hbts)
+del2016_2021_IV_meme_zonage$l_P_a_physiques_1UU_1000hbts <-log(del2016_2021_IV_meme_zonage$P_a_physiques_1UU_1000hbts)
+
+del2016_2021_IV_meme_zonage$l_P_a_biens_1AAV_1000hbts <-log(del2016_2021_IV_meme_zonage$P_a_biens_1AAV_1000hbts)
+del2016_2021_IV_meme_zonage$l_P_a_physiques_1AAV_1000hbts <-log(del2016_2021_IV_meme_zonage$P_a_physiques_1AAV_1000hbts)
+
+del2016_2021_IV_meme_zonage$l_P_a_biens_1CENTR_1000hbts <-log(del2016_2021_IV_meme_zonage$P_a_biens_1CENTR_1000hbts)
+del2016_2021_IV_meme_zonage$l_P_a_physiques_1CENTR_1000hbts <-log(del2016_2021_IV_meme_zonage$P_a_physiques_1CENTR_1000hbts)
+
+# on peut enfin ajouter le nombre d'atteintes pour 1000 habitants dans la commune où est enregistrée l'infraction (par type d'atteinte):
+del2016_2021_IV_meme_zonage$a_1000hbts <-del2016_2021_IV_meme_zonage$Nb_atteintes/del2016_2021_IV_meme_zonage$P19_POP*1000
+del2016_2021_IV_meme_zonage$cambr_1000hbts <-del2016_2021_IV_meme_zonage$Nb_atteintes_cambr/del2016_2021_IV_meme_zonage$P19_POP*1000
+del2016_2021_IV_meme_zonage$blessures_famil_1000hbts <-del2016_2021_IV_meme_zonage$Nb_atteintes_blessures_famil/del2016_2021_IV_meme_zonage$P19_POP*1000
+del2016_2021_IV_meme_zonage$blessures_horsfamil_1000hbts <-del2016_2021_IV_meme_zonage$Nb_atteintes_blessures_horsfamil/del2016_2021_IV_meme_zonage$P19_POP*1000
+del2016_2021_IV_meme_zonage$destr_degrad_1000hbts <-del2016_2021_IV_meme_zonage$Nb_atteintes_destr_degrad/del2016_2021_IV_meme_zonage$P19_POP*1000
+del2016_2021_IV_meme_zonage$homic_1000hbts <-del2016_2021_IV_meme_zonage$Nb_atteintes_homic/del2016_2021_IV_meme_zonage$P19_POP*1000
+del2016_2021_IV_meme_zonage$viol_sex_1000hbts <-del2016_2021_IV_meme_zonage$Nb_atteintes_viol_sex/del2016_2021_IV_meme_zonage$P19_POP*1000
+del2016_2021_IV_meme_zonage$vols_armes_1000hbts <-del2016_2021_IV_meme_zonage$Nb_atteintes_vols_armes/del2016_2021_IV_meme_zonage$P19_POP*1000
+del2016_2021_IV_meme_zonage$vols_acces_vehic_1000hbts <-del2016_2021_IV_meme_zonage$Nb_atteintes_vols_acces_vehic/del2016_2021_IV_meme_zonage$P19_POP*1000
+del2016_2021_IV_meme_zonage$vols_ds_vehic_1000hbts <-del2016_2021_IV_meme_zonage$Nb_atteintes_vols_ds_vehic/del2016_2021_IV_meme_zonage$P19_POP*1000
+del2016_2021_IV_meme_zonage$vols_de_vehic_1000hbts <-del2016_2021_IV_meme_zonage$Nb_atteintes_vols_de_vehic/del2016_2021_IV_meme_zonage$P19_POP*1000
+del2016_2021_IV_meme_zonage$vols_sansviol_1000hbts <-del2016_2021_IV_meme_zonage$Nb_atteintes_vols_sansviol/del2016_2021_IV_meme_zonage$P19_POP*1000
+del2016_2021_IV_meme_zonage$vols_violants_sansarme_1000hbts <-del2016_2021_IV_meme_zonage$Nb_atteintes_vols_violants_sansarme/del2016_2021_IV_meme_zonage$P19_POP*1000
+
+# passage en log:
+del2016_2021_IV_meme_zonage$l_a_1000hbts <-log(del2016_2021_IV_meme_zonage$a_1000hbts)
+del2016_2021_IV_meme_zonage$l_cambr_1000hbts <-log(del2016_2021_IV_meme_zonage$cambr_1000hbts)
+del2016_2021_IV_meme_zonage$l_blessures_famil_1000hbts <-log(del2016_2021_IV_meme_zonage$blessures_famil_1000hbts)
+del2016_2021_IV_meme_zonage$l_blessures_horsfamil_1000hbts <-log(del2016_2021_IV_meme_zonage$blessures_horsfamil_1000hbts)
+del2016_2021_IV_meme_zonage$l_destr_degrad_1000hbts <-log(del2016_2021_IV_meme_zonage$destr_degrad_1000hbts)
+del2016_2021_IV_meme_zonage$l_homic_1000hbts <-log(del2016_2021_IV_meme_zonage$homic_1000hbts)
+del2016_2021_IV_meme_zonage$l_viol_sex_1000hbts <-log(del2016_2021_IV_meme_zonage$viol_sex_1000hbts)
+del2016_2021_IV_meme_zonage$l_vols_armes_1000hbts <-log(del2016_2021_IV_meme_zonage$vols_armes_1000hbts)
+del2016_2021_IV_meme_zonage$l_vols_acces_vehic_1000hbts <-log(del2016_2021_IV_meme_zonage$vols_acces_vehic_1000hbts)
+del2016_2021_IV_meme_zonage$l_vols_ds_vehic_1000hbts <-log(del2016_2021_IV_meme_zonage$vols_ds_vehic_1000hbts)
+del2016_2021_IV_meme_zonage$l_vols_de_vehic_1000hbts <-log(del2016_2021_IV_meme_zonage$vols_de_vehic_1000hbts)
+del2016_2021_IV_meme_zonage$l_vols_sansviol_1000hbts <-log(del2016_2021_IV_meme_zonage$vols_sansviol_1000hbts)
+del2016_2021_IV_meme_zonage$l_vols_violants_sansarme_1000hbts <-log(del2016_2021_IV_meme_zonage$vols_violants_sansarme_1000hbts)
+
+# Structure des atteintes par type pour chaque commune (en %):
+del2016_2021_IV_meme_zonage$P_cambr <-del2016_2021_IV_meme_zonage$Nb_atteintes_cambr/del2016_2021_IV_meme_zonage$Nb_atteintes*100
+del2016_2021_IV_meme_zonage$P_blessures_famil <-del2016_2021_IV_meme_zonage$Nb_atteintes_blessures_famil/del2016_2021_IV_meme_zonage$Nb_atteintes*100
+del2016_2021_IV_meme_zonage$P_blessures_horsfamil <-del2016_2021_IV_meme_zonage$Nb_atteintes_blessures_horsfamil/del2016_2021_IV_meme_zonage$Nb_atteintes*100
+del2016_2021_IV_meme_zonage$P_destr_degrad <-del2016_2021_IV_meme_zonage$Nb_atteintes_destr_degrad/del2016_2021_IV_meme_zonage$Nb_atteintes*100
+del2016_2021_IV_meme_zonage$P_homic <-del2016_2021_IV_meme_zonage$Nb_atteintes_homic/del2016_2021_IV_meme_zonage$Nb_atteintes*100
+del2016_2021_IV_meme_zonage$P_viol_sex <-del2016_2021_IV_meme_zonage$Nb_atteintes_viol_sex/del2016_2021_IV_meme_zonage$Nb_atteintes*100
+del2016_2021_IV_meme_zonage$P_vols_armes <-del2016_2021_IV_meme_zonage$Nb_atteintes_vols_armes/del2016_2021_IV_meme_zonage$Nb_atteintes*100
+del2016_2021_IV_meme_zonage$P_vols_acces_vehic <-del2016_2021_IV_meme_zonage$Nb_atteintes_vols_acces_vehic/del2016_2021_IV_meme_zonage$Nb_atteintes*100
+del2016_2021_IV_meme_zonage$P_vols_ds_vehic <-del2016_2021_IV_meme_zonage$Nb_atteintes_vols_ds_vehic/del2016_2021_IV_meme_zonage$Nb_atteintes*100
+del2016_2021_IV_meme_zonage$P_vols_de_vehic <-del2016_2021_IV_meme_zonage$Nb_atteintes_vols_de_vehic/del2016_2021_IV_meme_zonage$Nb_atteintes*100
+del2016_2021_IV_meme_zonage$P_vols_sansviol <-del2016_2021_IV_meme_zonage$Nb_atteintes_vols_sansviol/del2016_2021_IV_meme_zonage$Nb_atteintes*100
+del2016_2021_IV_meme_zonage$P_vols_violants_sansarme <-del2016_2021_IV_meme_zonage$Nb_atteintes_vols_violants_sansarme/del2016_2021_IV_meme_zonage$Nb_atteintes*100
+
+
 names(del2016_2021_IV_meme_zonage)
+
+   
 
 # Filtrage de la base pour l'ACP:
 # individus actifs: communes de la France métropolitaine
 # variables actives: 12 + 2
-# - proportion d'atteintes (biens/physiques) dont les communes (I,V) s'inscrivent dans un même zonage z (z=ZE, BV, UU, AAV, GD ou CENTR), en % 
-# - nombre d'atteintes (biens/physiques) pour 1000 habitants.
+# - Nombre d'atteintes (biens/physiques) pour 1000 hbts, dont les communes (I,V) s'inscrivent dans un même zonage z (z=ZE, BV, UU, AAV, GD ou CENTR) (en log)
+# - nombre d'atteintes (biens/physiques) pour 1000 habitants (en log)
 
 # WARNING: Comme UU et AAV ne forment pas une partition du territoire français, on ne peut les faire rentrer dans l'ACP
 # que pour les cog_com_22_inf font partie d'une UU et d'une AAV (on teste alors si cog_com_22_inf est rattachée 
@@ -553,21 +637,29 @@ names(del2016_2021_IV_meme_zonage)
 # 1) on exclue les communes hors métropole (profil particulier de la délinquance);
 # 2) on exclue les communes hors UU et hors AAV
 # 3) on exclue les communes pour lesquelles on ne comptabilise aucune atteinte sur les biens et
-# aucune atteintes sur les personnes
+# aucune atteintes sur les personnes + on impose qu'elles aient au moins une atteinte avec (I,V) ds un même zonage
+# (pour chaque type de zonage)
 # 4) on ne garde que les communes qui ont au moins 500 habitants en 2019 (sinon R n'arrive pas à tourner sur l'ensemble
 # des communes!)
 
 data_com_IV_acp4 <- del2016_2021_IV_meme_zonage %>% filter(!(DEP.x %in% c("971","972","973","974","976")) &
                                                              !(UU2020=="01000") & !(AAV2020=="000") &
-                                                           Nb_atteintes_biens>0 & Nb_atteintes_physiques>0 &
-                                                           P19_POP>500) %>%
-                    select(cog_com_22_inf,LIBGEO.x,P19_POP,l_P_a_biens_1000hbts,l_P_a_physiques_1000hbts,
-                           contains(c("P_a_biens","P_a_physiques"))) %>%
-                    column_to_rownames(var="cog_com_22_inf")
-# il reste 24 836 communes (individus de l'ACP) 
+                                                             Nb_atteintes_>0 & Nb_atteintes_physiques_1ZE>0 &
+                                                             Nb_atteintes_biens_1BV>0 & Nb_atteintes_physiques_1BV>0 &
+                                                             Nb_atteintes_biens_1GD>0 & Nb_atteintes_physiques_1GD>0 &
+                                                             Nb_atteintes_biens_1UU>0 & Nb_atteintes_physiques_1UU>0 &
+                                                             Nb_atteintes_biens_1AAV>0 & Nb_atteintes_physiques_1AAV>0 &
+                                                             Nb_atteintes_biens_1CENTR>0 & Nb_atteintes_physiques_1CENTR>0 &
+                                                             P19_POP>500) %>%
+  select(cog_com_22_inf,LIBGEO.x,P19_POP,l_P_a_biens_1000hbts,l_P_a_physiques_1000hbts,
+         contains(c("P_a_biens","P_a_physiques"))) %>% 
+  select(cog_com_22_inf,LIBGEO.x,ends_with("_1000hbts")) %>%
+  select(cog_com_22_inf,LIBGEO.x,starts_with("l_P_")) %>%
+  column_to_rownames(var="cog_com_22_inf")
 summary(data_com_IV_acp4)
+# il reste 13 115 communes (individus de l'ACP) 
 
-res_acp_data_com_IV_acp3 <- PCA(data_com_IV_acp4[3:14], scale.unit = TRUE, ncp = 5, graph = TRUE)
+res_acp_data_com_IV_acp3 <- PCA(data_com_IV_acp4[2:15], scale.unit = TRUE, ncp = 5, graph = TRUE)
 summary(res_acp_data_com_IV_acp3)
 
 dimdesc(res_acp_data_com_IV_acp3)
@@ -575,12 +667,180 @@ dimdesc(res_acp_data_com_IV_acp3)
 # pour mettre en grisé les observations qui sont mal représentées sur le plan factoriel (Facteur 1, Facteur 2)
 plot(res_acp_data_com_IV_acp3,select="cos2 0.7")
 
-# data_com_IV_acp4_shiny <- data_com_IV_acp4[,3:16]
-# res = PCAshiny(data_com_IV_acp4_shiny)
+data_com_IV_acp4_shiny <- data_com_IV_acp4[,2:15]
+res = PCAshiny(data_com_IV_acp4_shiny)
 
+# Le résultat de l'ACP est décevant: un seul axe factoriel explique 85% de l'inertie totale (avec un gros effet taille)
+# le second axe factoriel n'esplique que 4% de l'inertie totale et les corrélations des variables sont faibles avec
+# ce second axe...
 
+# autre essai:
 
+# les individus de l'ACP: 1 647 communes
+# Plusieurs exclusions:
+# 1- les communes hors métropole
+# 2- les communes avec un nombre d'atteintes nuls dans au moins un type d'atteinte
+# 3- les communes avec une population>500 habitants
 
+# les variables actives: 24 = 12 + 12
+# 1- Le nombre d'atteintes dans la commune pour 1000 habitants (calculés pour les 12 types d'atteintes), en log.
+# ces variables mesurent l'importance quantitative de la délinquance au niveau communal, après avoir contrôlé de la taille de la commune.
+# 2- La part de chaque type d'atteintes dans l'ensemble des atteintes de la commune, en %.
+# ces variables mesurent la structure de la délinquance au niveau de chaque commune. Elles peuvent rendre compte d'une
+# éventuelle "spécialisation" de la commune dans un type de délinquance particulier.
+
+# les variables supplémentaires: 6
+# la part d'atteintes dans la commune associées à un couple (I,V) de communes situées dans un même zonage d'étude.
+# on teste les 6 types de zonages.
+
+data_com_IV_acp5 <- del2016_2021_IV_meme_zonage %>% filter(!(DEP.x %in% c("971","972","973","974","976")) &
+                                                             Nb_atteintes_cambr>0 &
+                                                             Nb_atteintes_blessures_famil>0 &
+                                                             Nb_atteintes_blessures_horsfamil>0 &
+                                                             Nb_atteintes_destr_degrad>0 &
+                                                             Nb_atteintes_homic>0 &
+                                                             Nb_atteintes_viol_sex>0 &
+                                                             Nb_atteintes_vols_armes>0 &
+                                                             Nb_atteintes_vols_acces_vehic>0 &
+                                                             Nb_atteintes_vols_ds_vehic>0 &
+                                                             Nb_atteintes_vols_de_vehic>0 &
+                                                             Nb_atteintes_vols_sansviol>0 &
+                                                             Nb_atteintes_vols_violants_sansarme>0 &
+                                                             P19_POP>500) %>%
+  select(cog_com_22_inf,LIBGEO.x,
+         P_a_1ZE,P_a_1BV,P_a_1GD,P_a_1UU,P_a_1AAV,P_a_1CENTR,
+         l_P_a_cambr_1000hbts,l_P_a_blessures_famil_1000hbts,
+         l_P_a_blessures_horsfamil_1000hbts,l_P_a_destr_degrad_1000hbts,l_P_a_homic_1000hbts,
+         l_P_a_viol_sex_1000hbts,l_P_a_vols_armes_1000hbts,l_P_a_vols_acces_vehic_1000hbts,
+         l_P_a_vols_ds_vehic_1000hbts,l_P_a_vols_de_vehic_1000hbts,l_P_a_vols_sansviol_1000hbts,
+         l_P_vols_violants_sansarme_1000hbts,
+         P_cambr,P_blessures_famil,
+         P_blessures_horsfamil,P_destr_degrad,P_homic,
+         P_viol_sex,P_vols_armes,P_vols_acces_vehic,
+         P_vols_ds_vehic,P_vols_de_vehic,P_vols_sansviol,
+         P_vols_violants_sansarme) %>%
+  column_to_rownames(var="cog_com_22_inf") %>%
+  rename(cambr=l_P_a_cambr_1000hbts,blessures_famil=l_P_a_blessures_famil_1000hbts,
+         blessures_horsfamil=l_P_a_blessures_horsfamil_1000hbts,
+         destr_degrad=l_P_a_destr_degrad_1000hbts,homic=l_P_a_homic_1000hbts,
+         viol_sex=l_P_a_viol_sex_1000hbts,vols_armes=l_P_a_vols_armes_1000hbts,
+         vols_acces_vehic=l_P_a_vols_acces_vehic_1000hbts,
+         vols_ds_vehic=l_P_a_vols_ds_vehic_1000hbts,
+         vols_de_vehic=l_P_a_vols_de_vehic_1000hbts,
+         vols_sansviol=l_P_a_vols_sansviol_1000hbts,
+         vols_violants_sansarme=l_P_vols_violants_sansarme_1000hbts)
+
+summary(data_com_IV_acp5)
+# on ne conserve que 1647 communes
+
+data_com_IV_acp5_shiny <- data_com_IV_acp5[,2:31]
+res = PCAshiny(data_com_IV_acp5_shiny)
+# Ca marche très bien!
+# 3 axes factoriels se dégagent et semblent être interprétables ;)
+
+# Autre variante:
+# On peut regrouper des types d'atteintes qui sont similaires:
+# on peut regrouper les atteintes "vols d'accessoires dans les véhicules", "vols de véhicules" et "vols dans les véhicules"
+# on peut également rassembler les atteintes physiques directes et graves, à savoir:
+# "coups et blessures volontaires dans la sphère familiale","coups et blessures volontaires en dehors de la sphère familiae"
+# et "homocides".
+# on peut également regrouper les "vols violents sans arme" et les "vols violents avec arme"
+
+data_com_IV_acp6 <- del2016_2021_IV_meme_zonage %>%
+                    mutate(Nb_atteintes_vols_vehic = Nb_atteintes_vols_acces_vehic + Nb_atteintes_vols_ds_vehic + 
+                             Nb_atteintes_vols_de_vehic,
+                           Nb_atteintes_bless_famil_homic = Nb_atteintes_blessures_famil + Nb_atteintes_blessures_horsfamil +
+                             Nb_atteintes_homic,
+                            Nb_atteintes_vols_violents = Nb_atteintes_vols_armes + Nb_atteintes_vols_violants_sansarme,
+                           Nb_atteintes_vols_vehic_1ZE = Nb_atteintes_vols_acces_vehic_1ZE + Nb_atteintes_vols_ds_vehic_1ZE + 
+                             Nb_atteintes_vols_de_vehic_1ZE,
+                           Nb_atteintes_bless_famil_homic_1ZE = Nb_atteintes_blessures_famil_1ZE + Nb_atteintes_blessures_horsfamil_1ZE +
+                             Nb_atteintes_homic_1ZE,
+                           Nb_atteintes_vols_violents_1ZE = Nb_atteintes_vols_armes_1ZE + Nb_atteintes_vols_violants_sansarme_1ZE,
+                           Nb_atteintes_vols_vehic_1BV = Nb_atteintes_vols_acces_vehic_1BV + Nb_atteintes_vols_ds_vehic_1BV + 
+                             Nb_atteintes_vols_de_vehic_1BV,
+                           Nb_atteintes_bless_famil_homic_1BV = Nb_atteintes_blessures_famil_1BV + Nb_atteintes_blessures_horsfamil_1BV +
+                             Nb_atteintes_homic_1BV,
+                           Nb_atteintes_vols_violents_1BV = Nb_atteintes_vols_armes_1BV + Nb_atteintes_vols_violants_sansarme_1BV,
+                           Nb_atteintes_vols_vehic_1GD = Nb_atteintes_vols_acces_vehic_1GD + Nb_atteintes_vols_ds_vehic_1GD + 
+                             Nb_atteintes_vols_de_vehic_1GD,
+                           Nb_atteintes_bless_famil_homic_1GD = Nb_atteintes_blessures_famil_1GD + Nb_atteintes_blessures_horsfamil_1GD +
+                             Nb_atteintes_homic_1GD,
+                           Nb_atteintes_vols_violents_1GD = Nb_atteintes_vols_armes_1GD + Nb_atteintes_vols_violants_sansarme_1GD,
+                           Nb_atteintes_vols_vehic_1UU = Nb_atteintes_vols_acces_vehic_1UU + Nb_atteintes_vols_ds_vehic_1UU + 
+                             Nb_atteintes_vols_de_vehic_1UU,
+                           Nb_atteintes_bless_famil_homic_1UU = Nb_atteintes_blessures_famil_1UU + Nb_atteintes_blessures_horsfamil_1UU +
+                             Nb_atteintes_homic_1UU,
+                           Nb_atteintes_vols_violents_1UU = Nb_atteintes_vols_armes_1UU + Nb_atteintes_vols_violants_sansarme_1UU,
+                           Nb_atteintes_vols_vehic_1AAV = Nb_atteintes_vols_acces_vehic_1AAV + Nb_atteintes_vols_ds_vehic_1AAV + 
+                             Nb_atteintes_vols_de_vehic_1AAV,
+                           Nb_atteintes_bless_famil_homic_1AAV = Nb_atteintes_blessures_famil_1AAV + Nb_atteintes_blessures_horsfamil_1AAV +
+                             Nb_atteintes_homic_1AAV,
+                           Nb_atteintes_vols_violents_1AAV = Nb_atteintes_vols_armes_1AAV + Nb_atteintes_vols_violants_sansarme_1AAV,
+                           Nb_atteintes_vols_vehic_1CENTR = Nb_atteintes_vols_acces_vehic_1CENTR + Nb_atteintes_vols_ds_vehic_1CENTR + 
+                             Nb_atteintes_vols_de_vehic_1CENTR,
+                           Nb_atteintes_bless_famil_homic_1CENTR = Nb_atteintes_blessures_famil_1CENTR + Nb_atteintes_blessures_horsfamil_1CENTR +
+                             Nb_atteintes_homic_1CENTR,
+                           Nb_atteintes_vols_violents_1CENTR = Nb_atteintes_vols_armes_1CENTR + Nb_atteintes_vols_violants_sansarme_1CENTR) %>%
+                           mutate(
+                           P_vols_vehic = Nb_atteintes_vols_vehic/Nb_atteintes*100,
+                           P_bless_famil_homic = Nb_atteintes_bless_famil_homic/Nb_atteintes*100,
+                           P_vols_violents = Nb_atteintes_vols_violents/Nb_atteintes*100,
+                           P_vols_vehic_1ZE = Nb_atteintes_vols_vehic_1ZE/Nb_atteintes_vols_vehic*100,
+                           P_bless_famil_homic_1ZE = Nb_atteintes_bless_famil_homic_1ZE/Nb_atteintes_bless_famil_homic*100,
+                           P_vols_violents_1ZE = Nb_atteintes_vols_violents_1ZE/Nb_atteintes_vols_violents*100,
+                           P_vols_vehic_1BV = Nb_atteintes_vols_vehic_1BV/Nb_atteintes_vols_vehic*100,
+                           P_bless_famil_homic_1BV = Nb_atteintes_bless_famil_homic_1BV/Nb_atteintes_bless_famil_homic*100,
+                           P_vols_violents_1BV = Nb_atteintes_vols_violents_1BV/Nb_atteintes_vols_violents*100,
+                           P_vols_vehic_1GD = Nb_atteintes_vols_vehic_1GD/Nb_atteintes_vols_vehic*100,
+                           P_bless_famil_homic_1GD = Nb_atteintes_bless_famil_homic_1GD/Nb_atteintes_bless_famil_homic*100,
+                           P_vols_violents_1GD = Nb_atteintes_vols_violents_1GD/Nb_atteintes_vols_violents*100,
+                           P_vols_vehic_1UU = Nb_atteintes_vols_vehic_1UU/Nb_atteintes_vols_vehic*100,
+                           P_bless_famil_homic_1UU = Nb_atteintes_bless_famil_homic_1UU/Nb_atteintes_bless_famil_homic*100,
+                           P_vols_violents_1UU = Nb_atteintes_vols_violents_1UU/Nb_atteintes_vols_violents*100,
+                           P_vols_vehic_1AAV = Nb_atteintes_vols_vehic_1AAV/Nb_atteintes_vols_vehic*100,
+                           P_bless_famil_homic_1AAV = Nb_atteintes_bless_famil_homic_1AAV/Nb_atteintes_bless_famil_homic*100,
+                           P_vols_violents_1AAV = Nb_atteintes_vols_violents_1AAV/Nb_atteintes_vols_violents*100,
+                           P_vols_vehic_1CENTR = Nb_atteintes_vols_vehic_1CENTR/Nb_atteintes_vols_vehic*100,
+                           P_bless_famil_homic_1CENTR = Nb_atteintes_bless_famil_homic_1CENTR/Nb_atteintes_bless_famil_homic*100,
+                           P_vols_violents_1CENTR = Nb_atteintes_vols_violents_1CENTR/Nb_atteintes_vols_violents*100,
+                           vols_vehic_1000hbts = Nb_atteintes_vols_vehic/P19_POP*1000,
+                           bless_famil_homic_1000hbts = Nb_atteintes_bless_famil_homic/P19_POP*1000,
+                           vols_violents_1000hbts = Nb_atteintes_vols_violents/P19_POP*1000,
+                           l_vols_vehic_1000hbts=log(Nb_atteintes_vols_vehic/P19_POP*1000),
+                           l_bless_famil_homic_1000hbts=log(Nb_atteintes_bless_famil_homic/P19_POP*1000),
+                           l_vols_violents_1000hbts=log(Nb_atteintes_vols_violents/P19_POP*1000)
+                           ) %>% filter(!(DEP.x %in% c("971","972","973","974","976")) &
+                                          Nb_atteintes_cambr>0 &
+                                          Nb_atteintes_bless_famil_homic>0 &
+                                          Nb_atteintes_destr_degrad>0 &
+                                          Nb_atteintes_viol_sex>0 &
+                                          Nb_atteintes_vols_vehic>0 &
+                                          Nb_atteintes_vols_violents>0 &
+                                          Nb_atteintes_vols_sansviol>0 & 
+                                          P19_POP>500) %>%
+                          select(cog_com_22_inf,LIBGEO.x,DEP.x,REG.x,
+                                 P_vols_vehic,P_bless_famil_homic,P_vols_violents,P_cambr,P_destr_degrad,
+                                 P_viol_sex,P_vols_sansviol,
+                                 vols_vehic_1000hbts,bless_famil_homic_1000hbts,vols_violents_1000hbts,
+                                 cambr_1000hbts,destr_degrad_1000hbts,
+                                 viol_sex_1000hbts,vols_sansviol_1000hbts
+                                 ) %>%
+                          column_to_rownames(var="cog_com_22_inf") %>%
+                          rename(vols_vehic = vols_vehic_1000hbts,
+                                 bless_famil_homic = bless_famil_homic_1000hbts,
+                                 vols_violents = vols_violents_1000hbts,
+                                 cambr = cambr_1000hbts,
+                                 destr_degrad = destr_degrad_1000hbts,
+                                 viol_sex = viol_sex_1000hbts,
+                                 vols_sansviol = vols_sansviol_1000hbts)
+summary(data_com_IV_acp6)
+
+mcor <- cor(data_com_IV_acp6[4:17])
+corrplot(mcor, type="upper", order="hclust", tl.col="black", tl.srt=45)
+
+data_com_IV_acp6_shiny <- data_com_IV_acp6[,3:17]
+res = PCAshiny(data_com_IV_acp6_shiny)
 
 
 
