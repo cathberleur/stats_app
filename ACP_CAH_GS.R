@@ -992,6 +992,23 @@ resACP3 = PCAshiny(data_acp3_shiny)
 data_acp3bis_shiny <- data_acp3[,7:20]
 resACP3bis = PCAshiny(data_acp3bis_shiny)
 
+# CAH - (4 classes)
+res.PCA<-PCA(data_acp3bis_shiny,graph=FALSE)
+classif<-HCPC(res.PCA,nb.clust=4,consol=FALSE,graph=FALSE)
+plot.HCPC(res.HCPC,choice='tree',title='Arbre hiérarchique')
+plot.HCPC(res.HCPC,choice='map',draw.tree=FALSE,title='Plan factoriel')
+plot.HCPC(res.HCPC,choice='3D.map',ind.names=FALSE,centers.plot=FALSE,angle=60,title='Arbre hiérarchique sur le plan factoriel')
+
+plot(classif)
+classif$data.clust
+names(classif$data.clust)
+dep <- del2016_2021_IV_meme_zonage2 %>% filter(!(DEP_inf %in% c("971","972","973","974","976")) &
+                                                       (is.na(DEP_inf)==FALSE)) %>% select(DEP_inf,P_atteintes_1ZE,P_atteintes_1BV,
+                                                              P_atteintes_1GD,P_atteintes_1UU,P_atteintes_1AAV,P_atteintes_1CENTR) 
+ACP3_clust <-cbind(classif$data.clust,dep)
+write.csv(ACP3_clust,"clusters_ACP3ter.csv")
+
+
 
 # Code R à retenir pour réaliser les différentes étapes de cette ACP (en vue du rapport):
 
@@ -1083,7 +1100,6 @@ names(del2016_2021_IVM_meme_zonage2)
 
 # b) Retraitement sur les variables: on calcule un nombre d'atteintes corporelles total
 
-
 del2016_2021_IVM_meme_zonage2 <- del2016_2021_IVM_meme_zonage2 %>%
   mutate(Nb_atteintes_corpo = Nb_atteintes_blessures_famil + Nb_atteintes_blessures_horsfamil + 
            Nb_atteintes_homic + Nb_atteintes_viol_sex,
@@ -1101,7 +1117,7 @@ del2016_2021_IVM_meme_zonage2 <- del2016_2021_IVM_meme_zonage2 %>%
            Nb_atteintes_homic_1CENTR + Nb_atteintes_viol_sex_1CENTR
   )
 
-# c) Calcul des ratios communaux sur le volume des atteintes corporelles (pour 1000 habitants) et sa structure (en %) par type d'atteinte:
+# c) Calcul des ratios départementaux sur le volume des atteintes corporelles (pour 1000 habitants) et sa structure (en %) par type d'atteinte:
 
 del2016_2021_IVM_meme_zonage2 <- del2016_2021_IVM_meme_zonage2 %>%
   mutate(
@@ -1168,10 +1184,96 @@ names(del2016_2021_IVM_meme_zonage2)
 
 # Variables supplémentaires: 6
 # a) variables quantitatives:
-# -part des atteintes associées à un triplet de communes (I,VnM) présent dans un même zonage d'étude
+# -part des atteintes associées à un triplet de communes (I,V,M) présent dans un même zonage d'étude
 # remarque: on ne distingue pas ici les différents types d'atteinte.
 
 # on pourrait en rajouter d'autres, notamment sur la dimension socio-éco-démo des communes (TODO!)
+
+# indicateur de tourisme, proportion de résidences secondaires, densité de population
+# proportions de communes classées en 
+# indicateurs de dispersion des revenus
+
+# source 1: le comparateur des communes
+
+# avec ces données on peut avoir les variables supplémentaires suivantes:
+
+# densité de population (P19_POP/SUPERF), en nombre d'hbts/km2.
+# proportion de résidences secondaires (en % de logements): P19_RSECOCC/P19_LOG
+# niveau de vie médian (MED20)
+# proportion de chômeurs (en % de la population des 15-64 ans): P19_CHOMEUR1564/P19_POP1564
+
+# on agrège par département:
+
+infos_dep_dt <- infos_communes_dt[ ,.(
+  P19_POP=sum(P19_POP, na.rm=TRUE),
+  SUPERF=sum(SUPERF, na.rm=TRUE),
+  P19_RSECOCC=sum(P19_RSECOCC, na.rm=TRUE),
+  P19_LOG=sum(P19_LOG,na.rm=TRUE),
+  MED20=mean(MED20,na.rm=TRUE),
+  P19_CHOMEUR1564=sum(P19_CHOMEUR1564,na.rm=TRUE),
+  P19_POP1564=sum(P19_POP1564,na.rm=TRUE)),
+  by =.(DEP)]
+
+infos_dep1 <- as_tibble(infos_dep_dt) %>%
+            mutate(densite_pop=P19_POP/SUPERF,
+                   part_res_secondaires=P19_RSECOCC/P19_LOG*100,
+                   part_chomeurs=P19_CHOMEUR1564/P19_POP1564*100) %>%
+            select(DEP,densite_pop,MED20,part_res_secondaires,part_chomeurs)
+
+# on apparie ces infos au fichier "del2016_2021_IVM_meme_zonage2":
+del2016_2021_IVM_meme_zonage2 <- del2016_2021_IVM_meme_zonage2 %>%
+  left_join(y = infos_dep1, 
+            by = c("DEP_inf" = "DEP"))
+
+# source 2: le dossier complet (près de 1900 indicateurs disponibles au niveau communal -> source Insee)
+
+library(readr)
+dossier_complet_var_insee <- read_delim("meta_dossier_complet.csv")
+dossier_complet_insee <- read_delim("dossier_complet.csv")
+names(dossier_complet_insee)
+
+# On récupère les variables utiles pour calculer les variables supplémentaires suivantes:
+# Part des jeunes (15-29 ans) dans la population communale (en %): P19_POP1529/P19_POP
+# Part des résidences de tourisme dans l'ensemble des logements de la commune (en %): RT23/P19_LOG
+# Nombre des campings pour 1000 habitants: CPG23/P19_POP*1000
+# Rapport interdécile de niveau de vie de la commune (D9/D1): RD20 = D920/D120
+# Part des hôtels dans l'ensemble des logements de la commune: HT23/P19_LOG
+
+communes_zonages <- as_tibble(communes_zonages_dt)
+dossier_complet_insee$RD20 <- as.numeric(dossier_complet_insee$RD20)
+
+infos_dep2 <- dossier_complet_insee %>%
+            left_join(y = communes_zonages, 
+            by = c("CODGEO" = "CODGEO")) %>%
+            group_by(DEP) %>%
+            summarise(P19_POP = sum(P19_POP, na.rm = TRUE),
+                      P19_POP1529 = sum(P19_POP1529, na.rm = TRUE),
+                      RT23 = sum(RT23, na.rm = TRUE),
+                      P19_LOG = sum(P19_LOG, na.rm = TRUE),
+                      CPG23 = sum(CPG23, na.rm = TRUE),
+                      RD20 = mean(RD20, na.rm = TRUE),
+                      HT23 = sum(HT23, na.rm = TRUE)) %>%
+             mutate(P_pop15_29ans = P19_POP1529/P19_POP*100,
+                    P_res_tourisme=RT23/P19_LOG*100,
+                    P_camping_1000hbt=CPG23/P19_POP*1000,
+                    P_hotel=HT23/P19_LOG*100) %>%
+            select(DEP,P_pop15_29ans,P_res_tourisme,P_camping_1000hbt,P_hotel)
+
+# on apparie ces infos au fichier "del2016_2021_IVM_meme_zonage2":
+del2016_2021_IVM_meme_zonage2 <- del2016_2021_IVM_meme_zonage2 %>%
+  left_join(y = infos_dep2, 
+            by = c("DEP_inf" = "DEP"))
+
+# source 3:
+# Calculer des proportions de communes selon une caractéristique d'un zonage d'étude donné;
+# Par exemple: calculer la part de communes relevant de l'"urbain dense" au sens de la grille de densité...
+#
+
+
+
+
+
+
 
 # b) variables qualitatives:
 # TODO!
@@ -1185,6 +1287,8 @@ data_acp4 <- del2016_2021_IVM_meme_zonage2 %>% filter(!(DEP_inf %in% c("971","97
   select(DEP_inf,
          P_atteintes_corpo_1ZE,P_atteintes_corpo_1BV,P_atteintes_corpo_1GD,P_atteintes_corpo_1UU,
          P_atteintes_corpo_1AAV,P_atteintes_corpo_1CENTR,
+         densite_pop,MED20,part_res_secondaires,part_chomeurs,
+         P_pop15_29ans,P_res_tourisme,P_camping_1000hbt,P_hotel,
          P_bless_famil,P_bless_h_famil,P_homic,P_viol_sex,
          bless_famil,bless_h_famil,homic,viol_sex) %>%
   column_to_rownames(var="DEP_inf")
@@ -1212,29 +1316,84 @@ data_acp4_shiny <- data_acp4
 resACP4 = PCAshiny(data_acp4_shiny)
 
 # on refait l'ACP sans aucune variable supplémentaire:
-data_acp4bis_shiny <- data_acp4[,7:14]
+data_acp4bis_shiny <- data_acp4[,7:22]
 resACP4bis = PCAshiny(data_acp4bis_shiny)
 
 
 # Code R à retenir pour réaliser les différentes étapes de cette ACP (en vue du rapport):
 
-# à insérer ici...
+# ACP:
+res.PCA<-PCA(data_acp4bis_shiny,graph=FALSE)
+plot.PCA(res.PCA,choix='var',title="Graphe des variables de l'ACP")
+plot.PCA(res.PCA,title="Graphe des individus de l'ACP")
 
-# Interprétation des résultats de l'ACP n°2:
+# CAH - (4 classes)
+res.PCA<-PCA(data_acp4bis_shiny,graph=FALSE)
+classif2<-HCPC(res.PCA,nb.clust=4,consol=FALSE,graph=FALSE)
+plot.HCPC(res.HCPC,choice='tree',title='Arbre hiérarchique')
+plot.HCPC(res.HCPC,choice='map',draw.tree=FALSE,title='Plan factoriel')
+plot.HCPC(res.HCPC,choice='3D.map',ind.names=FALSE,centers.plot=FALSE,angle=60,title='Arbre hiérarchique sur le plan factoriel')
 
-# Nombre d'axes factoriels à retenir pour l'interprétation: 
-# 3 axes factoriels peuvent être retenus ici, ils expliques à eux trois 83% de l'inertie totale.
+plot(classif2)
+classif2$data.clust
+names(classif2$data.clust)
+dep2 <- del2016_2021_IVM_meme_zonage2 %>% filter(!(DEP_inf %in% c("971","972","973","974","976")) &
+                                                 (is.na(DEP_inf)==FALSE)) %>% select(DEP_inf,P_atteintes_corpo_1ZE,P_atteintes_corpo_1BV,
+                                                                                     P_atteintes_corpo_1GD,P_atteintes_corpo_1UU,P_atteintes_corpo_1AAV,P_atteintes_corpo_1CENTR) 
+ACP4_clust <-cbind(classif2$data.clust,dep2)
+write.csv(ACP4_clust,"clusters_ACP4.csv")
 
-# 1er axe factoriel: volume des atteintes corporelles à l'échelle communale pour 1000 habitants
 
-# 2eme axe factoriel: structure des atteintes corporelles à l'échelle communale (opposition entre les communes
-# avec une prééminence des violences sexuelles et des homicides et celles avec une prééminence des
-# blessures volontaires extra-familiales)
+# Variante de l'ACP n°4:
+# on rajoute 4 variables actives:
+# le nombre de mec pour 1000 hbts par type d'atteinte ;)
 
-# 3eme axe factoriel: encore la structure des atteintes corporelles (opposition entre blessures intra-familiales
-# et blessures extra-familiales)
+Nb_mec <- del2016_2021_dt10[(is.na(cog_com_22_inf)==FALSE) & (is.na(cog_com_22_vict)==FALSE)
+                                                   & (is.na(cog_com_22_mec)==FALSE), .(
+                                                     Nb_mec_blessures_famil = sum(compteur*(classe2 == "Coups et blessures volontaires dans la sphère familiale"), na.rm = TRUE),
+                                                     Nb_mec_blessures_horsfamil = sum(compteur*(classe2 == "Coups et blessures volontaires en dehors de la sphère familiale"), na.rm = TRUE),
+                                                     Nb_mec_homic = sum(compteur*(classe2 == "Homicides"), na.rm = TRUE),
+                                                     Nb_mec_viol_sex = sum(compteur*(classe2 == "Violences sexuelles"), na.rm = TRUE)),
+                                                   by = .(DEP_mec)]
 
-# Variantes possibles de l'ACP n°2:
+Nb_mec <- as_tibble(Nb_mec) %>% filter(!(DEP_mec %in% c("971","972","973","974","976")) &
+                                         (is.na(DEP_mec)==FALSE))
+                            
+# on fusionne avec le fichier précédent "del2016_2021_IVM_meme_zonage2":
+
+test <- del2016_2021_IVM_meme_zonage2 %>% filter(!(DEP_inf %in% c("971","972","973","974","976")) &
+                                                   (is.na(DEP_inf)==FALSE)) %>%
+            left_join(y = Nb_mec, 
+            by = c("DEP_inf" = "DEP_mec"))
+head(test)
+
+# on calcule le nombre de mec pour 1000 habitants et la différence entre le nombre de inf et le nombre de mec:
+
+test <- test %>% mutate(mec_bless_famil=Nb_mec_blessures_famil/P19_POP*1000,
+                        mec_bless_h_famil=Nb_mec_blessures_horsfamil/P19_POP*1000,
+                        mec_homic=Nb_mec_homic/P19_POP*1000,
+                        mec_viol_sex=Nb_mec_viol_sex/P19_POP*1000) %>%
+                 mutate (dif_nbIM_bless_famil=bless_famil-mec_bless_famil,
+                         dif_nbIM_bless_h_famil=bless_h_famil-mec_bless_h_famil,
+                         dif_nbIM_homic=homic-mec_homic,
+                         dif_nbIM_viol_sex=viol_sex-mec_viol_sex)
+
+data_acp4bis <- test %>%
+  select(DEP_inf,
+         P_bless_famil,P_bless_h_famil,P_homic,P_viol_sex,
+         bless_famil,bless_h_famil,homic,viol_sex,
+         dif_nbIM_bless_famil,dif_nbIM_bless_h_famil,dif_nbIM_homic,dif_nbIM_viol_sex) %>%
+  column_to_rownames(var="DEP_inf")
+
+resACP4bis = PCAshiny(data_acp4bis)
+
+res.PCA<-PCA(data_acp4bis,graph=FALSE)
+dimdesc(res.PCA)
+# Ca fait bien ressortir sur l'axe factoriel 2 les différences d'inf et de mec pour chaque type d'atteinte corpo:
+# plus on est haut sur l'axe 2 plus on a des départements avec un nombre plus élevé de mec que d'inf pour 1000 hbts.
+# quand on clusterise, on a des classes qui tiennent compte du fait que l'on a plus d'inf que de mec ou vice-versa...
+# à creuser ;)
+
 
 
 

@@ -329,7 +329,6 @@ del2016_2021_dt10[ , a_3_memes_cv := data.table::fcase(
 ]
 
 
-
 # 2) Zonages statistiques:
 
 # a) pour chaque atteinte, on teste si le couple (I,V) / le triplet de communes (I,V,M) s'inscrit dans la même zone d'emploi (ZE) ou pas:
