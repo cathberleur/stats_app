@@ -155,7 +155,7 @@ names(del2016_2021_IV_meme_zonage)
 # 1er regroupement: "vols d'accessoires dans les véhicules", "vols de véhicules" et "vols dans les véhicules"
 # -> vols en rapport avec les véhicules
 # 2eme regroupement:
-# "coups et blessures volontaires dans la sphère familiale","coups et blessures volontaires en dehors de la sphère familiae" et "homocides".
+# "coups et blessures volontaires dans la sphère familiale","coups et blessures volontaires en dehors de la sphère familiale" et "homocides".
 # -> atteintes physiques corporelles graves et directes
 # 3eme regroupement: "vols violents sans arme" et les "vols violents avec arme"
 # -> vols violents

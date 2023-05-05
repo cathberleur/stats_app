@@ -1,8 +1,5 @@
 
-
-# Partie 1 du rapport Statapp: les données
-
-# 1.1 Les données de la base géolocalisée des atteintes du SSMSI:
+# Partie 1 du mémoire Stat'app: les données
 
 # Création du tableau 1: Atteintes selon leur type et la qualité de l'information sur les 3 lieux associés
 
@@ -95,9 +92,7 @@ tableau1 <- tableau1[order(tableau1$Nb_atteintes,decreasing = TRUE),]
 tableau1 <- subset(tableau1, select=c(classe2, Nb_atteintes,Neant,I,V,M,IV,IM,VM,IVM))
 
 # Export CSV du tableau 1:
+# WARNING: Chaque utilisateur doit spécifier le chemin vers le dossier dans lequel il souhaite sauvegarder le tableau.
 write.csv(tableau1, "/Users/sklenard/Documents/Statapp/Figures-Rapport Statapp//Tableau1.csv", row.names=FALSE)
 
-# Export final des tableaux de la partie 1 du Rapport au format .xlsx:
-#dataset_names <- list('lisez_moi' = lisez_moi,'nombre_atteintes' = nb_atteintes_1619,'communes' = ptab_communes, 'ZE' = ptab_ZE,'UU' = ptab_ZE,'AAV' = ptab_ZE)
-#write.xlsx(dataset_names, file = '/Users/sklenard/Documents/Statapp//tableaux_partie1_rapport.xlsx')
 
