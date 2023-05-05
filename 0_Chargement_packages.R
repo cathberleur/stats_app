@@ -1,0 +1,21 @@
+
+# Les packages utilisés dans le mémoire:
+
+library(tibble)
+library(dplyr)
+library(tidyr)
+library(magrittr)
+library(readr)
+library(readxl)
+library(questionr)
+library(forcats)
+library(data.table)
+library(openxlsx)
+library(sf)
+library(FactoMineR)
+library(factoextra)
+library(FactoInvestigate)
+library(Factoshiny)
+library(corrplot)
+library(readr)
+library(scatterplot3d)
