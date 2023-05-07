@@ -135,7 +135,12 @@ rm(del2016_2021_dt9)
 # Création de variables supplémentaires utiles pour l'analyse:
 
 # I) Recodage de la variable "classe" donnant le type d'atteinte: 
-# WARNING: ce recodage ne sera plus nécessaire lorsque le code tournera sur les "vraies" données au SSMSI !!!
+# TRES IMPORTANT!!! ce recodage ne sera plus nécessaire lorsque le code tournera sur les "vraies" données au SSMSI !!!
+# @Kevin et Aurélien: il faudra commenter ce bout de code avant de faire tourner sur les vraies bases!
+# Pour rappel, ce recodage résulte juste ici d'une "imputation" des différentes modalités de la variable "classe" en 
+# comparant les fréquences des atteintes calculées à partir de la base secrétisée et celles calculées à partir de la
+# base non secrétisée et en faisant l'hypothèse qu'une atteinte qui a le même rang en termes de fréquence dans les 2 bases.
+# Donc il se peut très bien qu'il y ait des erreurs de reclassement ci-dessous!!
 
 atteintes[ , classe := data.table::fcase(
   classe=="W", "Vols sans violence contre des personnes",
@@ -200,39 +205,39 @@ atteintes[ , a_3_memes_cv := data.table::fcase(
 # a) pour chaque atteinte, on teste si le couple (I,V) / le triplet de communes (I,V,M) s'inscrit dans la même zone d'emploi (ZE) ou pas:
 
 atteintes[ , IV_ds_meme_ZE := data.table::fcase(
-  (ZE2020_inf == ZE2020_vict), "oui",
+(is.na(ZE2020_inf)==FALSE) &  (ZE2020_inf == ZE2020_vict), "oui",
   default ="non")
 ]
 
 atteintes[ , IVM_ds_meme_ZE := data.table::fcase(
-  (ZE2020_inf == ZE2020_vict) & (ZE2020_vict == ZE2020_mec), "oui",
+(is.na(ZE2020_inf)==FALSE) &  (ZE2020_inf == ZE2020_vict) & (ZE2020_vict == ZE2020_mec), "oui",
   default ="non")
 ]
 
 # b) pour chaque atteinte, on teste si le couple (I,V) / le triplet de communes (I,V,M) s'inscrit dans le même bassin de vie (BV) ou pas:
 
 atteintes[ , IV_ds_meme_BV := data.table::fcase(
-  (BV2022_inf == BV2022_vict), "oui",
+(is.na(BV2022_inf)==FALSE) &  (BV2022_inf == BV2022_vict), "oui",
   default ="non")
 ]
 
 atteintes[ , IVM_ds_meme_BV := data.table::fcase(
-  (BV2022_inf == BV2022_vict) & (BV2022_vict == BV2022_mec), "oui",
+(is.na(BV2022_inf)==FALSE) & (BV2022_inf == BV2022_vict) & (BV2022_vict == BV2022_mec), "oui",
   default ="non")
 ]
 
 # c) pour chaque atteinte, on teste si le couple (I,V) / le triplet de communes (I,V,M) s'inscrit dans la même unité urbaine (UU) ou pas:
 
 atteintes[ , IV_ds_meme_UU := data.table::fcase(
-  !(UU2020_inf =="01000") & (UU2020_inf == UU2020_vict), "oui",
+  !(substr(UU2020_inf,3,5) =="000") & (is.na(UU2020_inf)==FALSE) & (UU2020_inf == UU2020_vict), "oui",
   default ="non")
 ]
 
 atteintes[ , IVM_ds_meme_UU := data.table::fcase(
-  !(UU2020_inf =="01000") & (UU2020_inf == UU2020_vict) & (UU2020_vict == UU2020_mec), "oui",
+  !(substr(UU2020_inf,3,5) =="000") & (is.na(UU2020_inf)==FALSE) & (UU2020_inf == UU2020_vict) & (UU2020_vict == UU2020_mec), "oui",
   default ="non")
 ]
-# note: pour éviter de classer en "oui" des atteintes dont les 3 communes seraient tous classées en 01000
+# note: pour éviter de classer en "oui" des atteintes dont les 3 communes seraient tous classées en XX000
 # (i.e hors UU), on rajoute la condition qui assure que l'infraction ait bien eu lieu dans une UU. 
 # En effet, le zonage UU ne constitue pas une partition du territoire français (il y a donc une classe résiduelle "hors UU").
 
@@ -240,12 +245,12 @@ atteintes[ , IVM_ds_meme_UU := data.table::fcase(
 #des villes (AAV) ou pas:
 
 atteintes[ , IV_ds_meme_AAV := data.table::fcase(
-  !(AAV2020_inf =="000") & (AAV2020_inf == AAV2020_vict), "oui",
+  !(AAV2020_inf =="000") & (is.na(AAV2020_inf)==FALSE) & (AAV2020_inf == AAV2020_vict), "oui",
   default ="non")
 ]
 
 atteintes[ , IVM_ds_meme_AAV := data.table::fcase(
-  !(AAV2020_inf =="000") & (AAV2020_inf == AAV2020_vict) & (AAV2020_vict == AAV2020_mec), "oui",
+  !(AAV2020_inf =="000") & (is.na(AAV2020_inf)==FALSE) & (AAV2020_inf == AAV2020_vict) & (AAV2020_vict == AAV2020_mec), "oui",
   default ="non")
 ]
 # note: pour éviter de classer en "oui" des atteintes dont les 3 communes seraient tous classées en 000
@@ -256,12 +261,12 @@ atteintes[ , IVM_ds_meme_AAV := data.table::fcase(
 # (mix de la grille communale de densité et de AAV) ou pas:
 
 atteintes[ , IV_ds_meme_GD := data.table::fcase(
-  (TYPE_inf == TYPE_vict), "oui",
+  (is.na(TYPE_inf)==FALSE) & (TYPE_inf == TYPE_vict), "oui",
   default ="non")
 ]
 
 atteintes[ , IVM_ds_meme_GD := data.table::fcase(
-  (TYPE_inf == TYPE_vict) & (TYPE_vict == TYPE_mec), "oui",
+  (is.na(TYPE_inf)==FALSE) & (TYPE_inf == TYPE_vict) & (TYPE_vict == TYPE_mec), "oui",
   default ="non")
 ]
 
@@ -269,39 +274,83 @@ atteintes[ , IVM_ds_meme_GD := data.table::fcase(
 # de la commune (cf. étude de l'INRAE sur les centralités) ou pas:
 
 atteintes[ , IV_ds_meme_CENTR := data.table::fcase(
-  (P_NP5CLA_inf == P_NP5CLA_vict), "oui",
+  !(P_NP5CLA_inf =="DCN0") & (is.na(P_NP5CLA_inf)==FALSE) & (P_NP5CLA_inf == P_NP5CLA_vict), "oui",
   default ="non")
 ]
 
 atteintes[ , IVM_ds_meme_CENTR := data.table::fcase(
-  (P_NP5CLA_inf == P_NP5CLA_vict) & (P_NP5CLA_vict == P_NP5CLA_mec), "oui",
+  !(P_NP5CLA_inf =="DCN0") & (is.na(P_NP5CLA_inf)==FALSE) & (P_NP5CLA_inf == P_NP5CLA_vict) & (P_NP5CLA_vict == P_NP5CLA_mec), "oui",
+  default ="non")
+]
+# note: pour éviter de classer en "oui" des atteintes dont les 3 communes seraient tous classées en 000
+# (i.e hors CENTRALITE), on rajoute la condition qui assure que l'infraction ait bien eu lieu dans une CENTRALITE 
+# En effet, le zonage CENTRALITE ne constitue pas une partition du territoire français (il y a donc une classe résiduelle "hors CENTR").
+
+
+# Autres indicatrices utiles:
+
+# on teste si la commune de l'infraction se situe dans une UU: 
+atteintes[ , I_ds_UU := data.table::fcase(
+  !(substr(UU2020_inf,3,5) =="000") & (is.na(UU2020_inf)==FALSE), "oui",
   default ="non")
 ]
 
-# 3) Statut de la commune au sein d'un zonage d'étude particulier:
-# Idée: on souhaite ici regarder le statut de la commune de I, de V (voire de M lorsqu'elle est bien renseignée) au sein
-# du zonage d'étude.
-# Par statut, on entend ici la caractérisation d'une commune au sein d'un zonage d'étude donné.
+# on teste si la commune de la victime se situe dans une UU: 
+atteintes[ , V_ds_UU := data.table::fcase(
+  !(substr(UU2020_vict,3,5) =="000") & (is.na(UU2020_vict)==FALSE), "oui",
+  default ="non")
+]
 
-# a) pour chaque atteinte, on teste si lorsque le couple (I,V) s'inscrit dans la même GD,il s'agit:
-# de (urbain dense,urbain dense),(urbain dense,urbain ...)
-# TODO !!!
+# on teste si la commune du mis en cause se situe dans une UU: 
+atteintes[ , M_ds_UU := data.table::fcase(
+  !(substr(UU2020_mec,3,5) =="000") & (is.na(UU2020_mec)==FALSE), "oui",
+  default ="non")
+]
 
-# atteintes[ , IV_ds_meme_ZE := data.table::fcase(
-#   (ZE2020_inf == ZE2020_vict), "oui",
-#   default ="non")
-# ]
-# 
-# atteintes[ , IVM_ds_meme_ZE := data.table::fcase(
-#   (ZE2020_inf == ZE2020_vict) & (ZE2020_vict == ZE2020_mec), "oui",
-#   default ="non")
-# ]
+
+# on teste si la commune de l'infraction se situe dans une AAV: 
+atteintes[ , I_ds_AAV := data.table::fcase(
+  !(AAV2020_inf =="000") & (is.na(AAV2020_inf)==FALSE), "oui",
+  default ="non")
+]
+
+# on teste si la commune de la victime se situe dans une AAV: 
+atteintes[ , V_ds_AAV := data.table::fcase(
+  !(AAV2020_vict =="000") & (is.na(AAV2020_vict)==FALSE), "oui",
+  default ="non")
+]
+
+# on teste si la commune du mis en cause se situe dans une AAV: 
+atteintes[ , M_ds_AAV := data.table::fcase(
+  !(AAV2020_mec =="000") & (is.na(AAV2020_mec)==FALSE), "oui",
+  default ="non")
+]
+
+# on teste si la commune de l'infraction se situe dans une centralité: 
+atteintes[ , I_ds_CENTR := data.table::fcase(
+  !(P_NP5CLA_inf == "DCN0") & (is.na(P_NP5CLA_inf)==FALSE), "oui",
+  default ="non")
+]
+
+# on teste si la commune de la victime se situe dans une centralité: 
+atteintes[ , V_ds_CENTR := data.table::fcase(
+  !(P_NP5CLA_vict == "DCN0") & (is.na(P_NP5CLA_vict)==FALSE), "oui",
+  default ="non")
+]
+
+# on teste si la commune du mis en cause se situe dans une centralité: 
+atteintes[ , M_ds_CENTR := data.table::fcase(
+  !(P_NP5CLA_mec == "DCN0") & (is.na(P_NP5CLA_mec)==FALSE), "oui",
+  default ="non")
+]
 
 
 # 3) Autres variables utiles pour l'analyse:
 
 # on crée un compteur:
 atteintes$compteur <-1
+# Autre syntaxe probablement plus rapide:
+# atteintes[, compteur := 1]
 
 # on ajoute l'information relative à la distance "à vol d'oiseau" entre les communes I, V et M pour chaque atteinte:
 del.dist_dt <- as.data.table(t.del.dist)
@@ -742,10 +791,22 @@ delinquance_com <- delinquance_com %>%
            Nb_I_vols_de_vehic_IVM_1CENTR,
          Nb_I_bless_famil_homic_IVM_1CENTR = Nb_I_bless_famil_IVM_1CENTR + Nb_I_bless_horsfamil_IVM_1CENTR +
            Nb_I_homic_IVM_1CENTR,
-         Nb_I_vols_violents_IVM_1CENTR = Nb_I_vols_armes_IVM_1CENTR + Nb_I_vols_viol_sansarme_IVM_1CENTR
+         Nb_I_vols_violents_IVM_1CENTR = Nb_I_vols_armes_IVM_1CENTR + Nb_I_vols_viol_sansarme_IVM_1CENTR,
+         Nb_V_vols_vehic = Nb_V_vols_acces_vehic + Nb_V_vols_ds_vehic + 
+           Nb_V_vols_de_vehic,
+         Nb_V_bless_famil_homic = Nb_V_bless_famil + Nb_V_bless_horsfamil +
+           Nb_V_homic,
+         Nb_V_vols_violents = Nb_V_vols_armes + Nb_V_vols_viol_sansarme,
+         Nb_M_vols_vehic = Nb_M_vols_acces_vehic + Nb_M_vols_ds_vehic + 
+           Nb_M_vols_de_vehic,
+         Nb_M_bless_famil_homic = Nb_M_bless_famil + Nb_M_bless_horsfamil +
+           Nb_M_homic,
+         Nb_M_vols_violents = Nb_M_vols_armes + Nb_M_vols_viol_sansarme,
          ) %>%
          mutate(
         Nb_I_corpo = Nb_I_bless_famil_homic + Nb_I_viol_sex,
+        Nb_V_corpo = Nb_V_bless_famil_homic + Nb_V_viol_sex,
+        Nb_M_corpo = Nb_M_bless_famil_homic + Nb_M_viol_sex,
         Nb_I_corpo_IV_1ZE = Nb_I_bless_famil_homic_IV_1ZE + Nb_I_viol_sex_IV_1ZE,
         Nb_I_corpo_IV_1BV = Nb_I_bless_famil_homic_IV_1BV + Nb_I_viol_sex_IV_1BV,
         Nb_I_corpo_IV_1GD = Nb_I_bless_famil_homic_IV_1GD + Nb_I_viol_sex_IV_1GD,
@@ -786,7 +847,7 @@ delinquance_com <- delinquance_com %>%
 
 delinquance_com <- delinquance_com %>%
   mutate(
-    V = Nb_I/P19_POP*1000,
+    V = Nb_V/P19_POP*1000,
     V_cambr = Nb_V_cambr/P19_POP*1000,
     V_bless_famil = Nb_V_bless_famil/P19_POP*1000,
     V_bless_horsfamil = Nb_V_bless_horsfamil/P19_POP*1000,
@@ -798,18 +859,18 @@ delinquance_com <- delinquance_com %>%
     V_vols_ds_vehic = Nb_V_vols_ds_vehic/P19_POP*1000,
     V_vols_de_vehic = Nb_V_vols_de_vehic/P19_POP*1000,
     V_vols_sansviol = Nb_V_vols_sansviol/P19_POP*1000,
-    V_vols_viol_sansarme = Nb_V_vols_viol_sansarme/P19_POP*1000
-    # V_vols_vehic = Nb_V_vols_vehic/P19_POP*1000,
-    # V_bless_famil_homic = Nb_V_bless_famil_homic/P19_POP*1000,
-    # V_vols_violents = Nb_V_vols_violents/P19_POP*1000,
-    # V_corpo = Nb_V_corpo/P19_POP*1000
+    V_vols_viol_sansarme = Nb_V_vols_viol_sansarme/P19_POP*1000,
+    V_vols_vehic = Nb_V_vols_vehic/P19_POP*1000,
+    V_bless_famil_homic = Nb_V_bless_famil_homic/P19_POP*1000,
+    V_vols_violents = Nb_V_vols_violents/P19_POP*1000,
+    V_corpo = Nb_V_corpo/P19_POP*1000
     )
 
 # Calcul de toutes les variables relatives au volume de mis en cause (pour 1000 habitants):
 
 delinquance_com <- delinquance_com %>%
   mutate(
-    M = Nb_I/P19_POP*1000,
+    M = Nb_M/P19_POP*1000,
     M_cambr = Nb_M_cambr/P19_POP*1000,
     M_bless_famil = Nb_M_bless_famil/P19_POP*1000,
     M_bless_horsfamil = Nb_M_bless_horsfamil/P19_POP*1000,
@@ -821,11 +882,11 @@ delinquance_com <- delinquance_com %>%
     M_vols_ds_vehic = Nb_M_vols_ds_vehic/P19_POP*1000,
     M_vols_de_vehic = Nb_M_vols_de_vehic/P19_POP*1000,
     M_vols_sansviol = Nb_M_vols_sansviol/P19_POP*1000,
-    M_vols_viol_sansarme = Nb_M_vols_viol_sansarme/P19_POP*1000
-    # M_vols_vehic = Nb_M_vols_vehic/P19_POP*1000,
-    # M_bless_famil_homic = Nb_M_bless_famil_homic/P19_POP*1000,
-    # M_vols_violents = Nb_M_vols_violents/P19_POP*1000,
-    # M_corpo = Nb_M_corpo/P19_POP*1000
+    M_vols_viol_sansarme = Nb_M_vols_viol_sansarme/P19_POP*1000,
+    M_vols_vehic = Nb_M_vols_vehic/P19_POP*1000,
+    M_bless_famil_homic = Nb_M_bless_famil_homic/P19_POP*1000,
+    M_vols_violents = Nb_M_vols_violents/P19_POP*1000,
+    M_corpo = Nb_M_corpo/P19_POP*1000
     )
 
 # Calcul de toutes les variables relatives à la structure de la délinquance par type d'atteinte (en %):
@@ -1091,317 +1152,317 @@ delinquance_com <- delinquance_com %>%
 
 # 3- Construction de la base "delinquance_dep" (analyse au niveau du département.)
 
-# Agrégation des atteintes par commune de l'infraction: calcul du nombre d'infractions (I) dans chaque département,
-# selon le type de l'atteinte.
-nb_I_dep <- atteintes[(is.na(cog_com_22_inf)==FALSE), .(
-  Nb_I = sum(compteur, na.rm = TRUE),
-  Nb_I_cambr = sum(compteur*(classe == "Cambriolages de logement"), na.rm = TRUE),
-  Nb_I_bless_famil = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale"), na.rm = TRUE),
-  Nb_bless_horsfamil = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale"), na.rm = TRUE),
-  Nb_I_destr_degrad = sum(compteur*(classe == "Destructions et dégradations"), na.rm = TRUE),
-  Nb_I_homic = sum(compteur*(classe == "Homicides"), na.rm = TRUE),
-  Nb_I_viol_sex = sum(compteur*(classe == "Violences sexuelles"), na.rm = TRUE),
-  Nb_I_vols_armes = sum(compteur*(classe == "Vols avec armes"), na.rm = TRUE),
-  Nb_I_vols_acces_vehic = sum(compteur*(classe == "Vols d'accessoires sur véhicules"), na.rm = TRUE),
-  Nb_I_vols_ds_vehic = sum(compteur*(classe == "Vols dans les véhicules"), na.rm = TRUE),
-  Nb_I_vols_de_vehic = sum(compteur*(classe == "Vols de véhicules"), na.rm = TRUE),
-  Nb_I_vols_sansviol = sum(compteur*(classe == "Vols sans violence contre des personnes"), na.rm = TRUE),
-  Nb_I_vols_viol_sansarme = sum(compteur*(classe == "Vols violents sans arme"), na.rm = TRUE)),
-  by = .(DEP_inf)]
-
-# Agrégation des atteintes par commune de domiciliation de la victime: calcul du nombre de victimes (V) dans chaque commune,
-# selon le type de l'atteinte.
-nb_V_dep <- atteintes[(is.na(cog_com_22_vict)==FALSE), .(
-  Nb_V = sum(compteur, na.rm = TRUE),
-  Nb_V_cambr = sum(compteur*(classe == "Cambriolages de logement"), na.rm = TRUE),
-  Nb_V_bless_famil = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale"), na.rm = TRUE),
-  Nb_bless_horsfamil = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale"), na.rm = TRUE),
-  Nb_V_destr_degrad = sum(compteur*(classe == "Destructions et dégradations"), na.rm = TRUE),
-  Nb_V_homic = sum(compteur*(classe == "Homicides"), na.rm = TRUE),
-  Nb_V_viol_sex = sum(compteur*(classe == "Violences sexuelles"), na.rm = TRUE),
-  Nb_V_vols_armes = sum(compteur*(classe == "Vols avec armes"), na.rm = TRUE),
-  Nb_V_vols_acces_vehic = sum(compteur*(classe == "Vols d'accessoires sur véhicules"), na.rm = TRUE),
-  Nb_V_vols_ds_vehic = sum(compteur*(classe == "Vols dans les véhicules"), na.rm = TRUE),
-  Nb_V_vols_de_vehic = sum(compteur*(classe == "Vols de véhicules"), na.rm = TRUE),
-  Nb_V_vols_sansviol = sum(compteur*(classe == "Vols sans violence contre des personnes"), na.rm = TRUE),
-  Nb_V_vols_viol_sansarme = sum(compteur*(classe == "Vols violents sans arme"), na.rm = TRUE)),
-  by = .(DEP_vict)]
-
-# Agrégation des atteintes par commune de domiciliation du mis en cause: calcul du nombre de mis en cause (M) dans
-#chaque commune, selon le type de l'atteinte.
-nb_M_dep <- atteintes[(is.na(cog_com_22_mec)==FALSE), .(
-  Nb_M = sum(compteur, na.rm = TRUE),
-  Nb_M_cambr = sum(compteur*(classe == "Cambriolages de logement"), na.rm = TRUE),
-  Nb_M_bless_famil = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale"), na.rm = TRUE),
-  Nb_bless_horsfamil = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale"), na.rm = TRUE),
-  Nb_M_destr_degrad = sum(compteur*(classe == "Destructions et dégradations"), na.rm = TRUE),
-  Nb_M_homic = sum(compteur*(classe == "Homicides"), na.rm = TRUE),
-  Nb_M_viol_sex = sum(compteur*(classe == "Violences sexuelles"), na.rm = TRUE),
-  Nb_M_vols_armes = sum(compteur*(classe == "Vols avec armes"), na.rm = TRUE),
-  Nb_M_vols_acces_vehic = sum(compteur*(classe == "Vols d'accessoires sur véhicules"), na.rm = TRUE),
-  Nb_M_vols_ds_vehic = sum(compteur*(classe == "Vols dans les véhicules"), na.rm = TRUE),
-  Nb_M_vols_de_vehic = sum(compteur*(classe == "Vols de véhicules"), na.rm = TRUE),
-  Nb_M_vols_sansviol = sum(compteur*(classe == "Vols sans violence contre des personnes"), na.rm = TRUE),
-  Nb_M_vols_viol_sansarme = sum(compteur*(classe == "Vols violents sans arme"), na.rm = TRUE)),
-  by = .(DEP_mec)]
-
-# Agrégation des atteintes par commune de l'infraction: calcul du nombre d'infractions (I) dans chaque commune,
-# associées à un couple de communes (I,V) inscrites dans un même zonage d'étude.
-
-# Warning: on se restreint ici aux seules atteintes associées à un couple de communes (I,V) renseigné!
-
-nb_I_IV_meme_zonage_dep <- atteintes[(is.na(cog_com_22_inf)==FALSE) & (is.na(cog_com_22_vict)==FALSE), .(
-  # Nombre d'infractions avec un couple de communes (I,V) dans la même zone d'emploi (ZE):
-  Nb_I_IV_1ZE = sum(compteur*(IV_ds_meme_ZE == "oui"), na.rm = TRUE),
-  Nb_I_cambr_IV_1ZE = sum(compteur*(classe == "Cambriolages de logement" & IV_ds_meme_ZE == "oui"), na.rm = TRUE),
-  Nb_I_bless_famil_IV_1ZE = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale" & IV_ds_meme_ZE == "oui"), na.rm = TRUE),
-  Nb_I_bless_horsfamil_IV_1ZE = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale" & IV_ds_meme_ZE == "oui"), na.rm = TRUE),
-  Nb_I_destr_degrad_IV_1ZE = sum(compteur*(classe == "Destructions et dégradations" & IV_ds_meme_ZE == "oui"), na.rm = TRUE),
-  Nb_I_homic_IV_1ZE = sum(compteur*(classe == "Homicides" & IV_ds_meme_ZE == "oui"), na.rm = TRUE),
-  Nb_I_viol_sex_IV_1ZE = sum(compteur*(classe == "Violences sexuelles" & IV_ds_meme_ZE == "oui"), na.rm = TRUE),
-  Nb_I_vols_armes_IV_1ZE = sum(compteur*(classe == "Vols avec armes" & IV_ds_meme_ZE == "oui"), na.rm = TRUE),
-  Nb_I_vols_acces_vehic_IV_1ZE = sum(compteur*(classe == "Vols d'accessoires sur véhicules" & IV_ds_meme_ZE == "oui"), na.rm = TRUE),
-  Nb_I_vols_ds_vehic_IV_1ZE = sum(compteur*(classe == "Vols dans les véhicules" & IV_ds_meme_ZE == "oui"), na.rm = TRUE),
-  Nb_I_vols_de_vehic_IV_1ZE = sum(compteur*(classe == "Vols de véhicules" & IV_ds_meme_ZE == "oui"), na.rm = TRUE),
-  Nb_I_vols_sansviol_IV_1ZE = sum(compteur*(classe == "Vols sans violence contre des personnes" & IV_ds_meme_ZE == "oui"), na.rm = TRUE),
-  Nb_I_vols_viol_sansarme_IV_1ZE = sum(compteur*(classe == "Vols violents sans arme" & IV_ds_meme_ZE == "oui"), na.rm = TRUE),
-  
-  # Nombre d'infractions avec un couple de communes (I,V) dans le même bassin de vie (BV):
-  Nb_I_IV_1BV = sum(compteur*(IV_ds_meme_BV == "oui"), na.rm = TRUE),
-  Nb_I_cambr_IV_1BV = sum(compteur*(classe == "Cambriolages de logement" & IV_ds_meme_BV == "oui"), na.rm = TRUE),
-  Nb_I_bless_famil_IV_1BV = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale" & IV_ds_meme_BV == "oui"), na.rm = TRUE),
-  Nb_I_bless_horsfamil_IV_1BV = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale" & IV_ds_meme_BV == "oui"), na.rm = TRUE),
-  Nb_I_destr_degrad_IV_1BV = sum(compteur*(classe == "Destructions et dégradations" & IV_ds_meme_BV == "oui"), na.rm = TRUE),
-  Nb_I_homic_IV_1BV = sum(compteur*(classe == "Homicides" & IV_ds_meme_BV == "oui"), na.rm = TRUE),
-  Nb_I_viol_sex_IV_1BV = sum(compteur*(classe == "Violences sexuelles" & IV_ds_meme_BV == "oui"), na.rm = TRUE),
-  Nb_I_vols_armes_IV_1BV = sum(compteur*(classe == "Vols avec armes" & IV_ds_meme_BV == "oui"), na.rm = TRUE),
-  Nb_I_vols_acces_vehic_IV_1BV = sum(compteur*(classe == "Vols d'accessoires sur véhicules" & IV_ds_meme_BV == "oui"), na.rm = TRUE),
-  Nb_I_vols_ds_vehic_IV_1BV = sum(compteur*(classe == "Vols dans les véhicules" & IV_ds_meme_BV == "oui"), na.rm = TRUE),
-  Nb_I_vols_de_vehic_IV_1BV = sum(compteur*(classe == "Vols de véhicules" & IV_ds_meme_BV == "oui"), na.rm = TRUE),
-  Nb_I_vols_sansviol_IV_1BV = sum(compteur*(classe == "Vols sans violence contre des personnes" & IV_ds_meme_BV == "oui"), na.rm = TRUE),
-  Nb_I_vols_viol_sansarme_IV_1BV = sum(compteur*(classe == "Vols violents sans arme" & IV_ds_meme_BV == "oui"), na.rm = TRUE),
-  
-  # Nombre d'infractions avec un couple de communes (I,V) dans la même grille de densité (GD):
-  Nb_I_IV_1GD = sum(compteur*(IV_ds_meme_GD == "oui"), na.rm = TRUE),
-  Nb_I_cambr_IV_1GD = sum(compteur*(classe == "Cambriolages de logement" & IV_ds_meme_GD == "oui"), na.rm = TRUE),
-  Nb_I_bless_famil_IV_1GD = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale" & IV_ds_meme_GD == "oui"), na.rm = TRUE),
-  Nb_I_bless_horsfamil_IV_1GD = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale" & IV_ds_meme_GD == "oui"), na.rm = TRUE),
-  Nb_I_destr_degrad_IV_1GD = sum(compteur*(classe == "Destructions et dégradations" & IV_ds_meme_GD == "oui"), na.rm = TRUE),
-  Nb_I_homic_IV_1GD = sum(compteur*(classe == "Homicides" & IV_ds_meme_GD == "oui"), na.rm = TRUE),
-  Nb_I_viol_sex_IV_1GD = sum(compteur*(classe == "Violences sexuelles" & IV_ds_meme_GD == "oui"), na.rm = TRUE),
-  Nb_I_vols_armes_IV_1GD = sum(compteur*(classe == "Vols avec armes" & IV_ds_meme_GD == "oui"), na.rm = TRUE),
-  Nb_I_vols_acces_vehic_IV_1GD = sum(compteur*(classe == "Vols d'accessoires sur véhicules" & IV_ds_meme_GD == "oui"), na.rm = TRUE),
-  Nb_I_vols_ds_vehic_IV_1GD = sum(compteur*(classe == "Vols dans les véhicules" & IV_ds_meme_GD == "oui"), na.rm = TRUE),
-  Nb_I_vols_de_vehic_IV_1GD = sum(compteur*(classe == "Vols de véhicules" & IV_ds_meme_GD == "oui"), na.rm = TRUE),
-  Nb_I_vols_sansviol_IV_1GD = sum(compteur*(classe == "Vols sans violence contre des personnes" & IV_ds_meme_GD == "oui"), na.rm = TRUE),
-  Nb_I_vols_viol_sansarme_IV_1GD = sum(compteur*(classe == "Vols violents sans arme" & IV_ds_meme_GD == "oui"), na.rm = TRUE),
-  
-  # Nombre d'infractions avec un couple de communes (I,V) dans la même unité urbaine (UU):
-  Nb_I_IV_1UU = sum(compteur*(IV_ds_meme_UU == "oui"), na.rm = TRUE),
-  Nb_I_cambr_IV_1UU = sum(compteur*(classe == "Cambriolages de logement" & IV_ds_meme_UU == "oui"), na.rm = TRUE),
-  Nb_I_bless_famil_IV_1UU = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale" & IV_ds_meme_UU == "oui"), na.rm = TRUE),
-  Nb_I_bless_horsfamil_IV_1UU = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale" & IV_ds_meme_UU == "oui"), na.rm = TRUE),
-  Nb_I_destr_degrad_IV_1UU = sum(compteur*(classe == "Destructions et dégradations" & IV_ds_meme_UU == "oui"), na.rm = TRUE),
-  Nb_I_homic_IV_1UU = sum(compteur*(classe == "Homicides" & IV_ds_meme_UU == "oui"), na.rm = TRUE),
-  Nb_I_viol_sex_IV_1UU = sum(compteur*(classe == "Violences sexuelles" & IV_ds_meme_UU == "oui"), na.rm = TRUE),
-  Nb_I_vols_armes_IV_1UU = sum(compteur*(classe == "Vols avec armes" & IV_ds_meme_UU == "oui"), na.rm = TRUE),
-  Nb_I_vols_acces_vehic_IV_1UU = sum(compteur*(classe == "Vols d'accessoires sur véhicules" & IV_ds_meme_UU == "oui"), na.rm = TRUE),
-  Nb_I_vols_ds_vehic_IV_1UU = sum(compteur*(classe == "Vols dans les véhicules" & IV_ds_meme_UU == "oui"), na.rm = TRUE),
-  Nb_I_vols_de_vehic_IV_1UU = sum(compteur*(classe == "Vols de véhicules" & IV_ds_meme_UU == "oui"), na.rm = TRUE),
-  Nb_I_vols_sansviol_IV_1UU = sum(compteur*(classe == "Vols sans violence contre des personnes" & IV_ds_meme_UU == "oui"), na.rm = TRUE),
-  Nb_I_vols_viol_sansarme_IV_1UU = sum(compteur*(classe == "Vols violents sans arme" & IV_ds_meme_UU == "oui"), na.rm = TRUE),
-  
-  # Nombre d'infractions avec un couple de communes (I,V) dans la même aire d'attraction des villes (AAV):
-  Nb_I_IV_1AAV = sum(compteur*(IV_ds_meme_AAV == "oui"), na.rm = TRUE),
-  Nb_I_cambr_IV_1AAV = sum(compteur*(classe == "Cambriolages de logement" & IV_ds_meme_AAV == "oui"), na.rm = TRUE),
-  Nb_I_bless_famil_IV_1AAV = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale" & IV_ds_meme_AAV == "oui"), na.rm = TRUE),
-  Nb_I_bless_horsfamil_IV_1AAV = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale" & IV_ds_meme_AAV == "oui"), na.rm = TRUE),
-  Nb_I_destr_degrad_IV_1AAV = sum(compteur*(classe == "Destructions et dégradations" & IV_ds_meme_AAV == "oui"), na.rm = TRUE),
-  Nb_I_homic_IV_1AAV = sum(compteur*(classe == "Homicides" & IV_ds_meme_AAV == "oui"), na.rm = TRUE),
-  Nb_I_viol_sex_IV_1AAV = sum(compteur*(classe == "Violences sexuelles" & IV_ds_meme_AAV == "oui"), na.rm = TRUE),
-  Nb_I_vols_armes_IV_1AAV = sum(compteur*(classe == "Vols avec armes" & IV_ds_meme_AAV == "oui"), na.rm = TRUE),
-  Nb_I_vols_acces_vehic_IV_1AAV = sum(compteur*(classe == "Vols d'accessoires sur véhicules" & IV_ds_meme_AAV == "oui"), na.rm = TRUE),
-  Nb_I_vols_ds_vehic_IV_1AAV = sum(compteur*(classe == "Vols dans les véhicules" & IV_ds_meme_AAV == "oui"), na.rm = TRUE),
-  Nb_I_vols_de_vehic_IV_1AAV = sum(compteur*(classe == "Vols de véhicules" & IV_ds_meme_AAV == "oui"), na.rm = TRUE),
-  Nb_I_vols_sansviol_IV_1AAV = sum(compteur*(classe == "Vols sans violence contre des personnes" & IV_ds_meme_AAV == "oui"), na.rm = TRUE),
-  Nb_I_vols_viol_sansarme_IV_1AAV = sum(compteur*(classe == "Vols violents sans arme" & IV_ds_meme_AAV == "oui"), na.rm = TRUE),
-  
-  # Nombre d'infractions avec un couple de communes (I,V) dans la même centralité (CENTR):
-  Nb_I_IV_1CENTR = sum(compteur*(IV_ds_meme_CENTR == "oui"), na.rm = TRUE),
-  Nb_I_cambr_IV_1CENTR = sum(compteur*(classe == "Cambriolages de logement" & IV_ds_meme_CENTR == "oui"), na.rm = TRUE),
-  Nb_I_bless_famil_IV_1CENTR = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale" & IV_ds_meme_CENTR == "oui"), na.rm = TRUE),
-  Nb_I_bless_horsfamil_IV_1CENTR = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale" & IV_ds_meme_CENTR == "oui"), na.rm = TRUE),
-  Nb_I_destr_degrad_IV_1CENTR = sum(compteur*(classe == "Destructions et dégradations" & IV_ds_meme_CENTR == "oui"), na.rm = TRUE),
-  Nb_I_homic_IV_1CENTR = sum(compteur*(classe == "Homicides" & IV_ds_meme_CENTR == "oui"), na.rm = TRUE),
-  Nb_I_viol_sex_IV_1CENTR = sum(compteur*(classe == "Violences sexuelles" & IV_ds_meme_CENTR == "oui"), na.rm = TRUE),
-  Nb_I_vols_armes_IV_1CENTR = sum(compteur*(classe == "Vols avec armes" & IV_ds_meme_CENTR == "oui"), na.rm = TRUE),
-  Nb_I_vols_acces_vehic_IV_1CENTR = sum(compteur*(classe == "Vols d'accessoires sur véhicules" & IV_ds_meme_CENTR == "oui"), na.rm = TRUE),
-  Nb_I_vols_ds_vehic_IV_1CENTR = sum(compteur*(classe == "Vols dans les véhicules" & IV_ds_meme_CENTR == "oui"), na.rm = TRUE),
-  Nb_I_vols_de_vehic_IV_1CENTR = sum(compteur*(classe == "Vols de véhicules" & IV_ds_meme_CENTR == "oui"), na.rm = TRUE),
-  Nb_I_vols_sansviol_IV_1CENTR = sum(compteur*(classe == "Vols sans violence contre des personnes" & IV_ds_meme_CENTR == "oui"), na.rm = TRUE),
-  Nb_I_vols_viol_sansarme_IV_1CENTR = sum(compteur*(classe == "Vols violents sans arme" & IV_ds_meme_CENTR == "oui"), na.rm = TRUE)),
-  by = .(DEP_inf)]
-
-# Agrégation des atteintes par département de l'infraction: calcul du nombre d'infractions (I) dans chaque commune,
-# associées à un triplet de communes (I,V,M) inscrites dans un même zonage d'étude.
-
-# Warning: on se restreint ici aux seules atteintes associées à un triplet de communes (I,V,M) renseignées!
-# On se limite ici aux seules atteintes corporelles, celles pour lesquelles la commmune du mis en cause
-# est le mieux renseigné.
-
-nb_I_IVM_meme_zonage_dep <- atteintes[(is.na(cog_com_22_inf)==FALSE) & (is.na(cog_com_22_vict)==FALSE) &
-                                    (is.na(cog_com_22_mec)==FALSE), .(
-                                      # Nombre d'infractions avec un triplet de communes (I,V,M) dans la même zone d'emploi (ZE):
-                                      Nb_I_IVM_1ZE = sum(compteur*(IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
-                                      Nb_I_cambr_IVM_1ZE = sum(compteur*(classe == "Cambriolages de logement" & IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
-                                      Nb_I_bless_famil_IVM_1ZE = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale" & IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
-                                      Nb_I_bless_horsfamil_IVM_1ZE = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale" & IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
-                                      Nb_I_destr_degrad_IVM_1ZE = sum(compteur*(classe == "Destructions et dégradations" & IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
-                                      Nb_I_homic_IVM_1ZE = sum(compteur*(classe == "Homicides" & IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
-                                      Nb_I_viol_sex_IVM_1ZE = sum(compteur*(classe == "Violences sexuelles" & IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
-                                      Nb_I_vols_armes_IVM_1ZE = sum(compteur*(classe == "Vols avec armes" & IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
-                                      Nb_I_vols_acces_vehic_IVM_1ZE = sum(compteur*(classe == "Vols d'accessoires sur véhicules" & IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
-                                      Nb_I_vols_ds_vehic_IVM_1ZE = sum(compteur*(classe == "Vols dans les véhicules" & IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
-                                      Nb_I_vols_de_vehic_IVM_1ZE = sum(compteur*(classe == "Vols de véhicules" & IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
-                                      Nb_I_vols_sansviol_IVM_1ZE = sum(compteur*(classe == "Vols sans violence contre des personnes" & IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
-                                      Nb_I_vols_viol_sansarme_IVM_1ZE = sum(compteur*(classe == "Vols violents sans arme" & IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
-                                      
-                                      # Nombre d'infractions avec un triplet de communes (I,V,M) dans le même bassin de vie (BV):
-                                      Nb_I_IVM_1BV = sum(compteur*(IVM_ds_meme_BV == "oui"), na.rm = TRUE),
-                                      Nb_I_cambr_IVM_1BV = sum(compteur*(classe == "Cambriolages de logement" & IVM_ds_meme_BV == "oui"), na.rm = TRUE),
-                                      Nb_I_bless_famil_IVM_1BV = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale" & IVM_ds_meme_BV == "oui"), na.rm = TRUE),
-                                      Nb_I_bless_horsfamil_IVM_1BV = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale" & IVM_ds_meme_BV == "oui"), na.rm = TRUE),
-                                      Nb_I_destr_degrad_IVM_1BV = sum(compteur*(classe == "Destructions et dégradations" & IVM_ds_meme_BV == "oui"), na.rm = TRUE),
-                                      Nb_I_homic_IVM_1BV = sum(compteur*(classe == "Homicides" & IVM_ds_meme_BV == "oui"), na.rm = TRUE),
-                                      Nb_I_viol_sex_IVM_1BV = sum(compteur*(classe == "Violences sexuelles" & IVM_ds_meme_BV == "oui"), na.rm = TRUE),
-                                      Nb_I_vols_armes_IVM_1BV = sum(compteur*(classe == "Vols avec armes" & IVM_ds_meme_BV == "oui"), na.rm = TRUE),
-                                      Nb_I_vols_acces_vehic_IVM_1BV = sum(compteur*(classe == "Vols d'accessoires sur véhicules" & IVM_ds_meme_BV == "oui"), na.rm = TRUE),
-                                      Nb_I_vols_ds_vehic_IVM_1BV = sum(compteur*(classe == "Vols dans les véhicules" & IVM_ds_meme_BV == "oui"), na.rm = TRUE),
-                                      Nb_I_vols_de_vehic_IVM_1BV = sum(compteur*(classe == "Vols de véhicules" & IVM_ds_meme_BV == "oui"), na.rm = TRUE),
-                                      Nb_I_vols_sansviol_IVM_1BV = sum(compteur*(classe == "Vols sans violence contre des personnes" & IVM_ds_meme_BV == "oui"), na.rm = TRUE),
-                                      Nb_I_vols_viol_sansarme_IVM_1BV = sum(compteur*(classe == "Vols violents sans arme" & IVM_ds_meme_BV == "oui"), na.rm = TRUE),
-                                      
-                                      # Nombre d'infractions avec un triplet de communes (I,V,M) dans la même grille de densité (GD):
-                                      Nb_I_IVM_1GD = sum(compteur*(IVM_ds_meme_GD == "oui"), na.rm = TRUE),
-                                      Nb_I_cambr_IVM_1GD = sum(compteur*(classe == "Cambriolages de logement" & IVM_ds_meme_GD == "oui"), na.rm = TRUE),
-                                      Nb_I_bless_famil_IVM_1GD = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale" & IVM_ds_meme_GD == "oui"), na.rm = TRUE),
-                                      Nb_I_bless_horsfamil_IVM_1GD = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale" & IVM_ds_meme_GD == "oui"), na.rm = TRUE),
-                                      Nb_I_destr_degrad_IVM_1GD = sum(compteur*(classe == "Destructions et dégradations" & IVM_ds_meme_GD == "oui"), na.rm = TRUE),
-                                      Nb_I_homic_IVM_1GD = sum(compteur*(classe == "Homicides" & IVM_ds_meme_GD == "oui"), na.rm = TRUE),
-                                      Nb_I_viol_sex_IVM_1GD = sum(compteur*(classe == "Violences sexuelles" & IVM_ds_meme_GD == "oui"), na.rm = TRUE),
-                                      Nb_I_vols_armes_IVM_1GD = sum(compteur*(classe == "Vols avec armes" & IVM_ds_meme_GD == "oui"), na.rm = TRUE),
-                                      Nb_I_vols_acces_vehic_IVM_1GD = sum(compteur*(classe == "Vols d'accessoires sur véhicules" & IVM_ds_meme_GD == "oui"), na.rm = TRUE),
-                                      Nb_I_vols_ds_vehic_IVM_1GD = sum(compteur*(classe == "Vols dans les véhicules" & IVM_ds_meme_GD == "oui"), na.rm = TRUE),
-                                      Nb_I_vols_de_vehic_IVM_1GD = sum(compteur*(classe == "Vols de véhicules" & IVM_ds_meme_GD == "oui"), na.rm = TRUE),
-                                      Nb_I_vols_sansviol_IVM_1GD = sum(compteur*(classe == "Vols sans violence contre des personnes" & IVM_ds_meme_GD == "oui"), na.rm = TRUE),
-                                      Nb_I_vols_viol_sansarme_IVM_1GD = sum(compteur*(classe == "Vols violents sans arme" & IVM_ds_meme_GD == "oui"), na.rm = TRUE),
-                                      
-                                      # Nombre d'infractions avec un triplet de communes (I,V,M) dans la même unité urbaine (UU):
-                                      Nb_I_IVM_1UU = sum(compteur*(IVM_ds_meme_UU == "oui"), na.rm = TRUE),
-                                      Nb_I_cambr_IVM_1UU = sum(compteur*(classe == "Cambriolages de logement" & IVM_ds_meme_UU == "oui"), na.rm = TRUE),
-                                      Nb_I_bless_famil_IVM_1UU = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale" & IVM_ds_meme_UU == "oui"), na.rm = TRUE),
-                                      Nb_I_bless_horsfamil_IVM_1UU = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale" & IVM_ds_meme_UU == "oui"), na.rm = TRUE),
-                                      Nb_I_destr_degrad_IVM_1UU = sum(compteur*(classe == "Destructions et dégradations" & IVM_ds_meme_UU == "oui"), na.rm = TRUE),
-                                      Nb_I_homic_IVM_1UU = sum(compteur*(classe == "Homicides" & IVM_ds_meme_UU == "oui"), na.rm = TRUE),
-                                      Nb_I_viol_sex_IVM_1UU = sum(compteur*(classe == "Violences sexuelles" & IVM_ds_meme_UU == "oui"), na.rm = TRUE),
-                                      Nb_I_vols_armes_IVM_1UU = sum(compteur*(classe == "Vols avec armes" & IVM_ds_meme_UU == "oui"), na.rm = TRUE),
-                                      Nb_I_vols_acces_vehic_IVM_1UU = sum(compteur*(classe == "Vols d'accessoires sur véhicules" & IVM_ds_meme_UU == "oui"), na.rm = TRUE),
-                                      Nb_I_vols_ds_vehic_IVM_1UU = sum(compteur*(classe == "Vols dans les véhicules" & IVM_ds_meme_UU == "oui"), na.rm = TRUE),
-                                      Nb_I_vols_de_vehic_IVM_1UU = sum(compteur*(classe == "Vols de véhicules" & IVM_ds_meme_UU == "oui"), na.rm = TRUE),
-                                      Nb_I_vols_sansviol_IVM_1UU = sum(compteur*(classe == "Vols sans violence contre des personnes" & IVM_ds_meme_UU == "oui"), na.rm = TRUE),
-                                      Nb_I_vols_viol_sansarme_IVM_1UU = sum(compteur*(classe == "Vols violents sans arme" & IVM_ds_meme_UU == "oui"), na.rm = TRUE),
-                                      
-                                      # Nombre d'infractions avec un triplet de communes (I,V,M) dans la même aire d'attraction des villes (AAV):
-                                      Nb_I_IVM_1AAV = sum(compteur*(IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
-                                      Nb_I_cambr_IVM_1AAV = sum(compteur*(classe == "Cambriolages de logement" & IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
-                                      Nb_I_bless_famil_IVM_1AAV = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale" & IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
-                                      Nb_I_bless_horsfamil_IVM_1AAV = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale" & IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
-                                      Nb_I_destr_degrad_IVM_1AAV = sum(compteur*(classe == "Destructions et dégradations" & IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
-                                      Nb_I_homic_IVM_1AAV = sum(compteur*(classe == "Homicides" & IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
-                                      Nb_I_viol_sex_IVM_1AAV = sum(compteur*(classe == "Violences sexuelles" & IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
-                                      Nb_I_vols_armes_IVM_1AAV = sum(compteur*(classe == "Vols avec armes" & IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
-                                      Nb_I_vols_acces_vehic_IVM_1AAV = sum(compteur*(classe == "Vols d'accessoires sur véhicules" & IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
-                                      Nb_I_vols_ds_vehic_IVM_1AAV = sum(compteur*(classe == "Vols dans les véhicules" & IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
-                                      Nb_I_vols_de_vehic_IVM_1AAV = sum(compteur*(classe == "Vols de véhicules" & IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
-                                      Nb_I_vols_sansviol_IVM_1AAV = sum(compteur*(classe == "Vols sans violence contre des personnes" & IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
-                                      Nb_I_vols_viol_sansarme_IVM_1AAV = sum(compteur*(classe == "Vols violents sans arme" & IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
-                                      
-                                      # Nombre d'infractions avec un triplet de communes (I,V,M) dans la même centralité (CENTR):
-                                      Nb_I_IVM_1CENTR = sum(compteur*(IVM_ds_meme_CENTR == "oui"), na.rm = TRUE),
-                                      Nb_I_cambr_IVM_1CENTR = sum(compteur*(classe == "Cambriolages de logement" & IVM_ds_meme_CENTR == "oui"), na.rm = TRUE),
-                                      Nb_I_bless_famil_IVM_1CENTR = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale" & IVM_ds_meme_CENTR == "oui"), na.rm = TRUE),
-                                      Nb_I_bless_horsfamil_IVM_1CENTR = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale" & IVM_ds_meme_CENTR == "oui"), na.rm = TRUE),
-                                      Nb_I_destr_degrad_IVM_1CENTR = sum(compteur*(classe == "Destructions et dégradations" & IVM_ds_meme_CENTR == "oui"), na.rm = TRUE),
-                                      Nb_I_homic_IVM_1CENTR = sum(compteur*(classe == "Homicides" & IVM_ds_meme_CENTR == "oui"), na.rm = TRUE),
-                                      Nb_I_viol_sex_IVM_1CENTR = sum(compteur*(classe == "Violences sexuelles" & IVM_ds_meme_CENTR == "oui"), na.rm = TRUE),
-                                      Nb_I_vols_armes_IVM_1CENTR = sum(compteur*(classe == "Vols avec armes" & IVM_ds_meme_CENTR == "oui"), na.rm = TRUE),
-                                      Nb_I_vols_acces_vehic_IVM_1CENTR = sum(compteur*(classe == "Vols d'accessoires sur véhicules" & IVM_ds_meme_CENTR == "oui"), na.rm = TRUE),
-                                      Nb_I_vols_ds_vehic_IVM_1CENTR = sum(compteur*(classe == "Vols dans les véhicules" & IVM_ds_meme_CENTR == "oui"), na.rm = TRUE),
-                                      Nb_I_vols_de_vehic_IVM_1CENTR = sum(compteur*(classe == "Vols de véhicules" & IVM_ds_meme_CENTR == "oui"), na.rm = TRUE),
-                                      Nb_I_vols_sansviol_IVM_1CENTR = sum(compteur*(classe == "Vols sans violence contre des personnes" & IVM_ds_meme_CENTR == "oui"), na.rm = TRUE),
-                                      Nb_I_vols_viol_sansarme_IVM_1CENTR = sum(compteur*(classe == "Vols violents sans arme" & IVM_ds_meme_CENTR == "oui"), na.rm = TRUE)),
-                                  by = .(DEP_inf)]
-
-# TODO !!!
-# Il restera à dénombrer les infractions selon le statut de la commune de I, celle de V (et celle de M pour les atteintes
-# corpo) au sein du zonage d'étude (lorsque (I,V) ou (I,V,M) s'inscrit dans un même zonage)
-# Cas à traiter:
-# 1) Statut de la commune au sein d'un bassin de vie: modalités 11- Pôle partiel/12- Commune associée à un pôle partiel/20- Pôle
-# 2) Statut de la commune au sein d'une aire d'attraction des villes (AAV): 11- Commune centre/12- Autre commune du pôle principal
-# /13- Commune d'un pôle secondaire/20- Commune de la couronne
-# 3) Statut de la commune dans la grille de densité: urbain dense/urbain moyennement dense/...
-
-# On rassemble toutes ces bases en une unique base communale:
-delinquance_dep <- 
-  merge(x = nb_I_dep,
-        y = nb_V_dep,
-        by.x = "DEP_inf",
-        by.y = "DEP_vict",
-        all.x = TRUE)
-delinquance_dep <- 
-  merge(x = delinquance_dep,
-        y = nb_M_dep,
-        by.x = "DEP_inf",
-        by.y = "DEP_mec",
-        all.x = TRUE)
-delinquance_dep <- 
-  merge(x = delinquance_dep,
-        y = nb_I_IV_meme_zonage_dep,
-        by.x = "DEP_inf",
-        by.y = "DEP_inf",
-        all.x = TRUE)
-delinquance_dep <- 
-  merge(x = delinquance_dep,
-        y = nb_I_IVM_meme_zonage_dep,
-        by.x = "DEP_inf",
-        by.y = "DEP_inf",
-        all.x = TRUE)
-
-dossier_complet_insee3 <- dossier_complet_insee[,.(DEP,P19_POP,P19_LOG,MED20,
-                                                   P19_POP1529,RT23,CPG23,RD20,
-                                                   D920,D120,HT23)]
-
-dossier_complet_insee_dep <- dossier_complet_insee3[,.(
-  P19_POP = sum(P19_POP,na.rm=TRUE),
-  P19_LOG= sum(P19_POP,na.rm=TRUE),
-  MED20= mean(P19_POP,na.rm=TRUE),
-  P19_POP1529= sum(P19_POP,na.rm=TRUE),
-  RT23= sum(P19_POP,na.rm=TRUE),
-  CPG23= sum(P19_POP,na.rm=TRUE),
-  RD20= mean(P19_POP,na.rm=TRUE),
-  D920= mean(P19_POP,na.rm=TRUE),
-  D120= mean(P19_POP,na.rm=TRUE),
-  HT23= sum(P19_POP,na.rm=TRUE) 
-),
-by = .(DEP)]
-
-delinquance_dep <- 
-  merge(x = delinquance_dep,
-        y = dossier_complet_insee_dep,
-        by.x = "DEP_inf",
-        by.y = "DEP",
-        all.x = TRUE)
-
-
-
-
+# # Agrégation des atteintes par commune de l'infraction: calcul du nombre d'infractions (I) dans chaque département,
+# # selon le type de l'atteinte.
+# nb_I_dep <- atteintes[(is.na(cog_com_22_inf)==FALSE), .(
+#   Nb_I = sum(compteur, na.rm = TRUE),
+#   Nb_I_cambr = sum(compteur*(classe == "Cambriolages de logement"), na.rm = TRUE),
+#   Nb_I_bless_famil = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale"), na.rm = TRUE),
+#   Nb_bless_horsfamil = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale"), na.rm = TRUE),
+#   Nb_I_destr_degrad = sum(compteur*(classe == "Destructions et dégradations"), na.rm = TRUE),
+#   Nb_I_homic = sum(compteur*(classe == "Homicides"), na.rm = TRUE),
+#   Nb_I_viol_sex = sum(compteur*(classe == "Violences sexuelles"), na.rm = TRUE),
+#   Nb_I_vols_armes = sum(compteur*(classe == "Vols avec armes"), na.rm = TRUE),
+#   Nb_I_vols_acces_vehic = sum(compteur*(classe == "Vols d'accessoires sur véhicules"), na.rm = TRUE),
+#   Nb_I_vols_ds_vehic = sum(compteur*(classe == "Vols dans les véhicules"), na.rm = TRUE),
+#   Nb_I_vols_de_vehic = sum(compteur*(classe == "Vols de véhicules"), na.rm = TRUE),
+#   Nb_I_vols_sansviol = sum(compteur*(classe == "Vols sans violence contre des personnes"), na.rm = TRUE),
+#   Nb_I_vols_viol_sansarme = sum(compteur*(classe == "Vols violents sans arme"), na.rm = TRUE)),
+#   by = .(DEP_inf)]
+# 
+# # Agrégation des atteintes par commune de domiciliation de la victime: calcul du nombre de victimes (V) dans chaque commune,
+# # selon le type de l'atteinte.
+# nb_V_dep <- atteintes[(is.na(cog_com_22_vict)==FALSE), .(
+#   Nb_V = sum(compteur, na.rm = TRUE),
+#   Nb_V_cambr = sum(compteur*(classe == "Cambriolages de logement"), na.rm = TRUE),
+#   Nb_V_bless_famil = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale"), na.rm = TRUE),
+#   Nb_bless_horsfamil = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale"), na.rm = TRUE),
+#   Nb_V_destr_degrad = sum(compteur*(classe == "Destructions et dégradations"), na.rm = TRUE),
+#   Nb_V_homic = sum(compteur*(classe == "Homicides"), na.rm = TRUE),
+#   Nb_V_viol_sex = sum(compteur*(classe == "Violences sexuelles"), na.rm = TRUE),
+#   Nb_V_vols_armes = sum(compteur*(classe == "Vols avec armes"), na.rm = TRUE),
+#   Nb_V_vols_acces_vehic = sum(compteur*(classe == "Vols d'accessoires sur véhicules"), na.rm = TRUE),
+#   Nb_V_vols_ds_vehic = sum(compteur*(classe == "Vols dans les véhicules"), na.rm = TRUE),
+#   Nb_V_vols_de_vehic = sum(compteur*(classe == "Vols de véhicules"), na.rm = TRUE),
+#   Nb_V_vols_sansviol = sum(compteur*(classe == "Vols sans violence contre des personnes"), na.rm = TRUE),
+#   Nb_V_vols_viol_sansarme = sum(compteur*(classe == "Vols violents sans arme"), na.rm = TRUE)),
+#   by = .(DEP_vict)]
+# 
+# # Agrégation des atteintes par commune de domiciliation du mis en cause: calcul du nombre de mis en cause (M) dans
+# #chaque commune, selon le type de l'atteinte.
+# nb_M_dep <- atteintes[(is.na(cog_com_22_mec)==FALSE), .(
+#   Nb_M = sum(compteur, na.rm = TRUE),
+#   Nb_M_cambr = sum(compteur*(classe == "Cambriolages de logement"), na.rm = TRUE),
+#   Nb_M_bless_famil = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale"), na.rm = TRUE),
+#   Nb_bless_horsfamil = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale"), na.rm = TRUE),
+#   Nb_M_destr_degrad = sum(compteur*(classe == "Destructions et dégradations"), na.rm = TRUE),
+#   Nb_M_homic = sum(compteur*(classe == "Homicides"), na.rm = TRUE),
+#   Nb_M_viol_sex = sum(compteur*(classe == "Violences sexuelles"), na.rm = TRUE),
+#   Nb_M_vols_armes = sum(compteur*(classe == "Vols avec armes"), na.rm = TRUE),
+#   Nb_M_vols_acces_vehic = sum(compteur*(classe == "Vols d'accessoires sur véhicules"), na.rm = TRUE),
+#   Nb_M_vols_ds_vehic = sum(compteur*(classe == "Vols dans les véhicules"), na.rm = TRUE),
+#   Nb_M_vols_de_vehic = sum(compteur*(classe == "Vols de véhicules"), na.rm = TRUE),
+#   Nb_M_vols_sansviol = sum(compteur*(classe == "Vols sans violence contre des personnes"), na.rm = TRUE),
+#   Nb_M_vols_viol_sansarme = sum(compteur*(classe == "Vols violents sans arme"), na.rm = TRUE)),
+#   by = .(DEP_mec)]
+# 
+# # Agrégation des atteintes par commune de l'infraction: calcul du nombre d'infractions (I) dans chaque commune,
+# # associées à un couple de communes (I,V) inscrites dans un même zonage d'étude.
+# 
+# # Warning: on se restreint ici aux seules atteintes associées à un couple de communes (I,V) renseigné!
+# 
+# nb_I_IV_meme_zonage_dep <- atteintes[(is.na(cog_com_22_inf)==FALSE) & (is.na(cog_com_22_vict)==FALSE), .(
+#   # Nombre d'infractions avec un couple de communes (I,V) dans la même zone d'emploi (ZE):
+#   Nb_I_IV_1ZE = sum(compteur*(IV_ds_meme_ZE == "oui"), na.rm = TRUE),
+#   Nb_I_cambr_IV_1ZE = sum(compteur*(classe == "Cambriolages de logement" & IV_ds_meme_ZE == "oui"), na.rm = TRUE),
+#   Nb_I_bless_famil_IV_1ZE = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale" & IV_ds_meme_ZE == "oui"), na.rm = TRUE),
+#   Nb_I_bless_horsfamil_IV_1ZE = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale" & IV_ds_meme_ZE == "oui"), na.rm = TRUE),
+#   Nb_I_destr_degrad_IV_1ZE = sum(compteur*(classe == "Destructions et dégradations" & IV_ds_meme_ZE == "oui"), na.rm = TRUE),
+#   Nb_I_homic_IV_1ZE = sum(compteur*(classe == "Homicides" & IV_ds_meme_ZE == "oui"), na.rm = TRUE),
+#   Nb_I_viol_sex_IV_1ZE = sum(compteur*(classe == "Violences sexuelles" & IV_ds_meme_ZE == "oui"), na.rm = TRUE),
+#   Nb_I_vols_armes_IV_1ZE = sum(compteur*(classe == "Vols avec armes" & IV_ds_meme_ZE == "oui"), na.rm = TRUE),
+#   Nb_I_vols_acces_vehic_IV_1ZE = sum(compteur*(classe == "Vols d'accessoires sur véhicules" & IV_ds_meme_ZE == "oui"), na.rm = TRUE),
+#   Nb_I_vols_ds_vehic_IV_1ZE = sum(compteur*(classe == "Vols dans les véhicules" & IV_ds_meme_ZE == "oui"), na.rm = TRUE),
+#   Nb_I_vols_de_vehic_IV_1ZE = sum(compteur*(classe == "Vols de véhicules" & IV_ds_meme_ZE == "oui"), na.rm = TRUE),
+#   Nb_I_vols_sansviol_IV_1ZE = sum(compteur*(classe == "Vols sans violence contre des personnes" & IV_ds_meme_ZE == "oui"), na.rm = TRUE),
+#   Nb_I_vols_viol_sansarme_IV_1ZE = sum(compteur*(classe == "Vols violents sans arme" & IV_ds_meme_ZE == "oui"), na.rm = TRUE),
+#   
+#   # Nombre d'infractions avec un couple de communes (I,V) dans le même bassin de vie (BV):
+#   Nb_I_IV_1BV = sum(compteur*(IV_ds_meme_BV == "oui"), na.rm = TRUE),
+#   Nb_I_cambr_IV_1BV = sum(compteur*(classe == "Cambriolages de logement" & IV_ds_meme_BV == "oui"), na.rm = TRUE),
+#   Nb_I_bless_famil_IV_1BV = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale" & IV_ds_meme_BV == "oui"), na.rm = TRUE),
+#   Nb_I_bless_horsfamil_IV_1BV = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale" & IV_ds_meme_BV == "oui"), na.rm = TRUE),
+#   Nb_I_destr_degrad_IV_1BV = sum(compteur*(classe == "Destructions et dégradations" & IV_ds_meme_BV == "oui"), na.rm = TRUE),
+#   Nb_I_homic_IV_1BV = sum(compteur*(classe == "Homicides" & IV_ds_meme_BV == "oui"), na.rm = TRUE),
+#   Nb_I_viol_sex_IV_1BV = sum(compteur*(classe == "Violences sexuelles" & IV_ds_meme_BV == "oui"), na.rm = TRUE),
+#   Nb_I_vols_armes_IV_1BV = sum(compteur*(classe == "Vols avec armes" & IV_ds_meme_BV == "oui"), na.rm = TRUE),
+#   Nb_I_vols_acces_vehic_IV_1BV = sum(compteur*(classe == "Vols d'accessoires sur véhicules" & IV_ds_meme_BV == "oui"), na.rm = TRUE),
+#   Nb_I_vols_ds_vehic_IV_1BV = sum(compteur*(classe == "Vols dans les véhicules" & IV_ds_meme_BV == "oui"), na.rm = TRUE),
+#   Nb_I_vols_de_vehic_IV_1BV = sum(compteur*(classe == "Vols de véhicules" & IV_ds_meme_BV == "oui"), na.rm = TRUE),
+#   Nb_I_vols_sansviol_IV_1BV = sum(compteur*(classe == "Vols sans violence contre des personnes" & IV_ds_meme_BV == "oui"), na.rm = TRUE),
+#   Nb_I_vols_viol_sansarme_IV_1BV = sum(compteur*(classe == "Vols violents sans arme" & IV_ds_meme_BV == "oui"), na.rm = TRUE),
+#   
+#   # Nombre d'infractions avec un couple de communes (I,V) dans la même grille de densité (GD):
+#   Nb_I_IV_1GD = sum(compteur*(IV_ds_meme_GD == "oui"), na.rm = TRUE),
+#   Nb_I_cambr_IV_1GD = sum(compteur*(classe == "Cambriolages de logement" & IV_ds_meme_GD == "oui"), na.rm = TRUE),
+#   Nb_I_bless_famil_IV_1GD = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale" & IV_ds_meme_GD == "oui"), na.rm = TRUE),
+#   Nb_I_bless_horsfamil_IV_1GD = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale" & IV_ds_meme_GD == "oui"), na.rm = TRUE),
+#   Nb_I_destr_degrad_IV_1GD = sum(compteur*(classe == "Destructions et dégradations" & IV_ds_meme_GD == "oui"), na.rm = TRUE),
+#   Nb_I_homic_IV_1GD = sum(compteur*(classe == "Homicides" & IV_ds_meme_GD == "oui"), na.rm = TRUE),
+#   Nb_I_viol_sex_IV_1GD = sum(compteur*(classe == "Violences sexuelles" & IV_ds_meme_GD == "oui"), na.rm = TRUE),
+#   Nb_I_vols_armes_IV_1GD = sum(compteur*(classe == "Vols avec armes" & IV_ds_meme_GD == "oui"), na.rm = TRUE),
+#   Nb_I_vols_acces_vehic_IV_1GD = sum(compteur*(classe == "Vols d'accessoires sur véhicules" & IV_ds_meme_GD == "oui"), na.rm = TRUE),
+#   Nb_I_vols_ds_vehic_IV_1GD = sum(compteur*(classe == "Vols dans les véhicules" & IV_ds_meme_GD == "oui"), na.rm = TRUE),
+#   Nb_I_vols_de_vehic_IV_1GD = sum(compteur*(classe == "Vols de véhicules" & IV_ds_meme_GD == "oui"), na.rm = TRUE),
+#   Nb_I_vols_sansviol_IV_1GD = sum(compteur*(classe == "Vols sans violence contre des personnes" & IV_ds_meme_GD == "oui"), na.rm = TRUE),
+#   Nb_I_vols_viol_sansarme_IV_1GD = sum(compteur*(classe == "Vols violents sans arme" & IV_ds_meme_GD == "oui"), na.rm = TRUE),
+#   
+#   # Nombre d'infractions avec un couple de communes (I,V) dans la même unité urbaine (UU):
+#   Nb_I_IV_1UU = sum(compteur*(IV_ds_meme_UU == "oui"), na.rm = TRUE),
+#   Nb_I_cambr_IV_1UU = sum(compteur*(classe == "Cambriolages de logement" & IV_ds_meme_UU == "oui"), na.rm = TRUE),
+#   Nb_I_bless_famil_IV_1UU = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale" & IV_ds_meme_UU == "oui"), na.rm = TRUE),
+#   Nb_I_bless_horsfamil_IV_1UU = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale" & IV_ds_meme_UU == "oui"), na.rm = TRUE),
+#   Nb_I_destr_degrad_IV_1UU = sum(compteur*(classe == "Destructions et dégradations" & IV_ds_meme_UU == "oui"), na.rm = TRUE),
+#   Nb_I_homic_IV_1UU = sum(compteur*(classe == "Homicides" & IV_ds_meme_UU == "oui"), na.rm = TRUE),
+#   Nb_I_viol_sex_IV_1UU = sum(compteur*(classe == "Violences sexuelles" & IV_ds_meme_UU == "oui"), na.rm = TRUE),
+#   Nb_I_vols_armes_IV_1UU = sum(compteur*(classe == "Vols avec armes" & IV_ds_meme_UU == "oui"), na.rm = TRUE),
+#   Nb_I_vols_acces_vehic_IV_1UU = sum(compteur*(classe == "Vols d'accessoires sur véhicules" & IV_ds_meme_UU == "oui"), na.rm = TRUE),
+#   Nb_I_vols_ds_vehic_IV_1UU = sum(compteur*(classe == "Vols dans les véhicules" & IV_ds_meme_UU == "oui"), na.rm = TRUE),
+#   Nb_I_vols_de_vehic_IV_1UU = sum(compteur*(classe == "Vols de véhicules" & IV_ds_meme_UU == "oui"), na.rm = TRUE),
+#   Nb_I_vols_sansviol_IV_1UU = sum(compteur*(classe == "Vols sans violence contre des personnes" & IV_ds_meme_UU == "oui"), na.rm = TRUE),
+#   Nb_I_vols_viol_sansarme_IV_1UU = sum(compteur*(classe == "Vols violents sans arme" & IV_ds_meme_UU == "oui"), na.rm = TRUE),
+#   
+#   # Nombre d'infractions avec un couple de communes (I,V) dans la même aire d'attraction des villes (AAV):
+#   Nb_I_IV_1AAV = sum(compteur*(IV_ds_meme_AAV == "oui"), na.rm = TRUE),
+#   Nb_I_cambr_IV_1AAV = sum(compteur*(classe == "Cambriolages de logement" & IV_ds_meme_AAV == "oui"), na.rm = TRUE),
+#   Nb_I_bless_famil_IV_1AAV = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale" & IV_ds_meme_AAV == "oui"), na.rm = TRUE),
+#   Nb_I_bless_horsfamil_IV_1AAV = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale" & IV_ds_meme_AAV == "oui"), na.rm = TRUE),
+#   Nb_I_destr_degrad_IV_1AAV = sum(compteur*(classe == "Destructions et dégradations" & IV_ds_meme_AAV == "oui"), na.rm = TRUE),
+#   Nb_I_homic_IV_1AAV = sum(compteur*(classe == "Homicides" & IV_ds_meme_AAV == "oui"), na.rm = TRUE),
+#   Nb_I_viol_sex_IV_1AAV = sum(compteur*(classe == "Violences sexuelles" & IV_ds_meme_AAV == "oui"), na.rm = TRUE),
+#   Nb_I_vols_armes_IV_1AAV = sum(compteur*(classe == "Vols avec armes" & IV_ds_meme_AAV == "oui"), na.rm = TRUE),
+#   Nb_I_vols_acces_vehic_IV_1AAV = sum(compteur*(classe == "Vols d'accessoires sur véhicules" & IV_ds_meme_AAV == "oui"), na.rm = TRUE),
+#   Nb_I_vols_ds_vehic_IV_1AAV = sum(compteur*(classe == "Vols dans les véhicules" & IV_ds_meme_AAV == "oui"), na.rm = TRUE),
+#   Nb_I_vols_de_vehic_IV_1AAV = sum(compteur*(classe == "Vols de véhicules" & IV_ds_meme_AAV == "oui"), na.rm = TRUE),
+#   Nb_I_vols_sansviol_IV_1AAV = sum(compteur*(classe == "Vols sans violence contre des personnes" & IV_ds_meme_AAV == "oui"), na.rm = TRUE),
+#   Nb_I_vols_viol_sansarme_IV_1AAV = sum(compteur*(classe == "Vols violents sans arme" & IV_ds_meme_AAV == "oui"), na.rm = TRUE),
+#   
+#   # Nombre d'infractions avec un couple de communes (I,V) dans la même centralité (CENTR):
+#   Nb_I_IV_1CENTR = sum(compteur*(IV_ds_meme_CENTR == "oui"), na.rm = TRUE),
+#   Nb_I_cambr_IV_1CENTR = sum(compteur*(classe == "Cambriolages de logement" & IV_ds_meme_CENTR == "oui"), na.rm = TRUE),
+#   Nb_I_bless_famil_IV_1CENTR = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale" & IV_ds_meme_CENTR == "oui"), na.rm = TRUE),
+#   Nb_I_bless_horsfamil_IV_1CENTR = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale" & IV_ds_meme_CENTR == "oui"), na.rm = TRUE),
+#   Nb_I_destr_degrad_IV_1CENTR = sum(compteur*(classe == "Destructions et dégradations" & IV_ds_meme_CENTR == "oui"), na.rm = TRUE),
+#   Nb_I_homic_IV_1CENTR = sum(compteur*(classe == "Homicides" & IV_ds_meme_CENTR == "oui"), na.rm = TRUE),
+#   Nb_I_viol_sex_IV_1CENTR = sum(compteur*(classe == "Violences sexuelles" & IV_ds_meme_CENTR == "oui"), na.rm = TRUE),
+#   Nb_I_vols_armes_IV_1CENTR = sum(compteur*(classe == "Vols avec armes" & IV_ds_meme_CENTR == "oui"), na.rm = TRUE),
+#   Nb_I_vols_acces_vehic_IV_1CENTR = sum(compteur*(classe == "Vols d'accessoires sur véhicules" & IV_ds_meme_CENTR == "oui"), na.rm = TRUE),
+#   Nb_I_vols_ds_vehic_IV_1CENTR = sum(compteur*(classe == "Vols dans les véhicules" & IV_ds_meme_CENTR == "oui"), na.rm = TRUE),
+#   Nb_I_vols_de_vehic_IV_1CENTR = sum(compteur*(classe == "Vols de véhicules" & IV_ds_meme_CENTR == "oui"), na.rm = TRUE),
+#   Nb_I_vols_sansviol_IV_1CENTR = sum(compteur*(classe == "Vols sans violence contre des personnes" & IV_ds_meme_CENTR == "oui"), na.rm = TRUE),
+#   Nb_I_vols_viol_sansarme_IV_1CENTR = sum(compteur*(classe == "Vols violents sans arme" & IV_ds_meme_CENTR == "oui"), na.rm = TRUE)),
+#   by = .(DEP_inf)]
+# 
+# # Agrégation des atteintes par département de l'infraction: calcul du nombre d'infractions (I) dans chaque commune,
+# # associées à un triplet de communes (I,V,M) inscrites dans un même zonage d'étude.
+# 
+# # Warning: on se restreint ici aux seules atteintes associées à un triplet de communes (I,V,M) renseignées!
+# # On se limite ici aux seules atteintes corporelles, celles pour lesquelles la commmune du mis en cause
+# # est le mieux renseigné.
+# 
+# nb_I_IVM_meme_zonage_dep <- atteintes[(is.na(cog_com_22_inf)==FALSE) & (is.na(cog_com_22_vict)==FALSE) &
+#                                     (is.na(cog_com_22_mec)==FALSE), .(
+#                                       # Nombre d'infractions avec un triplet de communes (I,V,M) dans la même zone d'emploi (ZE):
+#                                       Nb_I_IVM_1ZE = sum(compteur*(IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
+#                                       Nb_I_cambr_IVM_1ZE = sum(compteur*(classe == "Cambriolages de logement" & IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
+#                                       Nb_I_bless_famil_IVM_1ZE = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale" & IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
+#                                       Nb_I_bless_horsfamil_IVM_1ZE = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale" & IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
+#                                       Nb_I_destr_degrad_IVM_1ZE = sum(compteur*(classe == "Destructions et dégradations" & IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
+#                                       Nb_I_homic_IVM_1ZE = sum(compteur*(classe == "Homicides" & IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
+#                                       Nb_I_viol_sex_IVM_1ZE = sum(compteur*(classe == "Violences sexuelles" & IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
+#                                       Nb_I_vols_armes_IVM_1ZE = sum(compteur*(classe == "Vols avec armes" & IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
+#                                       Nb_I_vols_acces_vehic_IVM_1ZE = sum(compteur*(classe == "Vols d'accessoires sur véhicules" & IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
+#                                       Nb_I_vols_ds_vehic_IVM_1ZE = sum(compteur*(classe == "Vols dans les véhicules" & IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
+#                                       Nb_I_vols_de_vehic_IVM_1ZE = sum(compteur*(classe == "Vols de véhicules" & IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
+#                                       Nb_I_vols_sansviol_IVM_1ZE = sum(compteur*(classe == "Vols sans violence contre des personnes" & IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
+#                                       Nb_I_vols_viol_sansarme_IVM_1ZE = sum(compteur*(classe == "Vols violents sans arme" & IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
+#                                       
+#                                       # Nombre d'infractions avec un triplet de communes (I,V,M) dans le même bassin de vie (BV):
+#                                       Nb_I_IVM_1BV = sum(compteur*(IVM_ds_meme_BV == "oui"), na.rm = TRUE),
+#                                       Nb_I_cambr_IVM_1BV = sum(compteur*(classe == "Cambriolages de logement" & IVM_ds_meme_BV == "oui"), na.rm = TRUE),
+#                                       Nb_I_bless_famil_IVM_1BV = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale" & IVM_ds_meme_BV == "oui"), na.rm = TRUE),
+#                                       Nb_I_bless_horsfamil_IVM_1BV = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale" & IVM_ds_meme_BV == "oui"), na.rm = TRUE),
+#                                       Nb_I_destr_degrad_IVM_1BV = sum(compteur*(classe == "Destructions et dégradations" & IVM_ds_meme_BV == "oui"), na.rm = TRUE),
+#                                       Nb_I_homic_IVM_1BV = sum(compteur*(classe == "Homicides" & IVM_ds_meme_BV == "oui"), na.rm = TRUE),
+#                                       Nb_I_viol_sex_IVM_1BV = sum(compteur*(classe == "Violences sexuelles" & IVM_ds_meme_BV == "oui"), na.rm = TRUE),
+#                                       Nb_I_vols_armes_IVM_1BV = sum(compteur*(classe == "Vols avec armes" & IVM_ds_meme_BV == "oui"), na.rm = TRUE),
+#                                       Nb_I_vols_acces_vehic_IVM_1BV = sum(compteur*(classe == "Vols d'accessoires sur véhicules" & IVM_ds_meme_BV == "oui"), na.rm = TRUE),
+#                                       Nb_I_vols_ds_vehic_IVM_1BV = sum(compteur*(classe == "Vols dans les véhicules" & IVM_ds_meme_BV == "oui"), na.rm = TRUE),
+#                                       Nb_I_vols_de_vehic_IVM_1BV = sum(compteur*(classe == "Vols de véhicules" & IVM_ds_meme_BV == "oui"), na.rm = TRUE),
+#                                       Nb_I_vols_sansviol_IVM_1BV = sum(compteur*(classe == "Vols sans violence contre des personnes" & IVM_ds_meme_BV == "oui"), na.rm = TRUE),
+#                                       Nb_I_vols_viol_sansarme_IVM_1BV = sum(compteur*(classe == "Vols violents sans arme" & IVM_ds_meme_BV == "oui"), na.rm = TRUE),
+#                                       
+#                                       # Nombre d'infractions avec un triplet de communes (I,V,M) dans la même grille de densité (GD):
+#                                       Nb_I_IVM_1GD = sum(compteur*(IVM_ds_meme_GD == "oui"), na.rm = TRUE),
+#                                       Nb_I_cambr_IVM_1GD = sum(compteur*(classe == "Cambriolages de logement" & IVM_ds_meme_GD == "oui"), na.rm = TRUE),
+#                                       Nb_I_bless_famil_IVM_1GD = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale" & IVM_ds_meme_GD == "oui"), na.rm = TRUE),
+#                                       Nb_I_bless_horsfamil_IVM_1GD = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale" & IVM_ds_meme_GD == "oui"), na.rm = TRUE),
+#                                       Nb_I_destr_degrad_IVM_1GD = sum(compteur*(classe == "Destructions et dégradations" & IVM_ds_meme_GD == "oui"), na.rm = TRUE),
+#                                       Nb_I_homic_IVM_1GD = sum(compteur*(classe == "Homicides" & IVM_ds_meme_GD == "oui"), na.rm = TRUE),
+#                                       Nb_I_viol_sex_IVM_1GD = sum(compteur*(classe == "Violences sexuelles" & IVM_ds_meme_GD == "oui"), na.rm = TRUE),
+#                                       Nb_I_vols_armes_IVM_1GD = sum(compteur*(classe == "Vols avec armes" & IVM_ds_meme_GD == "oui"), na.rm = TRUE),
+#                                       Nb_I_vols_acces_vehic_IVM_1GD = sum(compteur*(classe == "Vols d'accessoires sur véhicules" & IVM_ds_meme_GD == "oui"), na.rm = TRUE),
+#                                       Nb_I_vols_ds_vehic_IVM_1GD = sum(compteur*(classe == "Vols dans les véhicules" & IVM_ds_meme_GD == "oui"), na.rm = TRUE),
+#                                       Nb_I_vols_de_vehic_IVM_1GD = sum(compteur*(classe == "Vols de véhicules" & IVM_ds_meme_GD == "oui"), na.rm = TRUE),
+#                                       Nb_I_vols_sansviol_IVM_1GD = sum(compteur*(classe == "Vols sans violence contre des personnes" & IVM_ds_meme_GD == "oui"), na.rm = TRUE),
+#                                       Nb_I_vols_viol_sansarme_IVM_1GD = sum(compteur*(classe == "Vols violents sans arme" & IVM_ds_meme_GD == "oui"), na.rm = TRUE),
+#                                       
+#                                       # Nombre d'infractions avec un triplet de communes (I,V,M) dans la même unité urbaine (UU):
+#                                       Nb_I_IVM_1UU = sum(compteur*(IVM_ds_meme_UU == "oui"), na.rm = TRUE),
+#                                       Nb_I_cambr_IVM_1UU = sum(compteur*(classe == "Cambriolages de logement" & IVM_ds_meme_UU == "oui"), na.rm = TRUE),
+#                                       Nb_I_bless_famil_IVM_1UU = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale" & IVM_ds_meme_UU == "oui"), na.rm = TRUE),
+#                                       Nb_I_bless_horsfamil_IVM_1UU = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale" & IVM_ds_meme_UU == "oui"), na.rm = TRUE),
+#                                       Nb_I_destr_degrad_IVM_1UU = sum(compteur*(classe == "Destructions et dégradations" & IVM_ds_meme_UU == "oui"), na.rm = TRUE),
+#                                       Nb_I_homic_IVM_1UU = sum(compteur*(classe == "Homicides" & IVM_ds_meme_UU == "oui"), na.rm = TRUE),
+#                                       Nb_I_viol_sex_IVM_1UU = sum(compteur*(classe == "Violences sexuelles" & IVM_ds_meme_UU == "oui"), na.rm = TRUE),
+#                                       Nb_I_vols_armes_IVM_1UU = sum(compteur*(classe == "Vols avec armes" & IVM_ds_meme_UU == "oui"), na.rm = TRUE),
+#                                       Nb_I_vols_acces_vehic_IVM_1UU = sum(compteur*(classe == "Vols d'accessoires sur véhicules" & IVM_ds_meme_UU == "oui"), na.rm = TRUE),
+#                                       Nb_I_vols_ds_vehic_IVM_1UU = sum(compteur*(classe == "Vols dans les véhicules" & IVM_ds_meme_UU == "oui"), na.rm = TRUE),
+#                                       Nb_I_vols_de_vehic_IVM_1UU = sum(compteur*(classe == "Vols de véhicules" & IVM_ds_meme_UU == "oui"), na.rm = TRUE),
+#                                       Nb_I_vols_sansviol_IVM_1UU = sum(compteur*(classe == "Vols sans violence contre des personnes" & IVM_ds_meme_UU == "oui"), na.rm = TRUE),
+#                                       Nb_I_vols_viol_sansarme_IVM_1UU = sum(compteur*(classe == "Vols violents sans arme" & IVM_ds_meme_UU == "oui"), na.rm = TRUE),
+#                                       
+#                                       # Nombre d'infractions avec un triplet de communes (I,V,M) dans la même aire d'attraction des villes (AAV):
+#                                       Nb_I_IVM_1AAV = sum(compteur*(IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
+#                                       Nb_I_cambr_IVM_1AAV = sum(compteur*(classe == "Cambriolages de logement" & IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
+#                                       Nb_I_bless_famil_IVM_1AAV = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale" & IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
+#                                       Nb_I_bless_horsfamil_IVM_1AAV = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale" & IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
+#                                       Nb_I_destr_degrad_IVM_1AAV = sum(compteur*(classe == "Destructions et dégradations" & IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
+#                                       Nb_I_homic_IVM_1AAV = sum(compteur*(classe == "Homicides" & IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
+#                                       Nb_I_viol_sex_IVM_1AAV = sum(compteur*(classe == "Violences sexuelles" & IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
+#                                       Nb_I_vols_armes_IVM_1AAV = sum(compteur*(classe == "Vols avec armes" & IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
+#                                       Nb_I_vols_acces_vehic_IVM_1AAV = sum(compteur*(classe == "Vols d'accessoires sur véhicules" & IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
+#                                       Nb_I_vols_ds_vehic_IVM_1AAV = sum(compteur*(classe == "Vols dans les véhicules" & IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
+#                                       Nb_I_vols_de_vehic_IVM_1AAV = sum(compteur*(classe == "Vols de véhicules" & IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
+#                                       Nb_I_vols_sansviol_IVM_1AAV = sum(compteur*(classe == "Vols sans violence contre des personnes" & IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
+#                                       Nb_I_vols_viol_sansarme_IVM_1AAV = sum(compteur*(classe == "Vols violents sans arme" & IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
+#                                       
+#                                       # Nombre d'infractions avec un triplet de communes (I,V,M) dans la même centralité (CENTR):
+#                                       Nb_I_IVM_1CENTR = sum(compteur*(IVM_ds_meme_CENTR == "oui"), na.rm = TRUE),
+#                                       Nb_I_cambr_IVM_1CENTR = sum(compteur*(classe == "Cambriolages de logement" & IVM_ds_meme_CENTR == "oui"), na.rm = TRUE),
+#                                       Nb_I_bless_famil_IVM_1CENTR = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale" & IVM_ds_meme_CENTR == "oui"), na.rm = TRUE),
+#                                       Nb_I_bless_horsfamil_IVM_1CENTR = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale" & IVM_ds_meme_CENTR == "oui"), na.rm = TRUE),
+#                                       Nb_I_destr_degrad_IVM_1CENTR = sum(compteur*(classe == "Destructions et dégradations" & IVM_ds_meme_CENTR == "oui"), na.rm = TRUE),
+#                                       Nb_I_homic_IVM_1CENTR = sum(compteur*(classe == "Homicides" & IVM_ds_meme_CENTR == "oui"), na.rm = TRUE),
+#                                       Nb_I_viol_sex_IVM_1CENTR = sum(compteur*(classe == "Violences sexuelles" & IVM_ds_meme_CENTR == "oui"), na.rm = TRUE),
+#                                       Nb_I_vols_armes_IVM_1CENTR = sum(compteur*(classe == "Vols avec armes" & IVM_ds_meme_CENTR == "oui"), na.rm = TRUE),
+#                                       Nb_I_vols_acces_vehic_IVM_1CENTR = sum(compteur*(classe == "Vols d'accessoires sur véhicules" & IVM_ds_meme_CENTR == "oui"), na.rm = TRUE),
+#                                       Nb_I_vols_ds_vehic_IVM_1CENTR = sum(compteur*(classe == "Vols dans les véhicules" & IVM_ds_meme_CENTR == "oui"), na.rm = TRUE),
+#                                       Nb_I_vols_de_vehic_IVM_1CENTR = sum(compteur*(classe == "Vols de véhicules" & IVM_ds_meme_CENTR == "oui"), na.rm = TRUE),
+#                                       Nb_I_vols_sansviol_IVM_1CENTR = sum(compteur*(classe == "Vols sans violence contre des personnes" & IVM_ds_meme_CENTR == "oui"), na.rm = TRUE),
+#                                       Nb_I_vols_viol_sansarme_IVM_1CENTR = sum(compteur*(classe == "Vols violents sans arme" & IVM_ds_meme_CENTR == "oui"), na.rm = TRUE)),
+#                                   by = .(DEP_inf)]
+# 
+# # TODO !!!
+# # Il restera à dénombrer les infractions selon le statut de la commune de I, celle de V (et celle de M pour les atteintes
+# # corpo) au sein du zonage d'étude (lorsque (I,V) ou (I,V,M) s'inscrit dans un même zonage)
+# # Cas à traiter:
+# # 1) Statut de la commune au sein d'un bassin de vie: modalités 11- Pôle partiel/12- Commune associée à un pôle partiel/20- Pôle
+# # 2) Statut de la commune au sein d'une aire d'attraction des villes (AAV): 11- Commune centre/12- Autre commune du pôle principal
+# # /13- Commune d'un pôle secondaire/20- Commune de la couronne
+# # 3) Statut de la commune dans la grille de densité: urbain dense/urbain moyennement dense/...
+# 
+# # On rassemble toutes ces bases en une unique base communale:
+# delinquance_dep <- 
+#   merge(x = nb_I_dep,
+#         y = nb_V_dep,
+#         by.x = "DEP_inf",
+#         by.y = "DEP_vict",
+#         all.x = TRUE)
+# delinquance_dep <- 
+#   merge(x = delinquance_dep,
+#         y = nb_M_dep,
+#         by.x = "DEP_inf",
+#         by.y = "DEP_mec",
+#         all.x = TRUE)
+# delinquance_dep <- 
+#   merge(x = delinquance_dep,
+#         y = nb_I_IV_meme_zonage_dep,
+#         by.x = "DEP_inf",
+#         by.y = "DEP_inf",
+#         all.x = TRUE)
+# delinquance_dep <- 
+#   merge(x = delinquance_dep,
+#         y = nb_I_IVM_meme_zonage_dep,
+#         by.x = "DEP_inf",
+#         by.y = "DEP_inf",
+#         all.x = TRUE)
+# 
+# dossier_complet_insee3 <- dossier_complet_insee[,.(DEP,P19_POP,P19_LOG,MED20,
+#                                                    P19_POP1529,RT23,CPG23,RD20,
+#                                                    D920,D120,HT23)]
+# 
+# dossier_complet_insee_dep <- dossier_complet_insee3[,.(
+#   P19_POP = sum(P19_POP,na.rm=TRUE),
+#   P19_LOG= sum(P19_POP,na.rm=TRUE),
+#   MED20= mean(P19_POP,na.rm=TRUE),
+#   P19_POP1529= sum(P19_POP,na.rm=TRUE),
+#   RT23= sum(P19_POP,na.rm=TRUE),
+#   CPG23= sum(P19_POP,na.rm=TRUE),
+#   RD20= mean(P19_POP,na.rm=TRUE),
+#   D920= mean(P19_POP,na.rm=TRUE),
+#   D120= mean(P19_POP,na.rm=TRUE),
+#   HT23= sum(P19_POP,na.rm=TRUE) 
+# ),
+# by = .(DEP)]
+# 
+# delinquance_dep <- 
+#   merge(x = delinquance_dep,
+#         y = dossier_complet_insee_dep,
+#         by.x = "DEP_inf",
+#         by.y = "DEP",
+#         all.x = TRUE)
+# 
+# 
+# 
+# 

@@ -43,6 +43,27 @@ communes_zonages_dt <-
         by.x = "BV2022",
         by.y = "BV2022",
         all.x = TRUE)
+# Ajout d'une variable caractérisant le statut de la commune vis-à-vis du bassin de vie (BV):
+t.type_BV2022_com<- readxl::read_excel(path = "BV2022_au_01-01-2022.xlsx", sheet = "Composition_communale",skip=5) # création d'un tibble.
+t.type_BV2022_com_dt <- as.data.table(t.type_BV2022_com)
+t.type_BV2022_com_dt <-t.type_BV2022_com_dt[ , .(CODGEO,TYPE_COM)]
+communes_zonages_dt <- 
+  merge(x = communes_zonages_dt,
+        y = t.type_BV2022_com_dt,
+        by.x = "CODGEO",
+        by.y = "CODGEO",
+        all.x = TRUE)
+# Ajout d'une variable caractérisant le statut de la commune vis-à-vis de l'unité urbaine (UU):
+t.type_UU2020_com<- readxl::read_excel(path = "UU2020_au_01-01-2023.xlsx", sheet = "Composition_communale",skip=5) # création d'un tibble.
+t.type_UU2020_com_dt <- as.data.table(t.type_UU2020_com)
+t.type_UU2020_com_dt <-t.type_UU2020_com_dt[ , .(CODGEO,STATUT_2017)]
+communes_zonages_dt <- 
+  merge(x = communes_zonages_dt,
+        y = t.type_UU2020_com_dt,
+        by.x = "CODGEO",
+        by.y = "CODGEO",
+        all.x = TRUE)
+
 
 # c) Fichier sur la grille de densité en 4 modalités (mix de la grille de densité d'Eurostat et des AAV de l'Insee):
 # Enregistrez au préalable dans votre WD le fichier grille.densité.Rdata mis à disposition par le SSMSI sur Osmose

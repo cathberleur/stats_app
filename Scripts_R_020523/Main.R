@@ -48,7 +48,10 @@ source("Scripts_R_020523/1_Chargement_data.R")
 
 # Etape 2: La construction des bases de données analysées dans ce projet:
 source("Scripts_R_020523/2_Construction_bases_etude.R")
-# @Kevin et Aurélien: RAS (rien à modifier ici!)
+# @Kevin et Aurélien: 1 seule chose à modifier dans ce script -> commenter le petit morceau de code 
+# qui impute des modalités explicites à la variable "classe" (à la place des lettres).
+# Il s'agit des lignes 145 à 158.
+# Cette modif est très importante, car potentiellement on a pu faire des mauvais reclassements!
 
 
 # Etape 3: Partie 1 du mémoire: Les données
@@ -92,17 +95,47 @@ plot(data.graphique1$P19_POP,data.graphique1$Nb_I_vols_sansviol,main = "Vol sans
 plot(data.graphique1$P19_POP,data.graphique1$Nb_I_vols_viol_sansarme,main = "Vol violents sans armes", xlab="Pop (log)", ylab="Nb I (log)")
 dev.off()
 
-# Graphique 2a: Matrice de corrélation des nombres d'infractions (I) et des nombres de victimes (V),pour 1000 habitants 
-# - par type d'atteinte
-png("Graphique2a.png")
-corrplot(data.graphique2a.cor, type="upper", order="hclust", tl.col="black", tl.srt=45)
+# Graphique 2: matrice de corrélation des nombres d'infractions par commune (pour 1000 habitants) selon le type d'atteinte
+png("Graphique2.png")
+corrplot(data.graphique2.cor, type="upper", order="hclust", tl.col="black", tl.srt=45)
 dev.off()
 
-# Graphique 2b: Matrice de corrélation des nombres d'infractions (I), des nombres de victimes (V), et des nombres de 
-# mis en cause, pour 1000 habitants - par type d'atteinte
-png("Graphique2b.png")
-corrplot(data.graphique2b.cor, type="upper", order="hclust", tl.col="black", tl.srt=45)
+# Graphiques 2a et 2b ci-desspis à mettre en Annexe (ou à supprimer du Mémoire):
+
+# Graphique 2a (Annexe): Matrice de corrélation des nombres d'infractions (I) et des nombres de victimes (V),pour 1000 habitants 
+# - par type d'atteinte
+png("Graphique2a_annexe.png")
+corrplot(data.graphique2a_annexe.cor, type="upper", order="hclust", tl.col="black", tl.srt=45)
 dev.off()
+
+# Graphique 2b (Annexe): Matrice de corrélation des nombres d'infractions (I), des nombres de victimes (V), et des nombres de 
+# mis en cause, pour 1000 habitants - par type d'atteinte
+png("Graphique2b_annexe.png")
+corrplot(data.graphique2b_annexe.cor, type="upper", order="hclust", tl.col="black", tl.srt=45)
+dev.off()
+
+
+# Graphique 3a: Distribution de la différence des log du nombre d'infractions et du nombre de victimes 
+# mesurée dans chaque commune (pour 1000 habitants) - 
+# Note: seules les atteintes non corporelles sont considérées ici!
+png("Graphique3a.png")
+ggplot(data.graphique3a, aes(x = type_atteinte, y = dlog_I_V)) + geom_boxplot()
+dev.off()
+
+# Graphique 3b: 
+# 1- Distribution de la différence des log du nombre d'infractions et du nombre de victimes
+# mesurée dans chaque commune (pour 1000 habitants) 
+# 2- Distribution de la différence des log du nombre d'infractions et du nombre de mis en cause 
+# mesurée dans chaque commune (pour 1000 habitants) 
+# Note: seules les atteintes corporelles sont considérées ici!
+
+png("Graphique3b_1.png")
+ggplot(data.graphique3b_1, aes(x = type_atteinte, y = dlog_I_V)) + geom_boxplot()
+dev.off()
+png("Graphique3b_2.png")
+ggplot(data.graphique3b_2, aes(x = type_atteinte, y = dlog_I_M)) + geom_boxplot()
+dev.off()
+
 
 # Tableau 3a: Proportion d'infractions (I) associées à un couple de communes (I,V) présentes dans un même zonage d'étude
 # - selon le type d'atteinte
@@ -112,16 +145,57 @@ write.csv(tableau3a, "Tableau3a.csv", row.names=FALSE)
 # - selon le type d'atteinte
 write.csv(tableau3b, "Tableau3b.csv", row.names=FALSE)
 
-# A mettre éventuellement en Annexe, en réplique les tableaux 3a et 3b en distinguant les période 2016-2019 (pré-Covid)
+# A mettre en Annexe ou dans le corps principal du mémoire:
+
+# Tableau 3a_bis: Proportion d'infractions (I) associées à un couple de communes (I,V) présentes dans un même zonage d'étude
+# - selon le type d'atteinte - après correction des différences de taille des différents zonages
+write.csv(tableau3a_bis, "Tableau3a_bis.csv", row.names=FALSE)
+
+# Tableau 3b_bis: Proportion d'infractions (I) associées à un triplet de communes (I,V,M) présentes dans un même zonage d'étude
+# - selon le type d'atteinte - après correction des différences de taille des différents zonages
+write.csv(tableau3b_bis, "Tableau3b_bis.csv", row.names=FALSE)
+
+
+# A mettre éventuellement en Annexe, en réplique des tableaux 3a et 3b en distinguant les sous-périodes 2016-2019 (pré-Covid)
 # et 2020-2021 (Covid):
-write.csv(tableau3a_2016_2019, "Tableau3a_2016_2019.csv", row.names=FALSE)
-write.csv(tableau3a_2020_2021, "Tableau3a_2020_2021.csv", row.names=FALSE)
-write.csv(tableau3b_2016_2019, "Tableau3b_2016_2019.csv", row.names=FALSE)
-write.csv(tableau3b_2020_2021, "Tableau3b_2020_2021.csv", row.names=FALSE)
+write.csv(tableau3a_2016_2019_annexe, "Tableau3a_2016_2019_annexe.csv", row.names=FALSE)
+write.csv(tableau3a_2020_2021_annexe, "Tableau3a_2020_2021_annexe.csv", row.names=FALSE)
+write.csv(tableau3b_2016_2019_annexe, "Tableau3b_2016_2019_annexe.csv", row.names=FALSE)
+write.csv(tableau3b_2020_2021_annexe, "Tableau3b_2020_2021_annexe.csv", row.names=FALSE)
 
-# Raffinements visant à analyser le statut des différentes communes (I,V) au sein d'un même zonage donné...
+# Raffinements visant à analyser le statut des communes (I,V,M) au sein d'un même zonage...
 
-# TODO prochainement!
+# 1) Statut des communes au sein du bassin de vie (BV):
+
+# Tableau 4a: Répartition (en %) des atteintes associées à un couple de communes (I,V) dans un même BV, selon le statut
+# respectif de la commune de I et celle de V au sein du BV. 
+# Rappel: 00: "Non pôle"; 11: "Pôle partiel"; 12: "Commune associée à un pôle partiel" et 20: "Pôle".
+write.csv(tableau4a, "Tableau4a.csv", row.names=FALSE)
+
+# Tableau 4b: Répartition (en %) des atteintes associées à un triplet de communes (I,V,M) dans un même BV, selon le statut
+# respectif de la commune de I, de celle de V et de celle de M au sein du BV. 
+# Rappel: 00: "Non pôle"; 11: "Pôle partiel"; 12: "Commune associée à un pôle partiel" et 20: "Pôle".
+# Remarque: pour construire nos modalités, on ne reprend que les modalités avec les plus grosses freq dans le tableau 4a ;)
+# On se restreint ici aux seules atteintes corporelles.
+write.csv(tableau4b, "Tableau4b.csv", row.names=FALSE)
+
+# 2) Statut des communes au sein de l'unité urbaine (UU):
+
+# Tableau 5a: Répartition (en %) des atteintes associées à un couple de communes (I,V) dans une même UU, selon le statut
+# respectif de la commune de I et celle de V au sein de l'UU. 
+# Rappel: H: "Hors UU"; C: "Ville-centre"; B: "Banlieue" et I: "Ville isolée".
+write.csv(tableau5a, "Tableau5a.csv", row.names=FALSE)
+
+# Tableau 5b: Répartition (en %) des atteintes associées à un triplet de communes (I,V,M) dans une même UU, selon le statut
+# respectif de la commune de I, de celle de V et de celle de M au sein de l'UU. 
+# Rappel: H: "Hors UU"; C: "Ville-centre"; B: "Banlieue" et I: "Ville isolée".
+# Remarque: pour construire nos modalités, on ne reprend que les modalités avec les plus grosses freq dans le tableau 5a ;)
+# On se restreint ici aux seules atteintes corporelles.
+write.csv(tableau5b, "Tableau5b.csv", row.names=FALSE)
+
+# 3) Statut des communes au sein de l'aire d'attraction des villes (AAV):
+
+
 
 
 # Etape 5: Partie 3 du mémoire: Classification des communes et des départements de France métropolitaine au regard de la délinquance
