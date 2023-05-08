@@ -202,10 +202,15 @@ atteintes[ , a_3_memes_cv := data.table::fcase(
 
 # 2) Zonages statistiques:
 
-# a) pour chaque atteinte, on teste si le couple (I,V) / le triplet de communes (I,V,M) s'inscrit dans la même zone d'emploi (ZE) ou pas:
+# a) pour chaque atteinte, on teste si le couple (I,V)/ le couple (M,V) / le triplet de communes (I,V,M) s'inscrit dans la même zone d'emploi (ZE) ou pas:
 
 atteintes[ , IV_ds_meme_ZE := data.table::fcase(
 (is.na(ZE2020_inf)==FALSE) &  (ZE2020_inf == ZE2020_vict), "oui",
+  default ="non")
+]
+
+atteintes[ , MV_ds_meme_ZE := data.table::fcase(
+  (is.na(ZE2020_mec)==FALSE) &  (ZE2020_mec == ZE2020_vict), "oui",
   default ="non")
 ]
 
@@ -214,10 +219,15 @@ atteintes[ , IVM_ds_meme_ZE := data.table::fcase(
   default ="non")
 ]
 
-# b) pour chaque atteinte, on teste si le couple (I,V) / le triplet de communes (I,V,M) s'inscrit dans le même bassin de vie (BV) ou pas:
+# b) pour chaque atteinte, on teste si le couple (I,V) /le couple (M,V)/ le triplet de communes (I,V,M) s'inscrit dans le même bassin de vie (BV) ou pas:
 
 atteintes[ , IV_ds_meme_BV := data.table::fcase(
 (is.na(BV2022_inf)==FALSE) &  (BV2022_inf == BV2022_vict), "oui",
+  default ="non")
+]
+
+atteintes[ , MV_ds_meme_BV := data.table::fcase(
+  (is.na(BV2022_mec)==FALSE) &  (BV2022_mec == BV2022_vict), "oui",
   default ="non")
 ]
 
@@ -226,10 +236,15 @@ atteintes[ , IVM_ds_meme_BV := data.table::fcase(
   default ="non")
 ]
 
-# c) pour chaque atteinte, on teste si le couple (I,V) / le triplet de communes (I,V,M) s'inscrit dans la même unité urbaine (UU) ou pas:
+# c) pour chaque atteinte, on teste si le couple (I,V) /le couple (M,V)/ le triplet de communes (I,V,M) s'inscrit dans la même unité urbaine (UU) ou pas:
 
 atteintes[ , IV_ds_meme_UU := data.table::fcase(
   !(substr(UU2020_inf,3,5) =="000") & (is.na(UU2020_inf)==FALSE) & (UU2020_inf == UU2020_vict), "oui",
+  default ="non")
+]
+
+atteintes[ , MV_ds_meme_UU := data.table::fcase(
+  !(substr(UU2020_mec,3,5) =="000") & (is.na(UU2020_mec)==FALSE) & (UU2020_mec == UU2020_vict), "oui",
   default ="non")
 ]
 
@@ -241,11 +256,16 @@ atteintes[ , IVM_ds_meme_UU := data.table::fcase(
 # (i.e hors UU), on rajoute la condition qui assure que l'infraction ait bien eu lieu dans une UU. 
 # En effet, le zonage UU ne constitue pas une partition du territoire français (il y a donc une classe résiduelle "hors UU").
 
-# d) pour chaque atteinte, on teste si le couple (I,V) / le triplet de communes (I,V,M) s'inscrit dans la même aire d'attraction
+# d) pour chaque atteinte, on teste si le couple (I,V) / le couple (M,V)/ le triplet de communes (I,V,M) s'inscrit dans la même aire d'attraction
 #des villes (AAV) ou pas:
 
 atteintes[ , IV_ds_meme_AAV := data.table::fcase(
   !(AAV2020_inf =="000") & (is.na(AAV2020_inf)==FALSE) & (AAV2020_inf == AAV2020_vict), "oui",
+  default ="non")
+]
+
+atteintes[ , MV_ds_meme_AAV := data.table::fcase(
+  !(AAV2020_mec =="000") & (is.na(AAV2020_mec)==FALSE) & (AAV2020_mec == AAV2020_vict), "oui",
   default ="non")
 ]
 
@@ -257,24 +277,34 @@ atteintes[ , IVM_ds_meme_AAV := data.table::fcase(
 # (i.e hors AAV), on rajoute la condition qui assure que l'infraction ait bien eu lieu dans une AAV. 
 # En effet, le zonage AAV ne constitue pas une partition du territoire français (il y a donc une classe résiduelle "hors AAV").
 
-# e) pour chaque atteinte, on teste si le couple (I,V) / le triplet de communes (I,V,M) s'inscrit dans la même grille de densité 
+# e) pour chaque atteinte, on teste si le couple (I,V) /le couple (M,V)/ le triplet de communes (I,V,M) s'inscrit dans la même grille de densité 
 # (mix de la grille communale de densité et de AAV) ou pas:
 
 atteintes[ , IV_ds_meme_GD := data.table::fcase(
-  (is.na(TYPE_inf)==FALSE) & (TYPE_inf == TYPE_vict), "oui",
+  (is.na(GRD_inf)==FALSE) & (GRD_inf == GRD_vict), "oui",
+  default ="non")
+]
+
+atteintes[ , MV_ds_meme_GD := data.table::fcase(
+  (is.na(GRD_mec)==FALSE) & (GRD_mec == GRD_vict), "oui",
   default ="non")
 ]
 
 atteintes[ , IVM_ds_meme_GD := data.table::fcase(
-  (is.na(TYPE_inf)==FALSE) & (TYPE_inf == TYPE_vict) & (TYPE_vict == TYPE_mec), "oui",
+  (is.na(GRD_inf)==FALSE) & (GRD_inf == GRD_vict) & (GRD_vict == GRD_mec), "oui",
   default ="non")
 ]
 
-# f) pour chaque atteinte, on teste si le couple (I,V) / le triplet de communes (I,V,M) s'inscrit dans le même niveau de centralité 
+# f) pour chaque atteinte, on teste si le couple (I,V) /le couple (M,V)/ le triplet de communes (I,V,M) s'inscrit dans le même niveau de centralité 
 # de la commune (cf. étude de l'INRAE sur les centralités) ou pas:
 
 atteintes[ , IV_ds_meme_CENTR := data.table::fcase(
   !(P_NP5CLA_inf =="DCN0") & (is.na(P_NP5CLA_inf)==FALSE) & (P_NP5CLA_inf == P_NP5CLA_vict), "oui",
+  default ="non")
+]
+
+atteintes[ , MV_ds_meme_CENTR := data.table::fcase(
+  !(P_NP5CLA_mec =="DCN0") & (is.na(P_NP5CLA_mec)==FALSE) & (P_NP5CLA_mec == P_NP5CLA_vict), "oui",
   default ="non")
 ]
 
@@ -442,7 +472,13 @@ names(atteintes)
 
 # Warning: on se restreint ici aux seules atteintes associées à un couple de communes (I,V) renseigné!
 
-  nb_I_IV_meme_zonage <- atteintes[(is.na(cog_com_22_inf)==FALSE) & (is.na(cog_com_22_vict)==FALSE), .(
+  nb_I_IV_meme_zonage <- atteintes[(is.na(cog_com_22_inf)==FALSE) & (is.na(cog_com_22_vict)==FALSE) &
+                                     (is.na(BV2022_inf)==FALSE) & (is.na(BV2022_vict)==FALSE) &
+                                     (is.na(ZE2020_inf)==FALSE) & (is.na(ZE2020_vict)==FALSE) &
+                                     (is.na(UU2020_inf)==FALSE) & (is.na(UU2020_vict)==FALSE) &
+                                     (is.na(AAV2020_inf)==FALSE) & (is.na(AAV2020_vict)==FALSE) &
+                                     (is.na(GRD_inf)==FALSE) & (is.na(GRD_vict)==FALSE) &
+                                     (is.na(P_NP5CLA_inf)==FALSE) & (is.na(P_NP5CLA_vict)==FALSE), .(
   # Nombre d'infractions avec un couple de communes (I,V) dans la même zone d'emploi (ZE):
   Nb_I_IV_1ZE = sum(compteur*(IV_ds_meme_ZE == "oui"), na.rm = TRUE),
   Nb_I_cambr_IV_1ZE = sum(compteur*(classe == "Cambriolages de logement" & IV_ds_meme_ZE == "oui"), na.rm = TRUE),
@@ -542,7 +578,13 @@ names(atteintes)
 # est le mieux renseigné.
 
 nb_I_IVM_meme_zonage <- atteintes[(is.na(cog_com_22_inf)==FALSE) & (is.na(cog_com_22_vict)==FALSE) &
-                                            (is.na(cog_com_22_mec)==FALSE), .(
+                                            (is.na(cog_com_22_mec)==FALSE) &
+                                    (is.na(BV2022_inf)==FALSE) & (is.na(BV2022_vict)==FALSE) & (is.na(BV2022_mec)==FALSE) &
+                                    (is.na(ZE2020_inf)==FALSE) & (is.na(ZE2020_vict)==FALSE) & (is.na(ZE2020_mec)==FALSE) &
+                                    (is.na(UU2020_inf)==FALSE) & (is.na(UU2020_vict)==FALSE) & (is.na(UU2020_mec)==FALSE) &
+                                    (is.na(AAV2020_inf)==FALSE) & (is.na(AAV2020_vict)==FALSE) & (is.na(AAV2020_mec)==FALSE) &
+                                    (is.na(GRD_inf)==FALSE) & (is.na(GRD_vict)==FALSE) & (is.na(GRD_mec)==FALSE) &
+                                    (is.na(P_NP5CLA_inf)==FALSE) & (is.na(P_NP5CLA_vict)==FALSE) & (is.na(P_NP5CLA_mec)==FALSE), .(
   # Nombre d'infractions avec un triplet de communes (I,V,M) dans la même zone d'emploi (ZE):
   Nb_I_IVM_1ZE = sum(compteur*(IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
   Nb_I_cambr_IVM_1ZE = sum(compteur*(classe == "Cambriolages de logement" & IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
@@ -634,14 +676,6 @@ nb_I_IVM_meme_zonage <- atteintes[(is.na(cog_com_22_inf)==FALSE) & (is.na(cog_co
   Nb_I_vols_viol_sansarme_IVM_1CENTR = sum(compteur*(classe == "Vols violents sans arme" & IVM_ds_meme_CENTR == "oui"), na.rm = TRUE)),
   by = .(cog_com_22_inf)]
 
-# TODO !!!
-# Il restera à dénombrer les infractions selon le statut de la commune de I, celle de V (et celle de M pour les atteintes
-# corpo) au sein du zonage d'étude (lorsque (I,V) ou (I,V,M) s'inscrit dans un même zonage)
-# Cas à traiter:
-# 1) Statut de la commune au sein d'un bassin de vie: modalités 11- Pôle partiel/12- Commune associée à un pôle partiel/20- Pôle
-# 2) Statut de la commune au sein d'une aire d'attraction des villes (AAV): 11- Commune centre/12- Autre commune du pôle principal
-# /13- Commune d'un pôle secondaire/20- Commune de la couronne
-# 3) Statut de la commune dans la grille de densité: urbain dense/urbain moyennement dense/...
 
 # On rassemble toutes ces bases en une unique base communale:
 delinquance_com <- 
@@ -704,14 +738,11 @@ delinquance_com <- delinquance_com %>%
 
 # On peut apparier le fichier obtenu avec les zonages d'étude de la commune d'infraction:
 
-communes_zonages <- as_tibble(communes_zonages_dt)
-communes_zonages <- communes_zonages %>%
-                    select(CODGEO,ZE2020,UU2020,TUU2017,TDUU2017,AAV2020,
-                                               TAAV2017,TDAAV2017,CATEAAV2020,BV2022,TYPE)
+communes_zonages_inf <- as_tibble(communes_zonages_dt_inf)
 
 delinquance_com <- delinquance_com %>%
-  left_join(y = communes_zonages, 
-            by = c("cog_com_22_inf" = "CODGEO"))
+  left_join(y = communes_zonages_inf, 
+            by = c("cog_com_22_inf" = "CODGEO_inf"))
 
 # Pour des raisons de lisibilité, nous aurons besoin parfois de réduire le nombre de type d'atteintes à analyser:
 # en passant des 12 types atteintes du fichier du SSMSI à
@@ -1147,322 +1178,437 @@ delinquance_com <- delinquance_com %>%
          P_hotel=HT23/P19_LOG*100) 
 
 # Ajout de l'information sur les distances médianes entre les communes I,V et M:
-# TODO !!
 
+# Calcul de la distance médiane I->V, I->M, V->M pour chaque commune:
+dist_mediane_com <-atteintes[, .(dist_mediane_I_V=median(dist_inf_vict,na.rm=TRUE),
+                                 dist_mediane_I_M=median(dist_inf_mec,na.rm=TRUE),
+                                 dist_mediane_V_M=median(dist_vict_mec,na.rm=TRUE)
+                                 ),by=.(cog_com_22_inf)]
+# Transformation en tibble:
+dist_mediane_com <- as_tibble(dist_mediane_com)
+
+# Appariement:
+delinquance_com <- delinquance_com %>%
+  left_join(y = dist_mediane_com, 
+            by = c("cog_com_22_inf" = "cog_com_22_inf"))
+
+                                                                                       
 
 # 3- Construction de la base "delinquance_dep" (analyse au niveau du département.)
 
-# # Agrégation des atteintes par commune de l'infraction: calcul du nombre d'infractions (I) dans chaque département,
-# # selon le type de l'atteinte.
-# nb_I_dep <- atteintes[(is.na(cog_com_22_inf)==FALSE), .(
-#   Nb_I = sum(compteur, na.rm = TRUE),
-#   Nb_I_cambr = sum(compteur*(classe == "Cambriolages de logement"), na.rm = TRUE),
-#   Nb_I_bless_famil = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale"), na.rm = TRUE),
-#   Nb_bless_horsfamil = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale"), na.rm = TRUE),
-#   Nb_I_destr_degrad = sum(compteur*(classe == "Destructions et dégradations"), na.rm = TRUE),
-#   Nb_I_homic = sum(compteur*(classe == "Homicides"), na.rm = TRUE),
-#   Nb_I_viol_sex = sum(compteur*(classe == "Violences sexuelles"), na.rm = TRUE),
-#   Nb_I_vols_armes = sum(compteur*(classe == "Vols avec armes"), na.rm = TRUE),
-#   Nb_I_vols_acces_vehic = sum(compteur*(classe == "Vols d'accessoires sur véhicules"), na.rm = TRUE),
-#   Nb_I_vols_ds_vehic = sum(compteur*(classe == "Vols dans les véhicules"), na.rm = TRUE),
-#   Nb_I_vols_de_vehic = sum(compteur*(classe == "Vols de véhicules"), na.rm = TRUE),
-#   Nb_I_vols_sansviol = sum(compteur*(classe == "Vols sans violence contre des personnes"), na.rm = TRUE),
-#   Nb_I_vols_viol_sansarme = sum(compteur*(classe == "Vols violents sans arme"), na.rm = TRUE)),
-#   by = .(DEP_inf)]
-# 
-# # Agrégation des atteintes par commune de domiciliation de la victime: calcul du nombre de victimes (V) dans chaque commune,
-# # selon le type de l'atteinte.
-# nb_V_dep <- atteintes[(is.na(cog_com_22_vict)==FALSE), .(
-#   Nb_V = sum(compteur, na.rm = TRUE),
-#   Nb_V_cambr = sum(compteur*(classe == "Cambriolages de logement"), na.rm = TRUE),
-#   Nb_V_bless_famil = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale"), na.rm = TRUE),
-#   Nb_bless_horsfamil = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale"), na.rm = TRUE),
-#   Nb_V_destr_degrad = sum(compteur*(classe == "Destructions et dégradations"), na.rm = TRUE),
-#   Nb_V_homic = sum(compteur*(classe == "Homicides"), na.rm = TRUE),
-#   Nb_V_viol_sex = sum(compteur*(classe == "Violences sexuelles"), na.rm = TRUE),
-#   Nb_V_vols_armes = sum(compteur*(classe == "Vols avec armes"), na.rm = TRUE),
-#   Nb_V_vols_acces_vehic = sum(compteur*(classe == "Vols d'accessoires sur véhicules"), na.rm = TRUE),
-#   Nb_V_vols_ds_vehic = sum(compteur*(classe == "Vols dans les véhicules"), na.rm = TRUE),
-#   Nb_V_vols_de_vehic = sum(compteur*(classe == "Vols de véhicules"), na.rm = TRUE),
-#   Nb_V_vols_sansviol = sum(compteur*(classe == "Vols sans violence contre des personnes"), na.rm = TRUE),
-#   Nb_V_vols_viol_sansarme = sum(compteur*(classe == "Vols violents sans arme"), na.rm = TRUE)),
-#   by = .(DEP_vict)]
-# 
-# # Agrégation des atteintes par commune de domiciliation du mis en cause: calcul du nombre de mis en cause (M) dans
-# #chaque commune, selon le type de l'atteinte.
-# nb_M_dep <- atteintes[(is.na(cog_com_22_mec)==FALSE), .(
-#   Nb_M = sum(compteur, na.rm = TRUE),
-#   Nb_M_cambr = sum(compteur*(classe == "Cambriolages de logement"), na.rm = TRUE),
-#   Nb_M_bless_famil = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale"), na.rm = TRUE),
-#   Nb_bless_horsfamil = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale"), na.rm = TRUE),
-#   Nb_M_destr_degrad = sum(compteur*(classe == "Destructions et dégradations"), na.rm = TRUE),
-#   Nb_M_homic = sum(compteur*(classe == "Homicides"), na.rm = TRUE),
-#   Nb_M_viol_sex = sum(compteur*(classe == "Violences sexuelles"), na.rm = TRUE),
-#   Nb_M_vols_armes = sum(compteur*(classe == "Vols avec armes"), na.rm = TRUE),
-#   Nb_M_vols_acces_vehic = sum(compteur*(classe == "Vols d'accessoires sur véhicules"), na.rm = TRUE),
-#   Nb_M_vols_ds_vehic = sum(compteur*(classe == "Vols dans les véhicules"), na.rm = TRUE),
-#   Nb_M_vols_de_vehic = sum(compteur*(classe == "Vols de véhicules"), na.rm = TRUE),
-#   Nb_M_vols_sansviol = sum(compteur*(classe == "Vols sans violence contre des personnes"), na.rm = TRUE),
-#   Nb_M_vols_viol_sansarme = sum(compteur*(classe == "Vols violents sans arme"), na.rm = TRUE)),
-#   by = .(DEP_mec)]
-# 
-# # Agrégation des atteintes par commune de l'infraction: calcul du nombre d'infractions (I) dans chaque commune,
-# # associées à un couple de communes (I,V) inscrites dans un même zonage d'étude.
-# 
-# # Warning: on se restreint ici aux seules atteintes associées à un couple de communes (I,V) renseigné!
-# 
-# nb_I_IV_meme_zonage_dep <- atteintes[(is.na(cog_com_22_inf)==FALSE) & (is.na(cog_com_22_vict)==FALSE), .(
-#   # Nombre d'infractions avec un couple de communes (I,V) dans la même zone d'emploi (ZE):
-#   Nb_I_IV_1ZE = sum(compteur*(IV_ds_meme_ZE == "oui"), na.rm = TRUE),
-#   Nb_I_cambr_IV_1ZE = sum(compteur*(classe == "Cambriolages de logement" & IV_ds_meme_ZE == "oui"), na.rm = TRUE),
-#   Nb_I_bless_famil_IV_1ZE = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale" & IV_ds_meme_ZE == "oui"), na.rm = TRUE),
-#   Nb_I_bless_horsfamil_IV_1ZE = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale" & IV_ds_meme_ZE == "oui"), na.rm = TRUE),
-#   Nb_I_destr_degrad_IV_1ZE = sum(compteur*(classe == "Destructions et dégradations" & IV_ds_meme_ZE == "oui"), na.rm = TRUE),
-#   Nb_I_homic_IV_1ZE = sum(compteur*(classe == "Homicides" & IV_ds_meme_ZE == "oui"), na.rm = TRUE),
-#   Nb_I_viol_sex_IV_1ZE = sum(compteur*(classe == "Violences sexuelles" & IV_ds_meme_ZE == "oui"), na.rm = TRUE),
-#   Nb_I_vols_armes_IV_1ZE = sum(compteur*(classe == "Vols avec armes" & IV_ds_meme_ZE == "oui"), na.rm = TRUE),
-#   Nb_I_vols_acces_vehic_IV_1ZE = sum(compteur*(classe == "Vols d'accessoires sur véhicules" & IV_ds_meme_ZE == "oui"), na.rm = TRUE),
-#   Nb_I_vols_ds_vehic_IV_1ZE = sum(compteur*(classe == "Vols dans les véhicules" & IV_ds_meme_ZE == "oui"), na.rm = TRUE),
-#   Nb_I_vols_de_vehic_IV_1ZE = sum(compteur*(classe == "Vols de véhicules" & IV_ds_meme_ZE == "oui"), na.rm = TRUE),
-#   Nb_I_vols_sansviol_IV_1ZE = sum(compteur*(classe == "Vols sans violence contre des personnes" & IV_ds_meme_ZE == "oui"), na.rm = TRUE),
-#   Nb_I_vols_viol_sansarme_IV_1ZE = sum(compteur*(classe == "Vols violents sans arme" & IV_ds_meme_ZE == "oui"), na.rm = TRUE),
-#   
-#   # Nombre d'infractions avec un couple de communes (I,V) dans le même bassin de vie (BV):
-#   Nb_I_IV_1BV = sum(compteur*(IV_ds_meme_BV == "oui"), na.rm = TRUE),
-#   Nb_I_cambr_IV_1BV = sum(compteur*(classe == "Cambriolages de logement" & IV_ds_meme_BV == "oui"), na.rm = TRUE),
-#   Nb_I_bless_famil_IV_1BV = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale" & IV_ds_meme_BV == "oui"), na.rm = TRUE),
-#   Nb_I_bless_horsfamil_IV_1BV = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale" & IV_ds_meme_BV == "oui"), na.rm = TRUE),
-#   Nb_I_destr_degrad_IV_1BV = sum(compteur*(classe == "Destructions et dégradations" & IV_ds_meme_BV == "oui"), na.rm = TRUE),
-#   Nb_I_homic_IV_1BV = sum(compteur*(classe == "Homicides" & IV_ds_meme_BV == "oui"), na.rm = TRUE),
-#   Nb_I_viol_sex_IV_1BV = sum(compteur*(classe == "Violences sexuelles" & IV_ds_meme_BV == "oui"), na.rm = TRUE),
-#   Nb_I_vols_armes_IV_1BV = sum(compteur*(classe == "Vols avec armes" & IV_ds_meme_BV == "oui"), na.rm = TRUE),
-#   Nb_I_vols_acces_vehic_IV_1BV = sum(compteur*(classe == "Vols d'accessoires sur véhicules" & IV_ds_meme_BV == "oui"), na.rm = TRUE),
-#   Nb_I_vols_ds_vehic_IV_1BV = sum(compteur*(classe == "Vols dans les véhicules" & IV_ds_meme_BV == "oui"), na.rm = TRUE),
-#   Nb_I_vols_de_vehic_IV_1BV = sum(compteur*(classe == "Vols de véhicules" & IV_ds_meme_BV == "oui"), na.rm = TRUE),
-#   Nb_I_vols_sansviol_IV_1BV = sum(compteur*(classe == "Vols sans violence contre des personnes" & IV_ds_meme_BV == "oui"), na.rm = TRUE),
-#   Nb_I_vols_viol_sansarme_IV_1BV = sum(compteur*(classe == "Vols violents sans arme" & IV_ds_meme_BV == "oui"), na.rm = TRUE),
-#   
-#   # Nombre d'infractions avec un couple de communes (I,V) dans la même grille de densité (GD):
-#   Nb_I_IV_1GD = sum(compteur*(IV_ds_meme_GD == "oui"), na.rm = TRUE),
-#   Nb_I_cambr_IV_1GD = sum(compteur*(classe == "Cambriolages de logement" & IV_ds_meme_GD == "oui"), na.rm = TRUE),
-#   Nb_I_bless_famil_IV_1GD = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale" & IV_ds_meme_GD == "oui"), na.rm = TRUE),
-#   Nb_I_bless_horsfamil_IV_1GD = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale" & IV_ds_meme_GD == "oui"), na.rm = TRUE),
-#   Nb_I_destr_degrad_IV_1GD = sum(compteur*(classe == "Destructions et dégradations" & IV_ds_meme_GD == "oui"), na.rm = TRUE),
-#   Nb_I_homic_IV_1GD = sum(compteur*(classe == "Homicides" & IV_ds_meme_GD == "oui"), na.rm = TRUE),
-#   Nb_I_viol_sex_IV_1GD = sum(compteur*(classe == "Violences sexuelles" & IV_ds_meme_GD == "oui"), na.rm = TRUE),
-#   Nb_I_vols_armes_IV_1GD = sum(compteur*(classe == "Vols avec armes" & IV_ds_meme_GD == "oui"), na.rm = TRUE),
-#   Nb_I_vols_acces_vehic_IV_1GD = sum(compteur*(classe == "Vols d'accessoires sur véhicules" & IV_ds_meme_GD == "oui"), na.rm = TRUE),
-#   Nb_I_vols_ds_vehic_IV_1GD = sum(compteur*(classe == "Vols dans les véhicules" & IV_ds_meme_GD == "oui"), na.rm = TRUE),
-#   Nb_I_vols_de_vehic_IV_1GD = sum(compteur*(classe == "Vols de véhicules" & IV_ds_meme_GD == "oui"), na.rm = TRUE),
-#   Nb_I_vols_sansviol_IV_1GD = sum(compteur*(classe == "Vols sans violence contre des personnes" & IV_ds_meme_GD == "oui"), na.rm = TRUE),
-#   Nb_I_vols_viol_sansarme_IV_1GD = sum(compteur*(classe == "Vols violents sans arme" & IV_ds_meme_GD == "oui"), na.rm = TRUE),
-#   
-#   # Nombre d'infractions avec un couple de communes (I,V) dans la même unité urbaine (UU):
-#   Nb_I_IV_1UU = sum(compteur*(IV_ds_meme_UU == "oui"), na.rm = TRUE),
-#   Nb_I_cambr_IV_1UU = sum(compteur*(classe == "Cambriolages de logement" & IV_ds_meme_UU == "oui"), na.rm = TRUE),
-#   Nb_I_bless_famil_IV_1UU = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale" & IV_ds_meme_UU == "oui"), na.rm = TRUE),
-#   Nb_I_bless_horsfamil_IV_1UU = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale" & IV_ds_meme_UU == "oui"), na.rm = TRUE),
-#   Nb_I_destr_degrad_IV_1UU = sum(compteur*(classe == "Destructions et dégradations" & IV_ds_meme_UU == "oui"), na.rm = TRUE),
-#   Nb_I_homic_IV_1UU = sum(compteur*(classe == "Homicides" & IV_ds_meme_UU == "oui"), na.rm = TRUE),
-#   Nb_I_viol_sex_IV_1UU = sum(compteur*(classe == "Violences sexuelles" & IV_ds_meme_UU == "oui"), na.rm = TRUE),
-#   Nb_I_vols_armes_IV_1UU = sum(compteur*(classe == "Vols avec armes" & IV_ds_meme_UU == "oui"), na.rm = TRUE),
-#   Nb_I_vols_acces_vehic_IV_1UU = sum(compteur*(classe == "Vols d'accessoires sur véhicules" & IV_ds_meme_UU == "oui"), na.rm = TRUE),
-#   Nb_I_vols_ds_vehic_IV_1UU = sum(compteur*(classe == "Vols dans les véhicules" & IV_ds_meme_UU == "oui"), na.rm = TRUE),
-#   Nb_I_vols_de_vehic_IV_1UU = sum(compteur*(classe == "Vols de véhicules" & IV_ds_meme_UU == "oui"), na.rm = TRUE),
-#   Nb_I_vols_sansviol_IV_1UU = sum(compteur*(classe == "Vols sans violence contre des personnes" & IV_ds_meme_UU == "oui"), na.rm = TRUE),
-#   Nb_I_vols_viol_sansarme_IV_1UU = sum(compteur*(classe == "Vols violents sans arme" & IV_ds_meme_UU == "oui"), na.rm = TRUE),
-#   
-#   # Nombre d'infractions avec un couple de communes (I,V) dans la même aire d'attraction des villes (AAV):
-#   Nb_I_IV_1AAV = sum(compteur*(IV_ds_meme_AAV == "oui"), na.rm = TRUE),
-#   Nb_I_cambr_IV_1AAV = sum(compteur*(classe == "Cambriolages de logement" & IV_ds_meme_AAV == "oui"), na.rm = TRUE),
-#   Nb_I_bless_famil_IV_1AAV = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale" & IV_ds_meme_AAV == "oui"), na.rm = TRUE),
-#   Nb_I_bless_horsfamil_IV_1AAV = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale" & IV_ds_meme_AAV == "oui"), na.rm = TRUE),
-#   Nb_I_destr_degrad_IV_1AAV = sum(compteur*(classe == "Destructions et dégradations" & IV_ds_meme_AAV == "oui"), na.rm = TRUE),
-#   Nb_I_homic_IV_1AAV = sum(compteur*(classe == "Homicides" & IV_ds_meme_AAV == "oui"), na.rm = TRUE),
-#   Nb_I_viol_sex_IV_1AAV = sum(compteur*(classe == "Violences sexuelles" & IV_ds_meme_AAV == "oui"), na.rm = TRUE),
-#   Nb_I_vols_armes_IV_1AAV = sum(compteur*(classe == "Vols avec armes" & IV_ds_meme_AAV == "oui"), na.rm = TRUE),
-#   Nb_I_vols_acces_vehic_IV_1AAV = sum(compteur*(classe == "Vols d'accessoires sur véhicules" & IV_ds_meme_AAV == "oui"), na.rm = TRUE),
-#   Nb_I_vols_ds_vehic_IV_1AAV = sum(compteur*(classe == "Vols dans les véhicules" & IV_ds_meme_AAV == "oui"), na.rm = TRUE),
-#   Nb_I_vols_de_vehic_IV_1AAV = sum(compteur*(classe == "Vols de véhicules" & IV_ds_meme_AAV == "oui"), na.rm = TRUE),
-#   Nb_I_vols_sansviol_IV_1AAV = sum(compteur*(classe == "Vols sans violence contre des personnes" & IV_ds_meme_AAV == "oui"), na.rm = TRUE),
-#   Nb_I_vols_viol_sansarme_IV_1AAV = sum(compteur*(classe == "Vols violents sans arme" & IV_ds_meme_AAV == "oui"), na.rm = TRUE),
-#   
-#   # Nombre d'infractions avec un couple de communes (I,V) dans la même centralité (CENTR):
-#   Nb_I_IV_1CENTR = sum(compteur*(IV_ds_meme_CENTR == "oui"), na.rm = TRUE),
-#   Nb_I_cambr_IV_1CENTR = sum(compteur*(classe == "Cambriolages de logement" & IV_ds_meme_CENTR == "oui"), na.rm = TRUE),
-#   Nb_I_bless_famil_IV_1CENTR = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale" & IV_ds_meme_CENTR == "oui"), na.rm = TRUE),
-#   Nb_I_bless_horsfamil_IV_1CENTR = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale" & IV_ds_meme_CENTR == "oui"), na.rm = TRUE),
-#   Nb_I_destr_degrad_IV_1CENTR = sum(compteur*(classe == "Destructions et dégradations" & IV_ds_meme_CENTR == "oui"), na.rm = TRUE),
-#   Nb_I_homic_IV_1CENTR = sum(compteur*(classe == "Homicides" & IV_ds_meme_CENTR == "oui"), na.rm = TRUE),
-#   Nb_I_viol_sex_IV_1CENTR = sum(compteur*(classe == "Violences sexuelles" & IV_ds_meme_CENTR == "oui"), na.rm = TRUE),
-#   Nb_I_vols_armes_IV_1CENTR = sum(compteur*(classe == "Vols avec armes" & IV_ds_meme_CENTR == "oui"), na.rm = TRUE),
-#   Nb_I_vols_acces_vehic_IV_1CENTR = sum(compteur*(classe == "Vols d'accessoires sur véhicules" & IV_ds_meme_CENTR == "oui"), na.rm = TRUE),
-#   Nb_I_vols_ds_vehic_IV_1CENTR = sum(compteur*(classe == "Vols dans les véhicules" & IV_ds_meme_CENTR == "oui"), na.rm = TRUE),
-#   Nb_I_vols_de_vehic_IV_1CENTR = sum(compteur*(classe == "Vols de véhicules" & IV_ds_meme_CENTR == "oui"), na.rm = TRUE),
-#   Nb_I_vols_sansviol_IV_1CENTR = sum(compteur*(classe == "Vols sans violence contre des personnes" & IV_ds_meme_CENTR == "oui"), na.rm = TRUE),
-#   Nb_I_vols_viol_sansarme_IV_1CENTR = sum(compteur*(classe == "Vols violents sans arme" & IV_ds_meme_CENTR == "oui"), na.rm = TRUE)),
-#   by = .(DEP_inf)]
-# 
-# # Agrégation des atteintes par département de l'infraction: calcul du nombre d'infractions (I) dans chaque commune,
-# # associées à un triplet de communes (I,V,M) inscrites dans un même zonage d'étude.
-# 
-# # Warning: on se restreint ici aux seules atteintes associées à un triplet de communes (I,V,M) renseignées!
-# # On se limite ici aux seules atteintes corporelles, celles pour lesquelles la commmune du mis en cause
-# # est le mieux renseigné.
-# 
-# nb_I_IVM_meme_zonage_dep <- atteintes[(is.na(cog_com_22_inf)==FALSE) & (is.na(cog_com_22_vict)==FALSE) &
-#                                     (is.na(cog_com_22_mec)==FALSE), .(
-#                                       # Nombre d'infractions avec un triplet de communes (I,V,M) dans la même zone d'emploi (ZE):
-#                                       Nb_I_IVM_1ZE = sum(compteur*(IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
-#                                       Nb_I_cambr_IVM_1ZE = sum(compteur*(classe == "Cambriolages de logement" & IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
-#                                       Nb_I_bless_famil_IVM_1ZE = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale" & IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
-#                                       Nb_I_bless_horsfamil_IVM_1ZE = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale" & IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
-#                                       Nb_I_destr_degrad_IVM_1ZE = sum(compteur*(classe == "Destructions et dégradations" & IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
-#                                       Nb_I_homic_IVM_1ZE = sum(compteur*(classe == "Homicides" & IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
-#                                       Nb_I_viol_sex_IVM_1ZE = sum(compteur*(classe == "Violences sexuelles" & IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
-#                                       Nb_I_vols_armes_IVM_1ZE = sum(compteur*(classe == "Vols avec armes" & IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
-#                                       Nb_I_vols_acces_vehic_IVM_1ZE = sum(compteur*(classe == "Vols d'accessoires sur véhicules" & IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
-#                                       Nb_I_vols_ds_vehic_IVM_1ZE = sum(compteur*(classe == "Vols dans les véhicules" & IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
-#                                       Nb_I_vols_de_vehic_IVM_1ZE = sum(compteur*(classe == "Vols de véhicules" & IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
-#                                       Nb_I_vols_sansviol_IVM_1ZE = sum(compteur*(classe == "Vols sans violence contre des personnes" & IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
-#                                       Nb_I_vols_viol_sansarme_IVM_1ZE = sum(compteur*(classe == "Vols violents sans arme" & IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
-#                                       
-#                                       # Nombre d'infractions avec un triplet de communes (I,V,M) dans le même bassin de vie (BV):
-#                                       Nb_I_IVM_1BV = sum(compteur*(IVM_ds_meme_BV == "oui"), na.rm = TRUE),
-#                                       Nb_I_cambr_IVM_1BV = sum(compteur*(classe == "Cambriolages de logement" & IVM_ds_meme_BV == "oui"), na.rm = TRUE),
-#                                       Nb_I_bless_famil_IVM_1BV = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale" & IVM_ds_meme_BV == "oui"), na.rm = TRUE),
-#                                       Nb_I_bless_horsfamil_IVM_1BV = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale" & IVM_ds_meme_BV == "oui"), na.rm = TRUE),
-#                                       Nb_I_destr_degrad_IVM_1BV = sum(compteur*(classe == "Destructions et dégradations" & IVM_ds_meme_BV == "oui"), na.rm = TRUE),
-#                                       Nb_I_homic_IVM_1BV = sum(compteur*(classe == "Homicides" & IVM_ds_meme_BV == "oui"), na.rm = TRUE),
-#                                       Nb_I_viol_sex_IVM_1BV = sum(compteur*(classe == "Violences sexuelles" & IVM_ds_meme_BV == "oui"), na.rm = TRUE),
-#                                       Nb_I_vols_armes_IVM_1BV = sum(compteur*(classe == "Vols avec armes" & IVM_ds_meme_BV == "oui"), na.rm = TRUE),
-#                                       Nb_I_vols_acces_vehic_IVM_1BV = sum(compteur*(classe == "Vols d'accessoires sur véhicules" & IVM_ds_meme_BV == "oui"), na.rm = TRUE),
-#                                       Nb_I_vols_ds_vehic_IVM_1BV = sum(compteur*(classe == "Vols dans les véhicules" & IVM_ds_meme_BV == "oui"), na.rm = TRUE),
-#                                       Nb_I_vols_de_vehic_IVM_1BV = sum(compteur*(classe == "Vols de véhicules" & IVM_ds_meme_BV == "oui"), na.rm = TRUE),
-#                                       Nb_I_vols_sansviol_IVM_1BV = sum(compteur*(classe == "Vols sans violence contre des personnes" & IVM_ds_meme_BV == "oui"), na.rm = TRUE),
-#                                       Nb_I_vols_viol_sansarme_IVM_1BV = sum(compteur*(classe == "Vols violents sans arme" & IVM_ds_meme_BV == "oui"), na.rm = TRUE),
-#                                       
-#                                       # Nombre d'infractions avec un triplet de communes (I,V,M) dans la même grille de densité (GD):
-#                                       Nb_I_IVM_1GD = sum(compteur*(IVM_ds_meme_GD == "oui"), na.rm = TRUE),
-#                                       Nb_I_cambr_IVM_1GD = sum(compteur*(classe == "Cambriolages de logement" & IVM_ds_meme_GD == "oui"), na.rm = TRUE),
-#                                       Nb_I_bless_famil_IVM_1GD = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale" & IVM_ds_meme_GD == "oui"), na.rm = TRUE),
-#                                       Nb_I_bless_horsfamil_IVM_1GD = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale" & IVM_ds_meme_GD == "oui"), na.rm = TRUE),
-#                                       Nb_I_destr_degrad_IVM_1GD = sum(compteur*(classe == "Destructions et dégradations" & IVM_ds_meme_GD == "oui"), na.rm = TRUE),
-#                                       Nb_I_homic_IVM_1GD = sum(compteur*(classe == "Homicides" & IVM_ds_meme_GD == "oui"), na.rm = TRUE),
-#                                       Nb_I_viol_sex_IVM_1GD = sum(compteur*(classe == "Violences sexuelles" & IVM_ds_meme_GD == "oui"), na.rm = TRUE),
-#                                       Nb_I_vols_armes_IVM_1GD = sum(compteur*(classe == "Vols avec armes" & IVM_ds_meme_GD == "oui"), na.rm = TRUE),
-#                                       Nb_I_vols_acces_vehic_IVM_1GD = sum(compteur*(classe == "Vols d'accessoires sur véhicules" & IVM_ds_meme_GD == "oui"), na.rm = TRUE),
-#                                       Nb_I_vols_ds_vehic_IVM_1GD = sum(compteur*(classe == "Vols dans les véhicules" & IVM_ds_meme_GD == "oui"), na.rm = TRUE),
-#                                       Nb_I_vols_de_vehic_IVM_1GD = sum(compteur*(classe == "Vols de véhicules" & IVM_ds_meme_GD == "oui"), na.rm = TRUE),
-#                                       Nb_I_vols_sansviol_IVM_1GD = sum(compteur*(classe == "Vols sans violence contre des personnes" & IVM_ds_meme_GD == "oui"), na.rm = TRUE),
-#                                       Nb_I_vols_viol_sansarme_IVM_1GD = sum(compteur*(classe == "Vols violents sans arme" & IVM_ds_meme_GD == "oui"), na.rm = TRUE),
-#                                       
-#                                       # Nombre d'infractions avec un triplet de communes (I,V,M) dans la même unité urbaine (UU):
-#                                       Nb_I_IVM_1UU = sum(compteur*(IVM_ds_meme_UU == "oui"), na.rm = TRUE),
-#                                       Nb_I_cambr_IVM_1UU = sum(compteur*(classe == "Cambriolages de logement" & IVM_ds_meme_UU == "oui"), na.rm = TRUE),
-#                                       Nb_I_bless_famil_IVM_1UU = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale" & IVM_ds_meme_UU == "oui"), na.rm = TRUE),
-#                                       Nb_I_bless_horsfamil_IVM_1UU = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale" & IVM_ds_meme_UU == "oui"), na.rm = TRUE),
-#                                       Nb_I_destr_degrad_IVM_1UU = sum(compteur*(classe == "Destructions et dégradations" & IVM_ds_meme_UU == "oui"), na.rm = TRUE),
-#                                       Nb_I_homic_IVM_1UU = sum(compteur*(classe == "Homicides" & IVM_ds_meme_UU == "oui"), na.rm = TRUE),
-#                                       Nb_I_viol_sex_IVM_1UU = sum(compteur*(classe == "Violences sexuelles" & IVM_ds_meme_UU == "oui"), na.rm = TRUE),
-#                                       Nb_I_vols_armes_IVM_1UU = sum(compteur*(classe == "Vols avec armes" & IVM_ds_meme_UU == "oui"), na.rm = TRUE),
-#                                       Nb_I_vols_acces_vehic_IVM_1UU = sum(compteur*(classe == "Vols d'accessoires sur véhicules" & IVM_ds_meme_UU == "oui"), na.rm = TRUE),
-#                                       Nb_I_vols_ds_vehic_IVM_1UU = sum(compteur*(classe == "Vols dans les véhicules" & IVM_ds_meme_UU == "oui"), na.rm = TRUE),
-#                                       Nb_I_vols_de_vehic_IVM_1UU = sum(compteur*(classe == "Vols de véhicules" & IVM_ds_meme_UU == "oui"), na.rm = TRUE),
-#                                       Nb_I_vols_sansviol_IVM_1UU = sum(compteur*(classe == "Vols sans violence contre des personnes" & IVM_ds_meme_UU == "oui"), na.rm = TRUE),
-#                                       Nb_I_vols_viol_sansarme_IVM_1UU = sum(compteur*(classe == "Vols violents sans arme" & IVM_ds_meme_UU == "oui"), na.rm = TRUE),
-#                                       
-#                                       # Nombre d'infractions avec un triplet de communes (I,V,M) dans la même aire d'attraction des villes (AAV):
-#                                       Nb_I_IVM_1AAV = sum(compteur*(IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
-#                                       Nb_I_cambr_IVM_1AAV = sum(compteur*(classe == "Cambriolages de logement" & IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
-#                                       Nb_I_bless_famil_IVM_1AAV = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale" & IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
-#                                       Nb_I_bless_horsfamil_IVM_1AAV = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale" & IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
-#                                       Nb_I_destr_degrad_IVM_1AAV = sum(compteur*(classe == "Destructions et dégradations" & IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
-#                                       Nb_I_homic_IVM_1AAV = sum(compteur*(classe == "Homicides" & IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
-#                                       Nb_I_viol_sex_IVM_1AAV = sum(compteur*(classe == "Violences sexuelles" & IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
-#                                       Nb_I_vols_armes_IVM_1AAV = sum(compteur*(classe == "Vols avec armes" & IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
-#                                       Nb_I_vols_acces_vehic_IVM_1AAV = sum(compteur*(classe == "Vols d'accessoires sur véhicules" & IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
-#                                       Nb_I_vols_ds_vehic_IVM_1AAV = sum(compteur*(classe == "Vols dans les véhicules" & IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
-#                                       Nb_I_vols_de_vehic_IVM_1AAV = sum(compteur*(classe == "Vols de véhicules" & IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
-#                                       Nb_I_vols_sansviol_IVM_1AAV = sum(compteur*(classe == "Vols sans violence contre des personnes" & IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
-#                                       Nb_I_vols_viol_sansarme_IVM_1AAV = sum(compteur*(classe == "Vols violents sans arme" & IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
-#                                       
-#                                       # Nombre d'infractions avec un triplet de communes (I,V,M) dans la même centralité (CENTR):
-#                                       Nb_I_IVM_1CENTR = sum(compteur*(IVM_ds_meme_CENTR == "oui"), na.rm = TRUE),
-#                                       Nb_I_cambr_IVM_1CENTR = sum(compteur*(classe == "Cambriolages de logement" & IVM_ds_meme_CENTR == "oui"), na.rm = TRUE),
-#                                       Nb_I_bless_famil_IVM_1CENTR = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale" & IVM_ds_meme_CENTR == "oui"), na.rm = TRUE),
-#                                       Nb_I_bless_horsfamil_IVM_1CENTR = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale" & IVM_ds_meme_CENTR == "oui"), na.rm = TRUE),
-#                                       Nb_I_destr_degrad_IVM_1CENTR = sum(compteur*(classe == "Destructions et dégradations" & IVM_ds_meme_CENTR == "oui"), na.rm = TRUE),
-#                                       Nb_I_homic_IVM_1CENTR = sum(compteur*(classe == "Homicides" & IVM_ds_meme_CENTR == "oui"), na.rm = TRUE),
-#                                       Nb_I_viol_sex_IVM_1CENTR = sum(compteur*(classe == "Violences sexuelles" & IVM_ds_meme_CENTR == "oui"), na.rm = TRUE),
-#                                       Nb_I_vols_armes_IVM_1CENTR = sum(compteur*(classe == "Vols avec armes" & IVM_ds_meme_CENTR == "oui"), na.rm = TRUE),
-#                                       Nb_I_vols_acces_vehic_IVM_1CENTR = sum(compteur*(classe == "Vols d'accessoires sur véhicules" & IVM_ds_meme_CENTR == "oui"), na.rm = TRUE),
-#                                       Nb_I_vols_ds_vehic_IVM_1CENTR = sum(compteur*(classe == "Vols dans les véhicules" & IVM_ds_meme_CENTR == "oui"), na.rm = TRUE),
-#                                       Nb_I_vols_de_vehic_IVM_1CENTR = sum(compteur*(classe == "Vols de véhicules" & IVM_ds_meme_CENTR == "oui"), na.rm = TRUE),
-#                                       Nb_I_vols_sansviol_IVM_1CENTR = sum(compteur*(classe == "Vols sans violence contre des personnes" & IVM_ds_meme_CENTR == "oui"), na.rm = TRUE),
-#                                       Nb_I_vols_viol_sansarme_IVM_1CENTR = sum(compteur*(classe == "Vols violents sans arme" & IVM_ds_meme_CENTR == "oui"), na.rm = TRUE)),
-#                                   by = .(DEP_inf)]
-# 
-# # TODO !!!
-# # Il restera à dénombrer les infractions selon le statut de la commune de I, celle de V (et celle de M pour les atteintes
-# # corpo) au sein du zonage d'étude (lorsque (I,V) ou (I,V,M) s'inscrit dans un même zonage)
-# # Cas à traiter:
-# # 1) Statut de la commune au sein d'un bassin de vie: modalités 11- Pôle partiel/12- Commune associée à un pôle partiel/20- Pôle
-# # 2) Statut de la commune au sein d'une aire d'attraction des villes (AAV): 11- Commune centre/12- Autre commune du pôle principal
-# # /13- Commune d'un pôle secondaire/20- Commune de la couronne
-# # 3) Statut de la commune dans la grille de densité: urbain dense/urbain moyennement dense/...
-# 
-# # On rassemble toutes ces bases en une unique base communale:
-# delinquance_dep <- 
-#   merge(x = nb_I_dep,
-#         y = nb_V_dep,
-#         by.x = "DEP_inf",
-#         by.y = "DEP_vict",
-#         all.x = TRUE)
-# delinquance_dep <- 
-#   merge(x = delinquance_dep,
-#         y = nb_M_dep,
-#         by.x = "DEP_inf",
-#         by.y = "DEP_mec",
-#         all.x = TRUE)
-# delinquance_dep <- 
-#   merge(x = delinquance_dep,
-#         y = nb_I_IV_meme_zonage_dep,
-#         by.x = "DEP_inf",
-#         by.y = "DEP_inf",
-#         all.x = TRUE)
-# delinquance_dep <- 
-#   merge(x = delinquance_dep,
-#         y = nb_I_IVM_meme_zonage_dep,
-#         by.x = "DEP_inf",
-#         by.y = "DEP_inf",
-#         all.x = TRUE)
-# 
-# dossier_complet_insee3 <- dossier_complet_insee[,.(DEP,P19_POP,P19_LOG,MED20,
-#                                                    P19_POP1529,RT23,CPG23,RD20,
-#                                                    D920,D120,HT23)]
-# 
-# dossier_complet_insee_dep <- dossier_complet_insee3[,.(
-#   P19_POP = sum(P19_POP,na.rm=TRUE),
-#   P19_LOG= sum(P19_POP,na.rm=TRUE),
-#   MED20= mean(P19_POP,na.rm=TRUE),
-#   P19_POP1529= sum(P19_POP,na.rm=TRUE),
-#   RT23= sum(P19_POP,na.rm=TRUE),
-#   CPG23= sum(P19_POP,na.rm=TRUE),
-#   RD20= mean(P19_POP,na.rm=TRUE),
-#   D920= mean(P19_POP,na.rm=TRUE),
-#   D120= mean(P19_POP,na.rm=TRUE),
-#   HT23= sum(P19_POP,na.rm=TRUE) 
-# ),
-# by = .(DEP)]
-# 
-# delinquance_dep <- 
-#   merge(x = delinquance_dep,
-#         y = dossier_complet_insee_dep,
-#         by.x = "DEP_inf",
-#         by.y = "DEP",
-#         all.x = TRUE)
-# 
-# 
-# 
-# 
+# Agrégation au niveau départemental de toutes les variables numériques commençant par "Nb_"
+# dans le tibble "delinquance_com":
+
+delinquance_dep <- delinquance_com %>% select(starts_with("Nb_"),DEP_inf) %>%
+                   group_by(DEP_inf) %>%
+                   summarize_all(sum,na.rm=TRUE)
+
+# On apparie la base à celle des principaux indicateurs démographiques et socio-économiques (issus du comparateur 
+# des communes de l'Insee) agrégés au niveau départemental:
+infos_communes<-as_tibble(infos_communes_dt)
+
+infos_dep <- infos_communes %>%
+             group_by(DEP) %>%
+             summarize(P19_POP = sum(P19_POP,na.rm = TRUE),
+                       SUPERF = sum(SUPERF,na.rm = TRUE),
+                       P19_LOG = sum(P19_LOG,na.rm = TRUE),
+                       P19_RP = sum(P19_RP,na.rm = TRUE),
+                       P19_RSECOCC = sum(P19_RSECOCC,na.rm = TRUE),
+                       P19_LOGVAC = sum(P19_LOGVAC,na.rm = TRUE),
+                       P19_RP_PROP = sum(P19_RP_PROP,na.rm = TRUE),
+                       NBMENFISC20 = sum(NBMENFISC20,na.rm = TRUE),
+                       P19_LOGVAC = sum(P19_LOGVAC,na.rm = TRUE),
+                       P19_RP_PROP = sum(P19_RP_PROP,na.rm = TRUE),
+                       NBMENFISC20 = sum(NBMENFISC20,na.rm = TRUE),
+                       P19_POP1564 = sum(P19_POP1564,na.rm = TRUE),
+                       P19_CHOMEUR1564 = sum(P19_CHOMEUR1564,na.rm = TRUE),
+                       MED20 = mean(MED20,na.rm = TRUE)
+                       )
+                       
+delinquance_dep <- delinquance_dep %>%
+  left_join(y = infos_dep, 
+            by = c("DEP_inf" = "DEP"))
+
+
+# On apparie la base avec une sélection d'indicateurs pertinents issus du dossier complet sur les communes (source: Insee):
+
+# Sélection des indicateurs pertinents:
+
+# On récupère les variables utiles pour calculer les variables supplémentaires suivantes:
+# Part des jeunes (15-29 ans) dans la population communale (en %): P19_POP1529/P19_POP
+# Part des résidences de tourisme dans l'ensemble des logements de la commune (en %): RT23/P19_LOG
+# Nombre des campings pour 1000 habitants: CPG23/P19_POP*1000
+# Rapport interdécile de niveau de vie de la commune (D9/D1): RD20 = D920/D120
+# Part des hôtels dans l'ensemble des logements de la commune: HT23/P19_LOG
+
+correspondances_COM_DEP <- as_tibble(communes_zonages_dt) %>% select(CODGEO,DEP)
+
+dossier_complet_insee_dep <- dossier_complet_insee %>%
+  select(CODGEO,P19_POP1529,RT23,CPG23,HT23,RD20) %>%
+  left_join(y = correspondances_COM_DEP, 
+            by = c("CODGEO" = "CODGEO")) %>%
+  group_by(DEP) %>%
+  summarise(P19_POP1529 = sum(P19_POP1529,na.rm = TRUE),
+            RT23 = sum(RT23,na.rm = TRUE),
+            CPG23 = sum(CPG23,na.rm = TRUE),
+            HT23 = sum(HT23,na.rm = TRUE)
+           )
+            
+delinquance_dep <- delinquance_dep %>%
+  left_join(y = dossier_complet_insee_dep, 
+            by = c("DEP_inf" = "DEP"))
+
+# Calcul de toutes les variables relatives au volume de délinquance (pour 1000 habitants):
+
+delinquance_dep <- delinquance_dep %>%
+  mutate(
+    I = Nb_I/P19_POP*1000,
+    I_cambr = Nb_I_cambr/P19_POP*1000,
+    I_bless_famil = Nb_I_bless_famil/P19_POP*1000,
+    I_bless_horsfamil = Nb_I_bless_horsfamil/P19_POP*1000,
+    I_destr_degrad = Nb_I_destr_degrad/P19_POP*1000,
+    I_homic = Nb_I_homic/P19_POP*1000,
+    I_viol_sex = Nb_I_viol_sex/P19_POP*1000,
+    I_vols_armes = Nb_I_vols_armes/P19_POP*1000,
+    I_vols_acces_vehic = Nb_I_vols_acces_vehic/P19_POP*1000,
+    I_vols_ds_vehic = Nb_I_vols_ds_vehic/P19_POP*1000,
+    I_vols_de_vehic = Nb_I_vols_de_vehic/P19_POP*1000,
+    I_vols_sansviol = Nb_I_vols_sansviol/P19_POP*1000,
+    I_vols_viol_sansarme = Nb_I_vols_viol_sansarme/P19_POP*1000,
+    I_vols_vehic = Nb_I_vols_vehic/P19_POP*1000,
+    I_bless_famil_homic = Nb_I_bless_famil_homic/P19_POP*1000,
+    I_vols_violents = Nb_I_vols_violents/P19_POP*1000,
+    I_corpo = Nb_I_corpo/P19_POP*1000)
+
+
+# Calcul de toutes les variables relatives au volume de victimes (pour 1000 habitants):
+
+delinquance_dep <- delinquance_dep %>%
+  mutate(
+    V = Nb_V/P19_POP*1000,
+    V_cambr = Nb_V_cambr/P19_POP*1000,
+    V_bless_famil = Nb_V_bless_famil/P19_POP*1000,
+    V_bless_horsfamil = Nb_V_bless_horsfamil/P19_POP*1000,
+    V_destr_degrad = Nb_V_destr_degrad/P19_POP*1000,
+    V_homic = Nb_V_homic/P19_POP*1000,
+    V_viol_sex = Nb_V_viol_sex/P19_POP*1000,
+    V_vols_armes = Nb_V_vols_armes/P19_POP*1000,
+    V_vols_acces_vehic = Nb_V_vols_acces_vehic/P19_POP*1000,
+    V_vols_ds_vehic = Nb_V_vols_ds_vehic/P19_POP*1000,
+    V_vols_de_vehic = Nb_V_vols_de_vehic/P19_POP*1000,
+    V_vols_sansviol = Nb_V_vols_sansviol/P19_POP*1000,
+    V_vols_viol_sansarme = Nb_V_vols_viol_sansarme/P19_POP*1000,
+    V_vols_vehic = Nb_V_vols_vehic/P19_POP*1000,
+    V_bless_famil_homic = Nb_V_bless_famil_homic/P19_POP*1000,
+    V_vols_violents = Nb_V_vols_violents/P19_POP*1000,
+    V_corpo = Nb_V_corpo/P19_POP*1000
+  )
+
+# Calcul de toutes les variables relatives au volume de mis en cause (pour 1000 habitants):
+
+delinquance_dep <- delinquance_dep %>%
+  mutate(
+    M = Nb_M/P19_POP*1000,
+    M_cambr = Nb_M_cambr/P19_POP*1000,
+    M_bless_famil = Nb_M_bless_famil/P19_POP*1000,
+    M_bless_horsfamil = Nb_M_bless_horsfamil/P19_POP*1000,
+    M_destr_degrad = Nb_M_destr_degrad/P19_POP*1000,
+    M_homic = Nb_M_homic/P19_POP*1000,
+    M_viol_sex = Nb_M_viol_sex/P19_POP*1000,
+    M_vols_armes = Nb_M_vols_armes/P19_POP*1000,
+    M_vols_acces_vehic = Nb_M_vols_acces_vehic/P19_POP*1000,
+    M_vols_ds_vehic = Nb_M_vols_ds_vehic/P19_POP*1000,
+    M_vols_de_vehic = Nb_M_vols_de_vehic/P19_POP*1000,
+    M_vols_sansviol = Nb_M_vols_sansviol/P19_POP*1000,
+    M_vols_viol_sansarme = Nb_M_vols_viol_sansarme/P19_POP*1000,
+    M_vols_vehic = Nb_M_vols_vehic/P19_POP*1000,
+    M_bless_famil_homic = Nb_M_bless_famil_homic/P19_POP*1000,
+    M_vols_violents = Nb_M_vols_violents/P19_POP*1000,
+    M_corpo = Nb_M_corpo/P19_POP*1000
+  )
+
+# Calcul de toutes les variables relatives à la structure de la délinquance par type d'atteinte (en %):
+
+delinquance_dep <- delinquance_dep %>%
+  mutate(
+    P_I_cambr = Nb_I_cambr/Nb_I*100,
+    P_I_bless_famil = Nb_I_bless_famil/Nb_I*100,
+    P_I_bless_horsfamil = Nb_I_bless_horsfamil/Nb_I*100,
+    P_I_destr_degrad = Nb_I_destr_degrad/Nb_I*100,
+    P_I_homic = Nb_I_homic/Nb_I*100,
+    P_I_viol_sex = Nb_I_viol_sex/Nb_I*100,
+    P_I_vols_armes = Nb_I_vols_armes/Nb_I*100,
+    P_I_vols_acces_vehic = Nb_I_vols_acces_vehic/Nb_I*100,
+    P_I_vols_ds_vehic = Nb_I_vols_ds_vehic/Nb_I*100,
+    P_I_vols_de_vehic = Nb_I_vols_de_vehic/Nb_I*100,
+    P_I_vols_sansviol = Nb_I_vols_sansviol/Nb_I*100,
+    P_I_vols_viol_sansarme = Nb_I_vols_viol_sansarme/Nb_I*100,
+    P_I_vols_vehic = Nb_I_vols_vehic/Nb_I*100,
+    P_I_bless_famil_homic = Nb_I_bless_famil_homic/Nb_I*100,
+    P_I_vols_violents = Nb_I_vols_violents/Nb_I*100,
+    P_I_corpo = Nb_I_corpo/Nb_I*100)
+
+
+# Calcul de toutes les variables relatives à la répartition des différents types d'atteintes selon que le couple
+# (I,V) associé ou le triplet (I,V,M) associé s'inscrit ou non dans un même zonage d'étude (en %):
+
+delinquance_dep <- delinquance_dep %>%
+  mutate(
+    # (I,V) dans même ZE:
+    P_I_IV_1ZE = Nb_I_IV_1ZE/Nb_I*100,
+    P_I_cambr_IV_1ZE = Nb_I_cambr_IV_1ZE/Nb_I_cambr*100,
+    P_I_bless_famil_IV_1ZE = Nb_I_bless_famil_IV_1ZE/Nb_I_bless_famil*100,
+    P_I_bless_horsfamil_IV_1ZE = Nb_I_bless_horsfamil_IV_1ZE/Nb_I_bless_horsfamil*100,
+    P_I_destr_degrad_IV_1ZE = Nb_I_destr_degrad_IV_1ZE/Nb_I_destr_degrad*100,
+    P_I_homic_IV_1ZE = Nb_I_homic_IV_1ZE/Nb_I_homic*100,
+    P_I_viol_sex_IV_1ZE = Nb_I_viol_sex_IV_1ZE/Nb_I_viol_sex*100,
+    P_I_vols_armes_IV_1ZE = Nb_I_vols_armes_IV_1ZE/Nb_I_vols_armes*100,
+    P_I_vols_acces_vehic_IV_1ZE = Nb_I_vols_acces_vehic_IV_1ZE/Nb_I_vols_acces_vehic*100,
+    P_I_vols_ds_vehic_IV_1ZE = Nb_I_vols_ds_vehic_IV_1ZE/Nb_I_vols_ds_vehic*100,
+    P_I_vols_de_vehic_IV_1ZE = Nb_I_vols_de_vehic_IV_1ZE/Nb_I_vols_de_vehic*100,
+    P_I_vols_sansviol_IV_1ZE = Nb_I_vols_sansviol_IV_1ZE/Nb_I_vols_sansviol*100,
+    P_I_vols_viol_sansarme_IV_1ZE = Nb_I_vols_viol_sansarme_IV_1ZE/Nb_I_vols_viol_sansarme*100,
+    P_I_vols_vehic_IV_1ZE = Nb_I_vols_vehic_IV_1ZE/Nb_I_vols_vehic*100,
+    P_I_bless_famil_homic_IV_1ZE = Nb_I_bless_famil_homic_IV_1ZE/Nb_I_bless_famil_homic*100,
+    P_I_vols_violents_IV_1ZE = Nb_I_vols_violents_IV_1ZE/Nb_I_vols_violents*100,
+    P_I_corpo_IV_1ZE = Nb_I_corpo_IV_1ZE/Nb_I_corpo*100,
+    # (I,V) dans même BV:
+    P_I_IV_1BV = Nb_I_IV_1BV/Nb_I*100,
+    P_I_cambr_IV_1BV = Nb_I_cambr_IV_1BV/Nb_I_cambr*100,
+    P_I_bless_famil_IV_1BV = Nb_I_bless_famil_IV_1BV/Nb_I_bless_famil*100,
+    P_I_bless_horsfamil_IV_1BV = Nb_I_bless_horsfamil_IV_1BV/Nb_I_bless_horsfamil*100,
+    P_I_destr_degrad_IV_1BV = Nb_I_destr_degrad_IV_1BV/Nb_I_destr_degrad*100,
+    P_I_homic_IV_1BV = Nb_I_homic_IV_1BV/Nb_I_homic*100,
+    P_I_viol_sex_IV_1BV = Nb_I_viol_sex_IV_1BV/Nb_I_viol_sex*100,
+    P_I_vols_armes_IV_1BV = Nb_I_vols_armes_IV_1BV/Nb_I_vols_armes*100,
+    P_I_vols_acces_vehic_IV_1BV = Nb_I_vols_acces_vehic_IV_1BV/Nb_I_vols_acces_vehic*100,
+    P_I_vols_ds_vehic_IV_1BV = Nb_I_vols_ds_vehic_IV_1BV/Nb_I_vols_ds_vehic*100,
+    P_I_vols_de_vehic_IV_1BV = Nb_I_vols_de_vehic_IV_1BV/Nb_I_vols_de_vehic*100,
+    P_I_vols_sansviol_IV_1BV = Nb_I_vols_sansviol_IV_1BV/Nb_I_vols_sansviol*100,
+    P_I_vols_viol_sansarme_IV_1BV = Nb_I_vols_viol_sansarme_IV_1BV/Nb_I_vols_viol_sansarme*100,
+    P_I_vols_vehic_IV_1BV = Nb_I_vols_vehic_IV_1BV/Nb_I_vols_vehic*100,
+    P_I_bless_famil_homic_IV_1BV = Nb_I_bless_famil_homic_IV_1BV/Nb_I_bless_famil_homic*100,
+    P_I_vols_violents_IV_1BV = Nb_I_vols_violents_IV_1BV/Nb_I_vols_violents*100,
+    P_I_corpo_IV_1BV = Nb_I_corpo_IV_1BV/Nb_I_corpo*100,
+    # (I,V) dans même GD:
+    P_I_IV_1GD = Nb_I_IV_1GD/Nb_I*100,
+    P_I_cambr_IV_1GD = Nb_I_cambr_IV_1GD/Nb_I_cambr*100,
+    P_I_bless_famil_IV_1GD = Nb_I_bless_famil_IV_1GD/Nb_I_bless_famil*100,
+    P_I_bless_horsfamil_IV_1GD = Nb_I_bless_horsfamil_IV_1GD/Nb_I_bless_horsfamil*100,
+    P_I_destr_degrad_IV_1GD = Nb_I_destr_degrad_IV_1GD/Nb_I_destr_degrad*100,
+    P_I_homic_IV_1GD = Nb_I_homic_IV_1GD/Nb_I_homic*100,
+    P_I_viol_sex_IV_1GD = Nb_I_viol_sex_IV_1GD/Nb_I_viol_sex*100,
+    P_I_vols_armes_IV_1GD = Nb_I_vols_armes_IV_1GD/Nb_I_vols_armes*100,
+    P_I_vols_acces_vehic_IV_1GD = Nb_I_vols_acces_vehic_IV_1GD/Nb_I_vols_acces_vehic*100,
+    P_I_vols_ds_vehic_IV_1GD = Nb_I_vols_ds_vehic_IV_1GD/Nb_I_vols_ds_vehic*100,
+    P_I_vols_de_vehic_IV_1GD = Nb_I_vols_de_vehic_IV_1GD/Nb_I_vols_de_vehic*100,
+    P_I_vols_sansviol_IV_1GD = Nb_I_vols_sansviol_IV_1GD/Nb_I_vols_sansviol*100,
+    P_I_vols_viol_sansarme_IV_1GD = Nb_I_vols_viol_sansarme_IV_1GD/Nb_I_vols_viol_sansarme*100,
+    P_I_vols_vehic_IV_1GD = Nb_I_vols_vehic_IV_1GD/Nb_I_vols_vehic*100,
+    P_I_bless_famil_homic_IV_1GD = Nb_I_bless_famil_homic_IV_1GD/Nb_I_bless_famil_homic*100,
+    P_I_vols_violents_IV_1GD = Nb_I_vols_violents_IV_1GD/Nb_I_vols_violents*100,
+    P_I_corpo_IV_1GD = Nb_I_corpo_IV_1GD/Nb_I_corpo*100,
+    # (I,V) dans même UU:
+    P_I_IV_1UU = Nb_I_IV_1UU/Nb_I*100,
+    P_I_cambr_IV_1UU = Nb_I_cambr_IV_1UU/Nb_I_cambr*100,
+    P_I_bless_famil_IV_1UU = Nb_I_bless_famil_IV_1UU/Nb_I_bless_famil*100,
+    P_I_bless_horsfamil_IV_1UU = Nb_I_bless_horsfamil_IV_1UU/Nb_I_bless_horsfamil*100,
+    P_I_destr_degrad_IV_1UU = Nb_I_destr_degrad_IV_1UU/Nb_I_destr_degrad*100,
+    P_I_homic_IV_1UU = Nb_I_homic_IV_1UU/Nb_I_homic*100,
+    P_I_viol_sex_IV_1UU = Nb_I_viol_sex_IV_1UU/Nb_I_viol_sex*100,
+    P_I_vols_armes_IV_1UU = Nb_I_vols_armes_IV_1UU/Nb_I_vols_armes*100,
+    P_I_vols_acces_vehic_IV_1UU = Nb_I_vols_acces_vehic_IV_1UU/Nb_I_vols_acces_vehic*100,
+    P_I_vols_ds_vehic_IV_1UU = Nb_I_vols_ds_vehic_IV_1UU/Nb_I_vols_ds_vehic*100,
+    P_I_vols_de_vehic_IV_1UU = Nb_I_vols_de_vehic_IV_1UU/Nb_I_vols_de_vehic*100,
+    P_I_vols_sansviol_IV_1UU = Nb_I_vols_sansviol_IV_1UU/Nb_I_vols_sansviol*100,
+    P_I_vols_viol_sansarme_IV_1UU = Nb_I_vols_viol_sansarme_IV_1UU/Nb_I_vols_viol_sansarme*100,
+    P_I_vols_vehic_IV_1UU = Nb_I_vols_vehic_IV_1UU/Nb_I_vols_vehic*100,
+    P_I_bless_famil_homic_IV_1UU = Nb_I_bless_famil_homic_IV_1UU/Nb_I_bless_famil_homic*100,
+    P_I_vols_violents_IV_1UU = Nb_I_vols_violents_IV_1UU/Nb_I_vols_violents*100,
+    P_I_corpo_IV_1UU = Nb_I_corpo_IV_1UU/Nb_I_corpo*100,
+    # (I,V) dans même AAV:
+    P_I_IV_1AAV = Nb_I_IV_1AAV/Nb_I*100,
+    P_I_cambr_IV_1AAV = Nb_I_cambr_IV_1AAV/Nb_I_cambr*100,
+    P_I_bless_famil_IV_1AAV = Nb_I_bless_famil_IV_1AAV/Nb_I_bless_famil*100,
+    P_I_bless_horsfamil_IV_1AAV = Nb_I_bless_horsfamil_IV_1AAV/Nb_I_bless_horsfamil*100,
+    P_I_destr_degrad_IV_1AAV = Nb_I_destr_degrad_IV_1AAV/Nb_I_destr_degrad*100,
+    P_I_homic_IV_1AAV = Nb_I_homic_IV_1AAV/Nb_I_homic*100,
+    P_I_viol_sex_IV_1AAV = Nb_I_viol_sex_IV_1AAV/Nb_I_viol_sex*100,
+    P_I_vols_armes_IV_1AAV = Nb_I_vols_armes_IV_1AAV/Nb_I_vols_armes*100,
+    P_I_vols_acces_vehic_IV_1AAV = Nb_I_vols_acces_vehic_IV_1AAV/Nb_I_vols_acces_vehic*100,
+    P_I_vols_ds_vehic_IV_1AAV = Nb_I_vols_ds_vehic_IV_1AAV/Nb_I_vols_ds_vehic*100,
+    P_I_vols_de_vehic_IV_1AAV = Nb_I_vols_de_vehic_IV_1AAV/Nb_I_vols_de_vehic*100,
+    P_I_vols_sansviol_IV_1AAV = Nb_I_vols_sansviol_IV_1AAV/Nb_I_vols_sansviol*100,
+    P_I_vols_viol_sansarme_IV_1AAV = Nb_I_vols_viol_sansarme_IV_1AAV/Nb_I_vols_viol_sansarme*100,
+    P_I_vols_vehic_IV_1AAV = Nb_I_vols_vehic_IV_1AAV/Nb_I_vols_vehic*100,
+    P_I_bless_famil_homic_IV_1AAV = Nb_I_bless_famil_homic_IV_1AAV/Nb_I_bless_famil_homic*100,
+    P_I_vols_violents_IV_1AAV = Nb_I_vols_violents_IV_1AAV/Nb_I_vols_violents*100,
+    P_I_corpo_IV_1AAV = Nb_I_corpo_IV_1AAV/Nb_I_corpo*100,
+    # (I,V) dans même CENTR:
+    P_I_IV_1CENTR = Nb_I_IV_1CENTR/Nb_I*100,
+    P_I_cambr_IV_1CENTR = Nb_I_cambr_IV_1CENTR/Nb_I_cambr*100,
+    P_I_bless_famil_IV_1CENTR = Nb_I_bless_famil_IV_1CENTR/Nb_I_bless_famil*100,
+    P_I_bless_horsfamil_IV_1CENTR = Nb_I_bless_horsfamil_IV_1CENTR/Nb_I_bless_horsfamil*100,
+    P_I_destr_degrad_IV_1CENTR = Nb_I_destr_degrad_IV_1CENTR/Nb_I_destr_degrad*100,
+    P_I_homic_IV_1CENTR = Nb_I_homic_IV_1CENTR/Nb_I_homic*100,
+    P_I_viol_sex_IV_1CENTR = Nb_I_viol_sex_IV_1CENTR/Nb_I_viol_sex*100,
+    P_I_vols_armes_IV_1CENTR = Nb_I_vols_armes_IV_1CENTR/Nb_I_vols_armes*100,
+    P_I_vols_acces_vehic_IV_1CENTR = Nb_I_vols_acces_vehic_IV_1CENTR/Nb_I_vols_acces_vehic*100,
+    P_I_vols_ds_vehic_IV_1CENTR = Nb_I_vols_ds_vehic_IV_1CENTR/Nb_I_vols_ds_vehic*100,
+    P_I_vols_de_vehic_IV_1CENTR = Nb_I_vols_de_vehic_IV_1CENTR/Nb_I_vols_de_vehic*100,
+    P_I_vols_sansviol_IV_1CENTR = Nb_I_vols_sansviol_IV_1CENTR/Nb_I_vols_sansviol*100,
+    P_I_vols_viol_sansarme_IV_1CENTR = Nb_I_vols_viol_sansarme_IV_1CENTR/Nb_I_vols_viol_sansarme*100,
+    P_I_vols_vehic_IV_1CENTR = Nb_I_vols_vehic_IV_1CENTR/Nb_I_vols_vehic*100,
+    P_I_bless_famil_homic_IV_1CENTR = Nb_I_bless_famil_homic_IV_1CENTR/Nb_I_bless_famil_homic*100,
+    P_I_vols_violents_IV_1CENTR = Nb_I_vols_violents_IV_1CENTR/Nb_I_vols_violents*100,
+    P_I_corpo_IV_1CENTR = Nb_I_corpo_IV_1CENTR/Nb_I_corpo*100,
+    # (I,V,M) dans même ZE:
+    P_I_cambr_IVM_1ZE = Nb_I_cambr_IVM_1ZE/Nb_I_cambr*100,
+    P_I_bless_famil_IVM_1ZE = Nb_I_bless_famil_IVM_1ZE/Nb_I_bless_famil*100,
+    P_I_bless_horsfamil_IVM_1ZE = Nb_I_bless_horsfamil_IVM_1ZE/Nb_I_bless_horsfamil*100,
+    P_I_destr_degrad_IVM_1ZE = Nb_I_destr_degrad_IVM_1ZE/Nb_I_destr_degrad*100,
+    P_I_homic_IVM_1ZE = Nb_I_homic_IVM_1ZE/Nb_I_homic*100,
+    P_I_viol_sex_IVM_1ZE = Nb_I_viol_sex_IVM_1ZE/Nb_I_viol_sex*100,
+    P_I_vols_armes_IVM_1ZE = Nb_I_vols_armes_IVM_1ZE/Nb_I_vols_armes*100,
+    P_I_vols_acces_vehic_IVM_1ZE = Nb_I_vols_acces_vehic_IVM_1ZE/Nb_I_vols_acces_vehic*100,
+    P_I_vols_ds_vehic_IVM_1ZE = Nb_I_vols_ds_vehic_IVM_1ZE/Nb_I_vols_ds_vehic*100,
+    P_I_vols_de_vehic_IVM_1ZE = Nb_I_vols_de_vehic_IVM_1ZE/Nb_I_vols_de_vehic*100,
+    P_I_vols_sansviol_IVM_1ZE = Nb_I_vols_sansviol_IVM_1ZE/Nb_I_vols_sansviol*100,
+    P_I_vols_viol_sansarme_IVM_1ZE = Nb_I_vols_viol_sansarme_IVM_1ZE/Nb_I_vols_viol_sansarme*100,
+    P_I_vols_vehic_IVM_1ZE = Nb_I_vols_vehic_IVM_1ZE/Nb_I_vols_vehic*100,
+    P_I_bless_famil_homic_IVM_1ZE = Nb_I_bless_famil_homic_IVM_1ZE/Nb_I_bless_famil_homic*100,
+    P_I_vols_violents_IVM_1ZE = Nb_I_vols_violents_IVM_1ZE/Nb_I_vols_violents*100,
+    P_I_corpo_IVM_1ZE = Nb_I_corpo_IVM_1ZE/Nb_I_corpo*100,
+    # (I,V,M) dans même BV:
+    P_I_cambr_IVM_1BV = Nb_I_cambr_IVM_1BV/Nb_I_cambr*100,
+    P_I_bless_famil_IVM_1BV = Nb_I_bless_famil_IVM_1BV/Nb_I_bless_famil*100,
+    P_I_bless_horsfamil_IVM_1BV = Nb_I_bless_horsfamil_IVM_1BV/Nb_I_bless_horsfamil*100,
+    P_I_destr_degrad_IVM_1BV = Nb_I_destr_degrad_IVM_1BV/Nb_I_destr_degrad*100,
+    P_I_homic_IVM_1BV = Nb_I_homic_IVM_1BV/Nb_I_homic*100,
+    P_I_viol_sex_IVM_1BV = Nb_I_viol_sex_IVM_1BV/Nb_I_viol_sex*100,
+    P_I_vols_armes_IVM_1BV = Nb_I_vols_armes_IVM_1BV/Nb_I_vols_armes*100,
+    P_I_vols_acces_vehic_IVM_1BV = Nb_I_vols_acces_vehic_IVM_1BV/Nb_I_vols_acces_vehic*100,
+    P_I_vols_ds_vehic_IVM_1BV = Nb_I_vols_ds_vehic_IVM_1BV/Nb_I_vols_ds_vehic*100,
+    P_I_vols_de_vehic_IVM_1BV = Nb_I_vols_de_vehic_IVM_1BV/Nb_I_vols_de_vehic*100,
+    P_I_vols_sansviol_IVM_1BV = Nb_I_vols_sansviol_IVM_1BV/Nb_I_vols_sansviol*100,
+    P_I_vols_viol_sansarme_IVM_1BV = Nb_I_vols_viol_sansarme_IVM_1BV/Nb_I_vols_viol_sansarme*100,
+    P_I_vols_vehic_IVM_1BV = Nb_I_vols_vehic_IVM_1BV/Nb_I_vols_vehic*100,
+    P_I_bless_famil_homic_IVM_1BV = Nb_I_bless_famil_homic_IVM_1BV/Nb_I_bless_famil_homic*100,
+    P_I_vols_violents_IVM_1BV = Nb_I_vols_violents_IVM_1BV/Nb_I_vols_violents*100,
+    P_I_corpo_IVM_1BV = Nb_I_corpo_IVM_1BV/Nb_I_corpo*100,
+    # (I,V,M) dans même GD:
+    P_I_cambr_IVM_1GD = Nb_I_cambr_IVM_1GD/Nb_I_cambr*100,
+    P_I_bless_famil_IVM_1GD = Nb_I_bless_famil_IVM_1GD/Nb_I_bless_famil*100,
+    P_I_bless_horsfamil_IVM_1GD = Nb_I_bless_horsfamil_IVM_1GD/Nb_I_bless_horsfamil*100,
+    P_I_destr_degrad_IVM_1GD = Nb_I_destr_degrad_IVM_1GD/Nb_I_destr_degrad*100,
+    P_I_homic_IVM_1GD = Nb_I_homic_IVM_1GD/Nb_I_homic*100,
+    P_I_viol_sex_IVM_1GD = Nb_I_viol_sex_IVM_1GD/Nb_I_viol_sex*100,
+    P_I_vols_armes_IVM_1GD = Nb_I_vols_armes_IVM_1GD/Nb_I_vols_armes*100,
+    P_I_vols_acces_vehic_IVM_1GD = Nb_I_vols_acces_vehic_IVM_1GD/Nb_I_vols_acces_vehic*100,
+    P_I_vols_ds_vehic_IVM_1GD = Nb_I_vols_ds_vehic_IVM_1GD/Nb_I_vols_ds_vehic*100,
+    P_I_vols_de_vehic_IVM_1GD = Nb_I_vols_de_vehic_IVM_1GD/Nb_I_vols_de_vehic*100,
+    P_I_vols_sansviol_IVM_1GD = Nb_I_vols_sansviol_IVM_1GD/Nb_I_vols_sansviol*100,
+    P_I_vols_viol_sansarme_IVM_1GD = Nb_I_vols_viol_sansarme_IVM_1GD/Nb_I_vols_viol_sansarme*100,
+    P_I_vols_vehic_IVM_1GD = Nb_I_vols_vehic_IVM_1GD/Nb_I_vols_vehic*100,
+    P_I_bless_famil_homic_IVM_1GD = Nb_I_bless_famil_homic_IVM_1GD/Nb_I_bless_famil_homic*100,
+    P_I_vols_violents_IVM_1GD = Nb_I_vols_violents_IVM_1GD/Nb_I_vols_violents*100,
+    P_I_corpo_IVM_1GD = Nb_I_corpo_IVM_1GD/Nb_I_corpo*100,
+    # (I,V,M) dans même UU:
+    P_I_cambr_IVM_1UU = Nb_I_cambr_IVM_1UU/Nb_I_cambr*100,
+    P_I_bless_famil_IVM_1UU = Nb_I_bless_famil_IVM_1UU/Nb_I_bless_famil*100,
+    P_I_bless_horsfamil_IVM_1UU = Nb_I_bless_horsfamil_IVM_1UU/Nb_I_bless_horsfamil*100,
+    P_I_destr_degrad_IVM_1UU = Nb_I_destr_degrad_IVM_1UU/Nb_I_destr_degrad*100,
+    P_I_homic_IVM_1UU = Nb_I_homic_IVM_1UU/Nb_I_homic*100,
+    P_I_viol_sex_IVM_1UU = Nb_I_viol_sex_IVM_1UU/Nb_I_viol_sex*100,
+    P_I_vols_armes_IVM_1UU = Nb_I_vols_armes_IVM_1UU/Nb_I_vols_armes*100,
+    P_I_vols_acces_vehic_IVM_1UU = Nb_I_vols_acces_vehic_IVM_1UU/Nb_I_vols_acces_vehic*100,
+    P_I_vols_ds_vehic_IVM_1UU = Nb_I_vols_ds_vehic_IVM_1UU/Nb_I_vols_ds_vehic*100,
+    P_I_vols_de_vehic_IVM_1UU = Nb_I_vols_de_vehic_IVM_1UU/Nb_I_vols_de_vehic*100,
+    P_I_vols_sansviol_IVM_1UU = Nb_I_vols_sansviol_IVM_1UU/Nb_I_vols_sansviol*100,
+    P_I_vols_viol_sansarme_IVM_1UU = Nb_I_vols_viol_sansarme_IVM_1UU/Nb_I_vols_viol_sansarme*100,
+    P_I_vols_vehic_IVM_1UU = Nb_I_vols_vehic_IVM_1UU/Nb_I_vols_vehic*100,
+    P_I_bless_famil_homic_IVM_1UU = Nb_I_bless_famil_homic_IVM_1UU/Nb_I_bless_famil_homic*100,
+    P_I_vols_violents_IVM_1UU = Nb_I_vols_violents_IVM_1UU/Nb_I_vols_violents*100,
+    P_I_corpo_IVM_1UU = Nb_I_corpo_IVM_1UU/Nb_I_corpo*100,
+    # (I,V,M) dans même AAV:
+    P_I_cambr_IVM_1AAV = Nb_I_cambr_IVM_1AAV/Nb_I_cambr*100,
+    P_I_bless_famil_IVM_1AAV = Nb_I_bless_famil_IVM_1AAV/Nb_I_bless_famil*100,
+    P_I_bless_horsfamil_IVM_1AAV = Nb_I_bless_horsfamil_IVM_1AAV/Nb_I_bless_horsfamil*100,
+    P_I_destr_degrad_IVM_1AAV = Nb_I_destr_degrad_IVM_1AAV/Nb_I_destr_degrad*100,
+    P_I_homic_IVM_1AAV = Nb_I_homic_IVM_1AAV/Nb_I_homic*100,
+    P_I_viol_sex_IVM_1AAV = Nb_I_viol_sex_IVM_1AAV/Nb_I_viol_sex*100,
+    P_I_vols_armes_IVM_1AAV = Nb_I_vols_armes_IVM_1AAV/Nb_I_vols_armes*100,
+    P_I_vols_acces_vehic_IVM_1AAV = Nb_I_vols_acces_vehic_IVM_1AAV/Nb_I_vols_acces_vehic*100,
+    P_I_vols_ds_vehic_IVM_1AAV = Nb_I_vols_ds_vehic_IVM_1AAV/Nb_I_vols_ds_vehic*100,
+    P_I_vols_de_vehic_IVM_1AAV = Nb_I_vols_de_vehic_IVM_1AAV/Nb_I_vols_de_vehic*100,
+    P_I_vols_sansviol_IVM_1AAV = Nb_I_vols_sansviol_IVM_1AAV/Nb_I_vols_sansviol*100,
+    P_I_vols_viol_sansarme_IVM_1AAV = Nb_I_vols_viol_sansarme_IVM_1AAV/Nb_I_vols_viol_sansarme*100,
+    P_I_vols_vehic_IVM_1AAV = Nb_I_vols_vehic_IVM_1AAV/Nb_I_vols_vehic*100,
+    P_I_bless_famil_homic_IVM_1AAV = Nb_I_bless_famil_homic_IVM_1AAV/Nb_I_bless_famil_homic*100,
+    P_I_vols_violents_IVM_1AAV = Nb_I_vols_violents_IVM_1AAV/Nb_I_vols_violents*100,
+    P_I_corpo_IVM_1AAV = Nb_I_corpo_IVM_1AAV/Nb_I_corpo*100,
+    # (I,V,M) dans même CENTR:
+    P_I_cambr_IVM_1CENTR = Nb_I_cambr_IVM_1CENTR/Nb_I_cambr*100,
+    P_I_bless_famil_IVM_1CENTR = Nb_I_bless_famil_IVM_1CENTR/Nb_I_bless_famil*100,
+    P_I_bless_horsfamil_IVM_1CENTR = Nb_I_bless_horsfamil_IVM_1CENTR/Nb_I_bless_horsfamil*100,
+    P_I_destr_degrad_IVM_1CENTR = Nb_I_destr_degrad_IVM_1CENTR/Nb_I_destr_degrad*100,
+    P_I_homic_IVM_1CENTR = Nb_I_homic_IVM_1CENTR/Nb_I_homic*100,
+    P_I_viol_sex_IVM_1CENTR = Nb_I_viol_sex_IVM_1CENTR/Nb_I_viol_sex*100,
+    P_I_vols_armes_IVM_1CENTR = Nb_I_vols_armes_IVM_1CENTR/Nb_I_vols_armes*100,
+    P_I_vols_acces_vehic_IVM_1CENTR = Nb_I_vols_acces_vehic_IVM_1CENTR/Nb_I_vols_acces_vehic*100,
+    P_I_vols_ds_vehic_IVM_1CENTR = Nb_I_vols_ds_vehic_IVM_1CENTR/Nb_I_vols_ds_vehic*100,
+    P_I_vols_de_vehic_IVM_1CENTR = Nb_I_vols_de_vehic_IVM_1CENTR/Nb_I_vols_de_vehic*100,
+    P_I_vols_sansviol_IVM_1CENTR = Nb_I_vols_sansviol_IVM_1CENTR/Nb_I_vols_sansviol*100,
+    P_I_vols_viol_sansarme_IVM_1CENTR = Nb_I_vols_viol_sansarme_IVM_1CENTR/Nb_I_vols_viol_sansarme*100,
+    P_I_vols_vehic_IVM_1CENTR = Nb_I_vols_vehic_IVM_1CENTR/Nb_I_vols_vehic*100,
+    P_I_bless_famil_homic_IVM_1CENTR = Nb_I_bless_famil_homic_IVM_1CENTR/Nb_I_bless_famil_homic*100,
+    P_I_vols_violents_IVM_1CENTR = Nb_I_vols_violents_IVM_1CENTR/Nb_I_vols_violents*100,
+    P_I_corpo_IVM_1CENTR = Nb_I_corpo_IVM_1CENTR/Nb_I_corpo*100)
+
+# Calculs d'indicateurs démographiques et socio-économiques sur les communes:
+
+# densité de population (P19_POP/SUPERF), en nombre d'hbts/km2.
+# proportion de résidences secondaires (en % de logements): P19_RSECOCC/P19_LOG
+# proportion de chômeurs (en % de la population des 15-64 ans): P19_CHOMEUR1564/P19_POP1564
+# Part des jeunes (15-29 ans) dans la population communale (en %): P19_POP1529/P19_POP
+# Part des résidences de tourisme dans l'ensemble des logements de la commune (en %): RT23/P19_LOG
+# Nombre des campings pour 1000 habitants: CPG23/P19_POP*1000
+# Rapport interdécile de niveau de vie de la commune (D9/D1): RD20 = D920/D120
+# Part des hôtels dans l'ensemble des logements de la commune: HT23/P19_LOG
+delinquance_dep <- delinquance_dep %>%
+  mutate(densite_pop=P19_POP/SUPERF,
+         part_res_secondaires=P19_RSECOCC/P19_LOG*100,
+         part_chomeurs=P19_CHOMEUR1564/P19_POP1564*100,
+         P_pop15_29ans = P19_POP1529/P19_POP*100,
+         P_res_tourisme=RT23/P19_LOG*100,
+         P_camping_1000hbt=CPG23/P19_POP*1000,
+         P_hotel=HT23/P19_LOG*100) 
+
+# Ajout de l'information sur les distances médianes entre les communes I,V et M:
+
+# Calcul de la distance médiane I->V, I->M, V->M pour chaque département:
+dist_mediane_dep <-atteintes[, .(dist_mediane_I_V=median(dist_inf_vict,na.rm=TRUE),
+                                 dist_mediane_I_M=median(dist_inf_mec,na.rm=TRUE),
+                                 dist_mediane_V_M=median(dist_vict_mec,na.rm=TRUE)
+),by=.(DEP_inf)]
+# Transformation en tibble:
+dist_mediane_dep <- as_tibble(dist_mediane_dep)
+
+# Appariement:
+delinquance_dep <- delinquance_dep %>%
+  left_join(y = dist_mediane_dep, 
+            by = c("DEP_inf" = "DEP_inf"))
+
+
+# Raffinement: on peut calculer une distance médiane par atteinte (on retient 8 types d'atteinte ici:
+# on regroupe les 3 atteintes sur les véhicules en une seule; on regroupe les homicides avec  les
+# blessures volontaires extra-familiales)
+# Recodage de la variable catégorielle "classe" en ce sens:
+
+# atteintes[ ,classe2 := data.table::fcase(
+#   (classe == "Cambriolages de logement"), "Cambriolages de logement",
+#   (classe == "Coups et blessures volontaires dans la sphère familiale"), "Coups et blessures volontaires dans la sphère familiale",
+#   (classe %chin% c("Coups et blessures volontaires en dehors de la sphère familiale","Homicides")), "Coups et blessures volontaires dans la sphère familiale & Homicides",
+#   (classe == "Destructions et dégradations"), "Destructions et dégradations",
+#   )
+# ]

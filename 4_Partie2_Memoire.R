@@ -549,7 +549,7 @@ tableau3b_2016_2019_annexe <- atteintes[annee %between% c(2016,2019) &
     (is.na(ZE2020_inf)==FALSE) & (is.na(ZE2020_vict)==FALSE) & (is.na(ZE2020_mec)==FALSE) &
     (is.na(UU2020_inf)==FALSE) & (is.na(UU2020_vict)==FALSE) & (is.na(UU2020_mec)==FALSE) &
     (is.na(AAV2020_inf)==FALSE) & (is.na(AAV2020_vict)==FALSE) & (is.na(AAV2020_mec)==FALSE) &
-    (is.na(TYPE_inf)==FALSE) & (is.na(TYPE_vict)==FALSE) & (is.na(TYPE_mec)==FALSE) &
+    (is.na(GRD_inf)==FALSE) & (is.na(GRD_vict)==FALSE) & (is.na(TYPE_mec)==FALSE) &
     (is.na(P_NP5CLA_inf)==FALSE) & (is.na(P_NP5CLA_vict)==FALSE) & (is.na(P_NP5CLA_mec)==FALSE) &
                         classe %chin% c("Coups et blessures volontaires dans la sphère familiale",
                                          "Coups et blessures volontaires en dehors de la sphère familiale",
@@ -583,7 +583,7 @@ tableau3b_2020_2021_annexe <- atteintes[annee %between% c(2020,2021) &
                                      (is.na(ZE2020_inf)==FALSE) & (is.na(ZE2020_vict)==FALSE) & (is.na(ZE2020_mec)==FALSE) &
                                      (is.na(UU2020_inf)==FALSE) & (is.na(UU2020_vict)==FALSE) & (is.na(UU2020_mec)==FALSE) &
                                      (is.na(AAV2020_inf)==FALSE) & (is.na(AAV2020_vict)==FALSE) & (is.na(AAV2020_mec)==FALSE) &
-                                     (is.na(TYPE_inf)==FALSE) & (is.na(TYPE_vict)==FALSE) & (is.na(TYPE_mec)==FALSE) &
+                                     (is.na(GRD_inf)==FALSE) & (is.na(GRD_vict)==FALSE) & (is.na(GRD_mec)==FALSE) &
                                      (is.na(P_NP5CLA_inf)==FALSE) & (is.na(P_NP5CLA_vict)==FALSE) & (is.na(P_NP5CLA_mec)==FALSE) &
                                  classe %chin% c("Coups et blessures volontaires dans la sphère familiale",
                                                    "Coups et blessures volontaires en dehors de la sphère familiale",
@@ -826,8 +826,250 @@ tableau6b <- atteintes[(IVM_ds_meme_AAV == "oui") & (is.na(cog_com_22_inf)==FALS
 # Tableau 7a:  Répartition (en %) des atteintes associées à un couple de communes (I,V) dans un même zonage, selon le statut
 # respectif de la commune de I et celle de V au sein de la GD 
 # Rappel: les différentes modalités de la GD sont:
-# Urbain dense; Urbain densité intermédiaire; Rural périurbain; Rural non périurbain
+# Urbain dense (UD); Urbain densité intermédiaire (UDI); Rural périurbain (RP); Rural non périurbain (RNP)
 
-# TODO!
+tableau7a <- atteintes[(is.na(cog_com_22_inf)==FALSE) & (is.na(cog_com_22_vict)==FALSE) &
+                         (is.na(BV2022_inf)==FALSE) & (is.na(BV2022_vict)==FALSE) &
+                         (is.na(ZE2020_inf)==FALSE) & (is.na(ZE2020_vict)==FALSE) &
+                         (is.na(UU2020_inf)==FALSE) & (is.na(UU2020_vict)==FALSE) &
+                         (is.na(AAV2020_inf)==FALSE) & (is.na(AAV2020_vict)==FALSE) &
+                         (is.na(GRD_inf)==FALSE) & (is.na(GRD_vict)==FALSE) &
+                         (is.na(P_NP5CLA_inf)==FALSE) & (is.na(P_NP5CLA_vict)==FALSE),
+                       .(GRD_inf,GRD_vict,compteur,IV_ds_meme_ZE,IV_ds_meme_BV,IV_ds_meme_UU,IV_ds_meme_AAV)
+                       ][, type_GD_IV_1zonage := data.table::fcase(
+                         (GRD_inf =="Urbain dense" & GRD_vict =="Urbain dense"), "UD - UD",
+                         (GRD_inf =="Urbain dense" & GRD_vict =="Urbain densité intermédiaire"), "UDI - UDI",
+                         (GRD_inf =="Urbain dense" & GRD_vict =="Rural periurbain"), "UD - RP",
+                         (GRD_inf =="Urbain dense" & GRD_vict =="Rural non periurbain"), "UD - RNP",
+                         (GRD_inf =="Urbain densité intermédiaire" & GRD_vict =="Urbain dense"), "UDI - UD",
+                         (GRD_inf =="Urbain densité intermédiaire" & GRD_vict =="Urbain densité intermédiaire"), "UDI - UDI",
+                         (GRD_inf =="Urbain densité intermédiaire" & GRD_vict =="Rural periurbain"), "UDI - RP",
+                         (GRD_inf =="Urbain densité intermédiaire" & GRD_vict =="Rural non periurbain"), "UDI - RNP",
+                         (GRD_inf =="Rural periurbain" & GRD_vict =="Urbain dense"), "RP - UD",
+                         (GRD_inf =="Rural periurbain" & GRD_vict =="Urbain densité intermédiaire"), "RP - UDI",
+                         (GRD_inf =="Rural periurbain" & GRD_vict =="Rural periurbain"), "RP - RP",
+                         (GRD_inf =="Rural periurbain" & GRD_vict =="Rural non periurbain"), "RP - RNP",
+                         (GRD_inf =="Rural non periurbain" & GRD_vict =="Urbain dense"), "RNP - UD",
+                         (GRD_inf =="Rural non periurbain" & GRD_vict =="Urbain densité intermédiaire"), "RNP - UDI",
+                         (GRD_inf =="Rural non periurbain" & GRD_vict =="Rural periurbain"), "RNP - RP",
+                         (GRD_inf =="Rural non periurbain" & GRD_vict =="Rural non periurbain"), "RNP - RNP",
+                         default = "Autres")][, .(
+                           Nb_IV_1ZE = sum(compteur*(IV_ds_meme_ZE == "oui"),na.rm = TRUE),
+                           Nb_IV_1BV = sum(compteur*(IV_ds_meme_BV == "oui"),na.rm = TRUE),
+                           Nb_IV_1UU = sum(compteur*(IV_ds_meme_UU == "oui"),na.rm = TRUE),
+                           Nb_IV_1AAV = sum(compteur*(IV_ds_meme_AAV == "oui"),na.rm = TRUE)
+                           ),by = .(type_GD_IV_1zonage) 
+                         ][order(type_GD_IV_1zonage)][,`:=`(Total_IV_1ZE = sum(Nb_IV_1ZE),Total_IV_1BV = sum(Nb_IV_1BV),
+                                                          Total_IV_1UU = sum(Nb_IV_1UU),Total_IV_1AAV = sum(Nb_IV_1AAV))
+                         ][, `:=`(Pct_IV_1ZE = round(Nb_IV_1ZE/Total_IV_1ZE*100,2),
+                                  Pct_IV_1BV = round(Nb_IV_1BV/Total_IV_1BV*100,2),
+                                  Pct_IV_1UU = round(Nb_IV_1UU/Total_IV_1UU*100,2),
+                                  Pct_IV_1AAV = round(Nb_IV_1AAV/Total_IV_1AAV*100,2))
+                           ][,.(type_GD_IV_1zonage,Pct_IV_1ZE,Pct_IV_1BV,Pct_IV_1UU,Pct_IV_1AAV)]
 
-# Tableau 7b: idem sur (I,V,M) et les atteintes corpo 
+
+# Tableau 7b: Répartition (en %) des atteintes associées à un triplet de communes (I,V,M) dans une même zonage, selon le statut
+# respectif de la commune de I, de celle de V et de celle de M au sein de la GD. 
+# Rappel: les différentes modalités de la GD sont:
+# Urbain dense (UD); Urbain densité intermédiaire (UDI); Rural périurbain (RP); Rural non périurbain (RNP)
+# Remarque: pour construire nos modalités, on ne reprend que les modalités avec les plus grosses freq dans le tableau 7a ;)
+# On se restreint ici aux seules atteintes corporelles.
+tableau7b <- atteintes[(is.na(cog_com_22_inf)==FALSE) & (is.na(cog_com_22_vict)==FALSE) & (is.na(cog_com_22_mec)==FALSE) &
+                         (is.na(BV2022_inf)==FALSE) & (is.na(BV2022_vict)==FALSE) & (is.na(BV2022_mec)==FALSE) &
+                         (is.na(ZE2020_inf)==FALSE) & (is.na(ZE2020_vict)==FALSE) & (is.na(ZE2020_mec)==FALSE) &
+                         (is.na(UU2020_inf)==FALSE) & (is.na(UU2020_vict)==FALSE) & (is.na(UU2020_mec)==FALSE) &
+                         (is.na(AAV2020_inf)==FALSE) & (is.na(AAV2020_vict)==FALSE) & (is.na(AAV2020_mec)==FALSE) &
+                         (is.na(GRD_inf)==FALSE) & (is.na(GRD_vict)==FALSE) & (is.na(GRD_mec)==FALSE) &
+                         (is.na(P_NP5CLA_inf)==FALSE) & (is.na(P_NP5CLA_vict)==FALSE) & (is.na(P_NP5CLA_mec)==FALSE) &
+                         classe %chin% c("Coups et blessures volontaires dans la sphère familiale",
+                                         "Coups et blessures volontaires en dehors de la sphère familiale",
+                                         "Homicides",
+                                         "Violences sexuelles"),
+                       .(GRD_inf,GRD_vict,GRD_mec,compteur,IVM_ds_meme_ZE,IVM_ds_meme_BV,IVM_ds_meme_UU,IVM_ds_meme_AAV)
+][, type_GD_IVM_1zonage := data.table::fcase(
+  (GRD_inf =="Urbain dense" & GRD_vict =="Urbain dense" & GRD_mec =="Urbain dense"), "UD - UD - UD",
+  (GRD_inf =="Urbain dense" & GRD_vict =="Urbain dense" & GRD_mec =="Urbain densité intermédiaire"), "UD - UD - UDI",
+  (GRD_inf =="Urbain dense" & GRD_vict =="Urbain dense" & GRD_mec =="Rural periurbain"), "UD - UD - RP",
+  (GRD_inf =="Urbain dense" & GRD_vict =="Urbain dense" & GRD_mec =="Rural non periurbain"), "UD - UD - RNP",
+  
+  (GRD_inf =="Urbain densité intermédiaire" & GRD_vict =="Urbain dense" & GRD_mec =="Urbain dense"), "UDI - UD - UD",
+  (GRD_inf =="Urbain densité intermédiaire" & GRD_vict =="Urbain dense" & GRD_mec =="Urbain densité intermédiaire"), "UDI - UD - UDI",
+  (GRD_inf =="Urbain densité intermédiaire" & GRD_vict =="Urbain dense" & GRD_mec =="Rural periurbain"), "UDI - UD - RP",
+  (GRD_inf =="Urbain densité intermédiaire" & GRD_vict =="Urbain dense" & GRD_mec =="Rural non periurbain"), "UDI - UD - RNP",
+
+  (GRD_inf =="Urbain densité intermédiaire" & GRD_vict =="Urbain densité intermédiaire" & GRD_mec =="Urbain dense"), "UDI - UDI - UD",
+  (GRD_inf =="Urbain densité intermédiaire" & GRD_vict =="Urbain densité intermédiaire" & GRD_mec =="Urbain densité intermédiaire"), "UDI - UDI - UDI",
+  (GRD_inf =="Urbain densité intermédiaire" & GRD_vict =="Urbain densité intermédiaire" & GRD_mec =="Rural periurbain"), "UDI - UDI - RP",
+  (GRD_inf =="Urbain densité intermédiaire" & GRD_vict =="Urbain densité intermédiaire" & GRD_mec =="Rural non periurbain"), "UDI - UDI - RNP",
+
+  (GRD_inf =="Urbain densité intermédiaire" & GRD_vict =="Rural periurbain" & GRD_mec =="Urbain dense"), "UDI - RP - UD",
+  (GRD_inf =="Urbain densité intermédiaire" & GRD_vict =="Rural periurbain" & GRD_mec =="Urbain densité intermédiaire"), "UDI - RP - UDI",
+  (GRD_inf =="Urbain densité intermédiaire" & GRD_vict =="Rural periurbain" & GRD_mec =="Rural periurbain"), "UDI - RP - RP",
+  (GRD_inf =="Urbain densité intermédiaire" & GRD_vict =="Rural periurbain" & GRD_mec =="Rural non periurbain"), "UDI - RP - RNP",
+  
+  (GRD_inf =="Rural periurbain" & GRD_vict =="Urbain densité intermédiaire" & GRD_mec =="Urbain dense"), "RP - UDI - UD",
+  (GRD_inf =="Rural periurbain" & GRD_vict =="Urbain densité intermédiaire" & GRD_mec =="Urbain densité intermédiaire"), "RP - UDI - UDI",
+  (GRD_inf =="Rural periurbain" & GRD_vict =="Urbain densité intermédiaire" & GRD_mec =="Rural periurbain"), "RP - UDI - RP",
+  (GRD_inf =="Rural periurbaine" & GRD_vict =="Urbain densité intermédiaire" & GRD_mec =="Rural non periurbain"), "RP - UDI - RNP",
+  
+  (GRD_inf =="Rural periurbain" & GRD_vict =="Rural periurbain" & GRD_mec =="Urbain dense"), "RP - RP - UD",
+  (GRD_inf =="Rural periurbain" & GRD_vict =="Rural periurbain" & GRD_mec =="Urbain densité intermédiaire"), "RP - RP - UDI",
+  (GRD_inf =="Rural periurbain" & GRD_vict =="Rural periurbain" & GRD_mec =="Rural periurbain"), "RP - RP - RP",
+  (GRD_inf =="Rural periurbaine" & GRD_vict =="Rural periurbain" & GRD_mec =="Rural non periurbain"), "RP - RP - RNP",
+
+  (GRD_inf =="Rural non periurbain" & GRD_vict =="Rural non periurbain" & GRD_mec =="Urbain dense"), "RNP - RP - UD",
+  (GRD_inf =="Rural non periurbain" & GRD_vict =="Rural non periurbain" & GRD_mec =="Urbain densité intermédiaire"), "RNP - RP - UDI",
+  (GRD_inf =="Rural non periurbain" & GRD_vict =="Rural non periurbain" & GRD_mec =="Rural periurbain"), "RNP - RP - RP",
+  (GRD_inf =="Rural non periurbaine" & GRD_vict =="Rural non periurbain" & GRD_mec =="Rural non periurbain"), "RNP - RP - RNP",
+  
+  default = "Autres")][, .(
+    Nb_IVM_1ZE = sum(compteur*(IVM_ds_meme_ZE == "oui"),na.rm = TRUE),
+    Nb_IVM_1BV = sum(compteur*(IVM_ds_meme_BV == "oui"),na.rm = TRUE),
+    Nb_IVM_1UU = sum(compteur*(IVM_ds_meme_UU == "oui"),na.rm = TRUE),
+    Nb_IVM_1AAV = sum(compteur*(IVM_ds_meme_AAV == "oui"),na.rm = TRUE)
+  ),by = .(type_GD_IVM_1zonage) 
+  ][order(type_GD_IVM_1zonage)][,`:=`(Total_IVM_1ZE = sum(Nb_IVM_1ZE),Total_IVM_1BV = sum(Nb_IVM_1BV),
+                                     Total_IVM_1UU = sum(Nb_IVM_1UU),Total_IVM_1AAV = sum(Nb_IVM_1AAV))
+  ][, `:=`(Pct_IVM_1ZE = round(Nb_IVM_1ZE/Total_IVM_1ZE*100,2),
+           Pct_IVM_1BV = round(Nb_IVM_1BV/Total_IVM_1BV*100,2),
+           Pct_IVM_1UU = round(Nb_IVM_1UU/Total_IVM_1UU*100,2),
+           Pct_IVM_1AAV = round(Nb_IVM_1AAV/Total_IVM_1AAV*100,2))
+  ][,.(type_GD_IVM_1zonage,Pct_IVM_1ZE,Pct_IVM_1BV,Pct_IVM_1UU,Pct_IVM_1AAV)]
+
+# Une variante des tableaux 7: pour chaque type d'atteinte, répartition des couples de communes (I,V) selon les différentes
+# modalités de la grille de densité:
+
+# on se concentre d'abord sur les seules atteintes non corporelles (7a):
+tableau7a_bis <- atteintes[(is.na(cog_com_22_inf)==FALSE) & (is.na(cog_com_22_vict)==FALSE) &
+                         (is.na(GRD_inf)==FALSE) & (is.na(GRD_vict)==FALSE) &
+                           !(classe %chin% c("Coups et blessures volontaires dans la sphère familiale",
+                                           "Coups et blessures volontaires en dehors de la sphère familiale",
+                                           "Homicides",
+                                           "Violences sexuelles")),
+                       .(GRD_inf,GRD_vict,compteur)
+][, type_GD_IV := data.table::fcase(
+  (GRD_inf =="Urbain dense" & GRD_vict =="Urbain dense"), "UD - UD",
+  (GRD_inf =="Urbain dense" & GRD_vict =="Urbain densité intermédiaire"), "UDI - UDI",
+  (GRD_inf =="Urbain dense" & GRD_vict =="Rural periurbain"), "UD - RP",
+  (GRD_inf =="Urbain dense" & GRD_vict =="Rural non periurbain"), "UD - RNP",
+  (GRD_inf =="Urbain densité intermédiaire" & GRD_vict =="Urbain dense"), "UDI - UD",
+  (GRD_inf =="Urbain densité intermédiaire" & GRD_vict =="Urbain densité intermédiaire"), "UDI - UDI",
+  (GRD_inf =="Urbain densité intermédiaire" & GRD_vict =="Rural periurbain"), "UDI - RP",
+  (GRD_inf =="Urbain densité intermédiaire" & GRD_vict =="Rural non periurbain"), "UDI - RNP",
+  (GRD_inf =="Rural periurbain" & GRD_vict =="Urbain dense"), "RP - UD",
+  (GRD_inf =="Rural periurbain" & GRD_vict =="Urbain densité intermédiaire"), "RP - UDI",
+  (GRD_inf =="Rural periurbain" & GRD_vict =="Rural periurbain"), "RP - RP",
+  (GRD_inf =="Rural periurbain" & GRD_vict =="Rural non periurbain"), "RP - RNP",
+  (GRD_inf =="Rural non periurbain" & GRD_vict =="Urbain dense"), "RNP - UD",
+  (GRD_inf =="Rural non periurbain" & GRD_vict =="Urbain densité intermédiaire"), "RNP - UDI",
+  (GRD_inf =="Rural non periurbain" & GRD_vict =="Rural periurbain"), "RNP - RP",
+  (GRD_inf =="Rural non periurbain" & GRD_vict =="Rural non periurbain"), "RNP - RNP",
+  default = "Autres")][, .(
+    Nb_cambr = sum(compteur*(classe == "Cambriolages de logement"),na.rm = TRUE),
+    Nb_destr_degrad = sum(compteur*(classe == "Destructions et dégradations"),na.rm = TRUE),
+    Nb_vols_arme = sum(compteur*(classe == "Vols avec armes"),na.rm = TRUE),
+    Nb_vols_viol_sansarme = sum(compteur*(classe == "Vols violents sans arme"),na.rm = TRUE),
+    Nb_vols_sansviol = sum(compteur*(classe == "Vols sans violence contre des personnes"),na.rm = TRUE),
+    Nb_vols_vehic = sum(compteur*(classe %chin% c("Vols d'accessoires sur véhicules","Vols dans les véhicules","Vols de véhicules")),na.rm = TRUE)
+  ),by = .(type_GD_IV) 
+  ][order(type_GD_IV)][,`:=`(Total_cambr = sum(Nb_cambr),Total_destr_degrad = sum(Nb_destr_degrad),
+                                     Total_vols_arme = sum(Nb_vols_arme),Total_vols_viol_sansarme = sum(Nb_vols_viol_sansarme),
+                             Total_vols_sansviol = sum(Nb_vols_sansviol),Total_vols_vehic = sum(Nb_vols_vehic))
+  ][, `:=`(Pct_cambr = round(Nb_cambr/Total_cambr*100,2),
+           Pct_destr_degrad = round(Nb_destr_degrad/Total_destr_degrad*100,2),
+           Pct_vols_arme = round(Nb_vols_arme/Total_vols_arme*100,2),
+           Pct_vols_viol_sansarme = round(Nb_vols_viol_sansarme/Total_vols_viol_sansarme*100,2),
+           Pct_vols_sansviol = round(Nb_vols_sansviol/Total_vols_sansviol*100,2),
+           Pct_vols_vehic = round(Nb_vols_vehic/Total_vols_vehic*100,2)
+           )
+  ][,.(type_GD_IV,Pct_cambr,Pct_destr_degrad,Pct_vols_arme,Pct_vols_viol_sansarme,Pct_vols_sansviol,Pct_vols_vehic)]
+
+# puis on se concentre sur les seules atteintes corporelles (7b):
+tableau7b_bis <- atteintes[(is.na(cog_com_22_inf)==FALSE) & (is.na(cog_com_22_vict)==FALSE) &
+                             (is.na(GRD_inf)==FALSE) & (is.na(GRD_vict)==FALSE) &
+                             (classe %chin% c("Coups et blessures volontaires dans la sphère familiale",
+                                               "Coups et blessures volontaires en dehors de la sphère familiale",
+                                               "Homicides",
+                                               "Violences sexuelles")),
+                           .(GRD_inf,GRD_vict,compteur,classe)
+][, type_GD_IV := data.table::fcase(
+  (GRD_inf =="Urbain dense" & GRD_vict =="Urbain dense"), "UD - UD",
+  (GRD_inf =="Urbain dense" & GRD_vict =="Urbain densité intermédiaire"), "UDI - UDI",
+  (GRD_inf =="Urbain dense" & GRD_vict =="Rural periurbain"), "UD - RP",
+  (GRD_inf =="Urbain dense" & GRD_vict =="Rural non periurbain"), "UD - RNP",
+  (GRD_inf =="Urbain densité intermédiaire" & GRD_vict =="Urbain dense"), "UDI - UD",
+  (GRD_inf =="Urbain densité intermédiaire" & GRD_vict =="Urbain densité intermédiaire"), "UDI - UDI",
+  (GRD_inf =="Urbain densité intermédiaire" & GRD_vict =="Rural periurbain"), "UDI - RP",
+  (GRD_inf =="Urbain densité intermédiaire" & GRD_vict =="Rural non periurbain"), "UDI - RNP",
+  (GRD_inf =="Rural periurbain" & GRD_vict =="Urbain dense"), "RP - UD",
+  (GRD_inf =="Rural periurbain" & GRD_vict =="Urbain densité intermédiaire"), "RP - UDI",
+  (GRD_inf =="Rural periurbain" & GRD_vict =="Rural periurbain"), "RP - RP",
+  (GRD_inf =="Rural periurbain" & GRD_vict =="Rural non periurbain"), "RP - RNP",
+  (GRD_inf =="Rural non periurbain" & GRD_vict =="Urbain dense"), "RNP - UD",
+  (GRD_inf =="Rural non periurbain" & GRD_vict =="Urbain densité intermédiaire"), "RNP - UDI",
+  (GRD_inf =="Rural non periurbain" & GRD_vict =="Rural periurbain"), "RNP - RP",
+  (GRD_inf =="Rural non periurbain" & GRD_vict =="Rural non periurbain"), "RNP - RNP",
+  default = "Autres")][, .(
+    Nb_bless_famil = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale"),na.rm = TRUE),
+    Nb_bless_horsfamil = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale"),na.rm = TRUE),
+    Nb_homicides = sum(compteur*(classe == "Homicides"),na.rm = TRUE),
+    Nb_viol_sex = sum(compteur*(classe == "Violences sexuelles"),na.rm = TRUE)
+  ),by = .(type_GD_IV) 
+  ][order(type_GD_IV)][,`:=`(Total_bless_famil = sum(Nb_bless_famil),Total_bless_horsfamil = sum(Nb_bless_horsfamil),
+                             Total_homicides = sum(Nb_homicides),Total_viol_sex = sum(Nb_viol_sex))
+  ][, `:=`(Pct_bless_famil = round(Nb_bless_famil/Total_bless_famil*100,2),
+           Pct_bless_horsfamil = round(Nb_bless_horsfamil/Total_bless_horsfamil*100,2),
+           Pct_homicides = round(Nb_homicides/Total_homicides*100,2),
+           Pct_viol_sex = round(Nb_viol_sex/Total_viol_sex*100,2)
+  )
+  ][,.(type_GD_IV,Pct_bless_famil,Pct_bless_horsfamil,Pct_homicides,Pct_viol_sex)]
+
+# ultime variante sur les atteintes corporelles: on peut dupliquer le tableau 7b_bis non plus en étudiant la répartition
+# selon  le couple de communes (I,V) dans la GD mais selon le couple (M,V) dans la GD:
+
+tableau7b_ter <- atteintes[(is.na(cog_com_22_mec)==FALSE) & (is.na(cog_com_22_vict)==FALSE) &
+                             (is.na(GRD_mec)==FALSE) & (is.na(GRD_vict)==FALSE) &
+                             (classe %chin% c("Coups et blessures volontaires dans la sphère familiale",
+                                              "Coups et blessures volontaires en dehors de la sphère familiale",
+                                              "Homicides",
+                                              "Violences sexuelles")),
+                           .(GRD_mec,GRD_vict,compteur,classe)
+][, type_GD_MV := data.table::fcase(
+  (GRD_mec =="Urbain dense" & GRD_vict =="Urbain dense"), "UD - UD",
+  (GRD_mec =="Urbain dense" & GRD_vict =="Urbain densité intermédiaire"), "UDI - UDI",
+  (GRD_mec =="Urbain dense" & GRD_vict =="Rural periurbain"), "UD - RP",
+  (GRD_mec =="Urbain dense" & GRD_vict =="Rural non periurbain"), "UD - RNP",
+  (GRD_mec =="Urbain densité intermédiaire" & GRD_vict =="Urbain dense"), "UDI - UD",
+  (GRD_mec =="Urbain densité intermédiaire" & GRD_vict =="Urbain densité intermédiaire"), "UDI - UDI",
+  (GRD_mec =="Urbain densité intermédiaire" & GRD_vict =="Rural periurbain"), "UDI - RP",
+  (GRD_mec =="Urbain densité intermédiaire" & GRD_vict =="Rural non periurbain"), "UDI - RNP",
+  (GRD_mec =="Rural periurbain" & GRD_vict =="Urbain dense"), "RP - UD",
+  (GRD_mec =="Rural periurbain" & GRD_vict =="Urbain densité intermédiaire"), "RP - UDI",
+  (GRD_mec =="Rural periurbain" & GRD_vict =="Rural periurbain"), "RP - RP",
+  (GRD_mec =="Rural periurbain" & GRD_vict =="Rural non periurbain"), "RP - RNP",
+  (GRD_mec =="Rural non periurbain" & GRD_vict =="Urbain dense"), "RNP - UD",
+  (GRD_mec =="Rural non periurbain" & GRD_vict =="Urbain densité intermédiaire"), "RNP - UDI",
+  (GRD_mec =="Rural non periurbain" & GRD_vict =="Rural periurbain"), "RNP - RP",
+  (GRD_mec =="Rural non periurbain" & GRD_vict =="Rural non periurbain"), "RNP - RNP",
+  default = "Autres")][, .(
+    Nb_bless_famil = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale"),na.rm = TRUE),
+    Nb_bless_horsfamil = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale"),na.rm = TRUE),
+    Nb_homicides = sum(compteur*(classe == "Homicides"),na.rm = TRUE),
+    Nb_viol_sex = sum(compteur*(classe == "Violences sexuelles"),na.rm = TRUE)
+  ),by = .(type_GD_MV) 
+  ][order(type_GD_MV)][,`:=`(Total_bless_famil = sum(Nb_bless_famil),Total_bless_horsfamil = sum(Nb_bless_horsfamil),
+                             Total_homicides = sum(Nb_homicides),Total_viol_sex = sum(Nb_viol_sex))
+  ][, `:=`(Pct_bless_famil = round(Nb_bless_famil/Total_bless_famil*100,2),
+           Pct_bless_horsfamil = round(Nb_bless_horsfamil/Total_bless_horsfamil*100,2),
+           Pct_homicides = round(Nb_homicides/Total_homicides*100,2),
+           Pct_viol_sex = round(Nb_viol_sex/Total_viol_sex*100,2)
+  )
+  ][,.(type_GD_MV,Pct_bless_famil,Pct_bless_horsfamil,Pct_homicides,Pct_viol_sex)]
+
+# TODO: on peut regarder le même genre de chose avec le niveau de fragilité des centralités (étude Inrae...)
+# à faire sur le champ des atteintes associées à un couple (I,V) présent dans une centralité (pas forcément la même...)
+
+############################# Fin de la partie "Faits stylisés" sur l'organisation spatiale de la délinquance #############
+
+
+
