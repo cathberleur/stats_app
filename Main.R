@@ -4,27 +4,32 @@
 
 # Auteurs: Catherine Berleur, Clémence Bracq, Marie Meyer et Gabriel Sklénard.
 
-# TODO:
+# IMPORTANT: 2 paramètres à modifier par chaque utilisateur avant d'excécuter ce programme:
 
-# Préciser votre WD:
+# 1) Votre WD:
+setwd("/Users/sklenard/Documents/Statapp/WD_Gabriel") # WD pour Gabriel.
+# c'est à cet endroit que devront être enregistrés les différents fichiers servant  d'"inputs" pour notre travail
+# (cf. la liste juste rappelée ci-dessous)
 
-# WD de Gabriel Sklénard:
-setwd("/Users/sklenard/Documents/Statapp/WD_Gabriel") 
-# IMPORTANT! à modifier par chaque utilisateur au début de ce programme !!
+# 2) Préciser le chemin pointant vers le dossier où sont enregistrés les 8 scripts R: le Main.R + les 7 scripts associés:
+scripts_path="/Users/sklenard/Documents/GitHub/stats_app" # scripts_path pour Gabriel.
 
-# WARNING: ce qu'il faut penser à faire pour que le programme Main.R tourne bien:
-# Enregistrez sous votre WD les fichiers suivants:
-# 1) le dossier Scripts_R_020523 (nos scripts R dernière version, que nous vous avons mis à disposition sur OSMOSE);
-# 2) le fichier .rdata non secrétisé des atteintes géolocalisées (source: SSMSI) dans votre WD;
-# 3) le fichier table-appartenance-geo-communes-23.xlsx (source: Insee https://www.insee.fr/fr/information/2028028);
-# 4) le fichier BV2022_au_01-01-2022.xlsx (source: https://www.insee.fr/fr/information/6676988);
-# 5) le fichier grille.densité.rdata (mis à disposition sur OSMOSE);
+# Remarque pour Clémence, Marie et Catherine: pour nous le chemin doit pointer vers notre repo Github créé sur notre ordi
+# perso via Desktop, ce qui permet de toujours pointer sur la dernière version validée Github des scripts ;)
+
+# WARNING: il faut penser à enregistrer sous votre WD les 9 fichiers suivants:
+# 1) le fichier donnees.secretisees.delinquance.RData (version secrétisée de la base géolocalisée des atteintes du SSMSI);
+# @Kevin et Aurélien: enregistrez la version non secrétisée du fichier ;)
+# 2) le fichier table-appartenance-geo-communes-23.xlsx (source: Insee https://www.insee.fr/fr/information/2028028);
+# 3) le fichier BV2022_au_01-01-2022.xlsx (source: https://www.insee.fr/fr/information/6676988);
+# 4) le fichier UU2020_au_01-01-2023.xlsx (source: https://www.insee.fr/fr/information/4802589);
+# 5) le fichier grille.densité.rdata (mis à disposition par le SSMSI sur OSMOSE);
 # 6) le fichier 202009_data_etudescentralites_inrae_anct.xlsx (mis à disposition sur OSMOSE);
 # 7) le fichier base_cc_comparateur.xlsx (source: Insee https://www.insee.fr/fr/statistiques/2521169);
 # 8) les fichiers dossier_complet.csv et meta_dossier_complet.csv (source: Insee https://www.insee.fr/fr/statistiques/5359146);
-# 9) le fichier .rdata non secrétisé des distances entre commune de l'infraction, de la victime et du mis en
-# cause  (calculs SSMSI);
-
+# 9) le fichier donnees.secretisees.delinquance.distances.rdata (version secrétisée du fichier des distances entre communes
+# de l'infraction, de la victime et du mis en cause  (calculs SSMSI)) ;
+# @Kevin et Aurélien: enregistrez la version non secrétisée du fichier ;)
 
 # IMPORTANT!!
 # @ Kevin et Aurélien: 
@@ -35,19 +40,19 @@ setwd("/Users/sklenard/Documents/Statapp/WD_Gabriel")
 # par leur version non secrétisée stockée au SSMSI sous le répertoire M...
 
 # Etape 0 - Les packages utilisés dans ce projet:
-source("Scripts_R_020523/0_Chargement_packages.R")
+source(paste0(scripts_path,"/0_Chargement_packages.R"))
 # @Kevin et Aurélien: RAS (rien à modifier ici!)
 
 
 # Etape 1 - Le chargement des différentes sources de données utilisées dans ce projet:
-source("Scripts_R_020523/1_Chargement_data.R")
+source(paste0(scripts_path,"/1_Chargement_data.R"))
 # IMPORTANT! @Kevin et Aurélien: 
 # Pensez ici à remplacer les deux fichiers .Rdata secréitisés chargés dans ce script
 # par leur version non secrétisée !!
 
 
 # Etape 2: La construction des bases de données analysées dans ce projet:
-source("Scripts_R_020523/2_Construction_bases_etude.R")
+source(paste0(scripts_path,"/2_Construction_bases_etude.R"))
 # @Kevin et Aurélien: 1 seule chose à modifier dans ce script -> commenter le petit morceau de code 
 # qui impute des modalités explicites à la variable "classe" (à la place des lettres).
 # Il s'agit des lignes 145 à 158.
@@ -55,7 +60,7 @@ source("Scripts_R_020523/2_Construction_bases_etude.R")
 
 
 # Etape 3: Partie 1 du mémoire: Les données
-source("Scripts_R_020523/3_Partie1_Memoire.R")
+source(paste0(scripts_path,"/3_Partie1_Memoire.R"))
 # @Kevin et Aurélien: RAS (rien à modifier ici!)
 
 # Tableau 1: Les différents types d'atteinte selon l'information spatiale disponible
@@ -63,7 +68,7 @@ write.csv(tableau1, "Tableau1.csv", row.names=FALSE)
 
 
 # Etape 4: Partie 2 du mémoire: Faits stylisés: une description fine de l'organisation spatiale de la délinquance
-source("Scripts_R_020523/4_Partie2_Memoire.R")
+source(paste0(scripts_path,"/4_Partie2_Memoire.R"))
 # @Kevin et Aurélien: RAS (rien à modifier ici!)
 
 # Tableau 2: Distribution du nombre d'infractions au niveau communal (pour 1000 habitants), selon le type d'atteinte
@@ -195,15 +200,26 @@ write.csv(tableau5b, "Tableau5b.csv", row.names=FALSE)
 
 # 3) Statut des communes au sein de l'aire d'attraction des villes (AAV):
 
+# Tableau 6a: Répartition (en %) des atteintes associées à un couple de communes (I,V) dans une même AAV, selon le statut
+# respectif de la commune de I et celle de V au sein de l'AAV. 
+# Rappel: 11: "Commune-centre"; 12: "Autre commune du pôle principal"; 13: "Commune d'un pôle secondaire";
+# 20: "Commune de la couronne"; 30: "Commune hors AAV".
+write.csv(tableau6a, "Tableau6a.csv", row.names=FALSE)
+
+# Tableau 6b: Répartition (en %) des atteintes associées à un triplet de communes (I,V,M) dans une même AAV, selon le statut
+# respectif de la commune de I, de celle de V et de celle de M au sein de l'AAV. 
+# Rappel: 11: "Commune-centre"; 12: "Autre commune du pôle principal"; 13: "Commune d'un pôle secondaire";
+# 20: "Commune de la couronne"; 30: "Commune hors AAV".
+write.csv(tableau6b, "Tableau6b.csv", row.names=FALSE)
 
 
 
 # Etape 5: Partie 3 du mémoire: Classification des communes et des départements de France métropolitaine au regard de la délinquance
-# source("Scripts_R_020523/5_Partie3_Memoire.R")
+# source(paste0(scripts_path,"/5_Partie3_Memoire.R"))
 # @Kevin et Aurélien: le code est en cours de finalisation et vous sera transmis très prochainement...
 
 
 # Etape 6: Partie 4 du mémoire: Lien entre les clusters de communes et les zonages d'étude
-# source("Scripts_R_020523/6_Partie4_Memoire.R")
+# source(paste0(scripts_path,"/6_Partie4_Memoire.R"))
 # @Kevin et Aurélien: le code est en cours de finalisation et vous sera transmis très prochainement...
 
