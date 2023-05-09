@@ -939,7 +939,7 @@ tableau7b <- atteintes[(is.na(cog_com_22_inf)==FALSE) & (is.na(cog_com_22_vict)=
 # Une variante des tableaux 7: pour chaque type d'atteinte, répartition des couples de communes (I,V) selon les différentes
 # modalités de la grille de densité:
 
-# on se concentre d'abord sur les seules atteintes non corporelles (7a):
+# on se concentre d'abord sur les seules atteintes non corporelles (7a_bis):
 tableau7a_bis <- atteintes[(is.na(cog_com_22_inf)==FALSE) & (is.na(cog_com_22_vict)==FALSE) &
                          (is.na(GRD_inf)==FALSE) & (is.na(GRD_vict)==FALSE) &
                            !(classe %chin% c("Coups et blessures volontaires dans la sphère familiale",
@@ -984,7 +984,7 @@ tableau7a_bis <- atteintes[(is.na(cog_com_22_inf)==FALSE) & (is.na(cog_com_22_vi
            )
   ][,.(type_GD_IV,Pct_cambr,Pct_destr_degrad,Pct_vols_arme,Pct_vols_viol_sansarme,Pct_vols_sansviol,Pct_vols_vehic)]
 
-# puis on se concentre sur les seules atteintes corporelles (7b):
+# puis on se concentre sur les seules atteintes corporelles (7b_bis):
 tableau7b_bis <- atteintes[(is.na(cog_com_22_inf)==FALSE) & (is.na(cog_com_22_vict)==FALSE) &
                              (is.na(GRD_inf)==FALSE) & (is.na(GRD_vict)==FALSE) &
                              (classe %chin% c("Coups et blessures volontaires dans la sphère familiale",

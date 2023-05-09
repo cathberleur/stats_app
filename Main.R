@@ -212,6 +212,34 @@ write.csv(tableau6a, "Tableau6a.csv", row.names=FALSE)
 # 20: "Commune de la couronne"; 30: "Commune hors AAV".
 write.csv(tableau6b, "Tableau6b.csv", row.names=FALSE)
 
+# 3) Type des communes (I,V) (au sens de la GD) qui se retrouvent dans un même zonage:
+
+# Tableau 7a:  Répartition (en %) des atteintes associées à un couple de communes (I,V) dans un même zonage, selon le statut
+# respectif de la commune de I et celle de V au sein de la GD 
+# Rappel: les différentes modalités de la GD sont:
+# Urbain dense (UD); Urbain densité intermédiaire (UDI); Rural périurbain (RP); Rural non périurbain (RNP)
+write.csv(tableau7a, "Tableau7a.csv", row.names=FALSE)
+
+# Tableau 7b: Répartition (en %) des atteintes associées à un triplet de communes (I,V,M) dans une même zonage, selon le statut
+# respectif de la commune de I, de celle de V et de celle de M au sein de la GD. 
+# Rappel: les différentes modalités de la GD sont:
+# Urbain dense (UD); Urbain densité intermédiaire (UDI); Rural périurbain (RP); Rural non périurbain (RNP)
+# Remarque: pour construire nos modalités, on ne reprend que les modalités avec les plus grosses freq dans le tableau 7a ;)
+# On se restreint ici aux seules atteintes corporelles.
+write.csv(tableau7b, "Tableau7b.csv", row.names=FALSE)
+
+# Une variante des tableaux 7: pour chaque type d'atteinte, répartition des couples de communes (I,V) selon les différentes
+# modalités de la grille de densité:
+
+# on se concentre d'abord sur les seules atteintes non corporelles (7a_bis):
+write.csv(tableau7a_bis, "Tableau7a_bis.csv", row.names=FALSE)
+
+# puis on se concentre sur les seules atteintes corporelles (7b_bis):
+write.csv(tableau7b_bis, "Tableau7b_bis.csv", row.names=FALSE)
+
+# ultime variante sur les atteintes corporelles: on peut dupliquer le tableau 7b_bis non plus en étudiant la répartition
+# selon  le couple de communes (I,V) dans la GD mais selon le couple (M,V) dans la GD:
+write.csv(tableau7b_ter, "Tableau7b_ter.csv", row.names=FALSE)
 
 
 # Etape 5: Partie 3 du mémoire: Classification des communes et des départements de France métropolitaine au regard de la délinquance
