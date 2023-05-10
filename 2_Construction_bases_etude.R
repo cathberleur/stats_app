@@ -157,6 +157,28 @@ atteintes[ , classe := data.table::fcase(
   default ="Homicides")
 ]
 
+# Version un plus synthétique (en procédant à des regroupements de catégories):
+atteintes[ , classe2 := data.table::fcase(
+  classe== "Cambriolages de logement","Cambr",
+  classe== "Coups et blessures volontaires dans la sphère familiale","Bless_famil",
+  classe %chin% c("Coups et blessures volontaires en dehors de la sphère familiale","Homicides"),"Bless_hfamil_homic",
+  classe== "Destructions et dégradations","Destr_degrad",
+  classe== "Violences sexuelles","Viol_sex",
+  classe %chin% c("Vols avec armes","Vols violents sans arme"),"Vols_violents",
+  classe %chin% c("Vols dans les véhicules","Vols d'accessoires sur véhicules","Vols de véhicules"),"Vols_vehic",
+  classe== "Vols sans violence contre des personnes","Vols_sansviolence",
+  default ="Autres")
+]
+
+# Distinction: atteintes physiques/ atteintes sur les biens
+atteintes[ , classe3 := data.table::fcase(
+  classe %chin% c("Coups et blessures volontaires en dehors de la sphère familiale",
+                  "Coups et blessures volontaires dans la sphère familiale",
+                  "Homicides",
+                  "Violences sexuelles"),"Atteintes_corpo",
+  default = "Atteintes_non_corpo")]
+  
+
 # II) Création de variables catégorielles classant les atteintes selon que les 3 lieux (vict/inf/mec)
 # s'inscrivent dans un même zonage ou pas:
 
@@ -752,7 +774,7 @@ delinquance_com <- delinquance_com %>%
 # 1er regroupement: "vols d'accessoires dans les véhicules", "vols de véhicules" et "vols dans les véhicules"
 # -> vols en rapport avec les véhicules
 # 2eme regroupement:
-# "coups et blessures volontaires dans la sphère familiale","coups et blessures volontaires en dehors de la sphère familiale" et "homocides".
+# "coups et blessures volontaires en dehors de la sphère familiale" et "homicides".
 # -> atteintes physiques corporelles graves et directes
 # 3eme regroupement: "vols violents sans arme" et les "vols violents avec arme"
 # -> vols violents
@@ -760,96 +782,96 @@ delinquance_com <- delinquance_com %>%
 delinquance_com <- delinquance_com %>%
   mutate(Nb_I_vols_vehic = Nb_I_vols_acces_vehic + Nb_I_vols_ds_vehic + 
            Nb_I_vols_de_vehic,
-         Nb_I_bless_famil_homic = Nb_I_bless_famil + Nb_I_bless_horsfamil +
+         Nb_I_bless_hfamil_homic = Nb_I_bless_horsfamil +
            Nb_I_homic,
          Nb_I_vols_violents = Nb_I_vols_armes + Nb_I_vols_viol_sansarme,
          Nb_I_vols_vehic_IV_1ZE = Nb_I_vols_acces_vehic_IV_1ZE + Nb_I_vols_ds_vehic_IV_1ZE + 
            Nb_I_vols_de_vehic_IV_1ZE,
-         Nb_I_bless_famil_homic_IV_1ZE = Nb_I_bless_famil_IV_1ZE + Nb_I_bless_horsfamil_IV_1ZE +
+         Nb_I_bless_hfamil_homic_IV_1ZE = Nb_I_bless_horsfamil_IV_1ZE +
            Nb_I_homic_IV_1ZE,
          Nb_I_vols_violents_IV_1ZE = Nb_I_vols_armes_IV_1ZE + Nb_I_vols_viol_sansarme_IV_1ZE,
          Nb_I_vols_vehic_IV_1BV = Nb_I_vols_acces_vehic_IV_1BV + Nb_I_vols_ds_vehic_IV_1BV + 
            Nb_I_vols_de_vehic_IV_1BV,
-         Nb_I_bless_famil_homic_IV_1BV = Nb_I_bless_famil_IV_1BV + Nb_I_bless_horsfamil_IV_1BV +
+         Nb_I_bless_hfamil_homic_IV_1BV = Nb_I_bless_horsfamil_IV_1BV +
            Nb_I_homic_IV_1BV,
          Nb_I_vols_violents_IV_1BV = Nb_I_vols_armes_IV_1BV + Nb_I_vols_viol_sansarme_IV_1BV,
          Nb_I_vols_vehic_IV_1GD = Nb_I_vols_acces_vehic_IV_1GD + Nb_I_vols_ds_vehic_IV_1GD + 
            Nb_I_vols_de_vehic_IV_1GD,
-         Nb_I_bless_famil_homic_IV_1GD = Nb_I_bless_famil_IV_1GD + Nb_I_bless_horsfamil_IV_1GD +
+         Nb_I_bless_hfamil_homic_IV_1GD = Nb_I_bless_horsfamil_IV_1GD +
            Nb_I_homic_IV_1GD,
          Nb_I_vols_violents_IV_1GD = Nb_I_vols_armes_IV_1GD + Nb_I_vols_viol_sansarme_IV_1GD,
          Nb_I_vols_vehic_IV_1UU = Nb_I_vols_acces_vehic_IV_1UU + Nb_I_vols_ds_vehic_IV_1UU + 
            Nb_I_vols_de_vehic_IV_1UU,
-         Nb_I_bless_famil_homic_IV_1UU = Nb_I_bless_famil_IV_1UU + Nb_I_bless_horsfamil_IV_1UU +
+         Nb_I_bless_hfamil_homic_IV_1UU = Nb_I_bless_horsfamil_IV_1UU +
            Nb_I_homic_IV_1UU,
          Nb_I_vols_violents_IV_1UU = Nb_I_vols_armes_IV_1UU + Nb_I_vols_viol_sansarme_IV_1UU,
          Nb_I_vols_vehic_IV_1AAV = Nb_I_vols_acces_vehic_IV_1AAV + Nb_I_vols_ds_vehic_IV_1AAV + 
            Nb_I_vols_de_vehic_IV_1AAV,
-         Nb_I_bless_famil_homic_IV_1AAV = Nb_I_bless_famil_IV_1AAV + Nb_I_bless_horsfamil_IV_1AAV +
+         Nb_I_bless_hfamil_homic_IV_1AAV = Nb_I_bless_horsfamil_IV_1AAV +
            Nb_I_homic_IV_1AAV,
          Nb_I_vols_violents_IV_1AAV = Nb_I_vols_armes_IV_1AAV + Nb_I_vols_viol_sansarme_IV_1AAV,
          Nb_I_vols_vehic_IV_1CENTR = Nb_I_vols_acces_vehic_IV_1CENTR + Nb_I_vols_ds_vehic_IV_1CENTR + 
            Nb_I_vols_de_vehic_IV_1CENTR,
-         Nb_I_bless_famil_homic_IV_1CENTR = Nb_I_bless_famil_IV_1CENTR + Nb_I_bless_horsfamil_IV_1CENTR +
+         Nb_I_bless_hfamil_homic_IV_1CENTR = Nb_I_bless_horsfamil_IV_1CENTR +
            Nb_I_homic_IV_1CENTR,
          Nb_I_vols_violents_IV_1CENTR = Nb_I_vols_armes_IV_1CENTR + Nb_I_vols_viol_sansarme_IV_1CENTR,
          Nb_I_vols_vehic_IVM_1ZE = Nb_I_vols_acces_vehic_IVM_1ZE + Nb_I_vols_ds_vehic_IVM_1ZE + 
            Nb_I_vols_de_vehic_IVM_1ZE,
-         Nb_I_bless_famil_homic_IVM_1ZE = Nb_I_bless_famil_IVM_1ZE + Nb_I_bless_horsfamil_IVM_1ZE +
+         Nb_I_bless_hfamil_homic_IVM_1ZE = Nb_I_bless_horsfamil_IVM_1ZE +
            Nb_I_homic_IVM_1ZE,
          Nb_I_vols_violents_IVM_1ZE = Nb_I_vols_armes_IVM_1ZE + Nb_I_vols_viol_sansarme_IVM_1ZE,
          Nb_I_vols_vehic_IVM_1BV = Nb_I_vols_acces_vehic_IVM_1BV + Nb_I_vols_ds_vehic_IVM_1BV + 
            Nb_I_vols_de_vehic_IVM_1BV,
-         Nb_I_bless_famil_homic_IVM_1BV = Nb_I_bless_famil_IVM_1BV + Nb_I_bless_horsfamil_IVM_1BV +
+         Nb_I_bless_hfamil_homic_IVM_1BV = Nb_I_bless_horsfamil_IVM_1BV +
            Nb_I_homic_IVM_1BV,
          Nb_I_vols_violents_IVM_1BV = Nb_I_vols_armes_IVM_1BV + Nb_I_vols_viol_sansarme_IVM_1BV,
          Nb_I_vols_vehic_IVM_1GD = Nb_I_vols_acces_vehic_IVM_1GD + Nb_I_vols_ds_vehic_IVM_1GD + 
            Nb_I_vols_de_vehic_IVM_1GD,
-         Nb_I_bless_famil_homic_IVM_1GD = Nb_I_bless_famil_IVM_1GD + Nb_I_bless_horsfamil_IVM_1GD +
+         Nb_I_bless_hfamil_homic_IVM_1GD = Nb_I_bless_horsfamil_IVM_1GD +
            Nb_I_homic_IVM_1GD,
          Nb_I_vols_violents_IVM_1GD = Nb_I_vols_armes_IVM_1GD + Nb_I_vols_viol_sansarme_IVM_1GD,
          Nb_I_vols_vehic_IVM_1UU = Nb_I_vols_acces_vehic_IVM_1UU + Nb_I_vols_ds_vehic_IVM_1UU + 
            Nb_I_vols_de_vehic_IVM_1UU,
-         Nb_I_bless_famil_homic_IVM_1UU = Nb_I_bless_famil_IVM_1UU + Nb_I_bless_horsfamil_IVM_1UU +
+         Nb_I_bless_hfamil_homic_IVM_1UU = Nb_I_bless_horsfamil_IVM_1UU +
            Nb_I_homic_IVM_1UU,
          Nb_I_vols_violents_IVM_1UU = Nb_I_vols_armes_IVM_1UU + Nb_I_vols_viol_sansarme_IVM_1UU,
          Nb_I_vols_vehic_IVM_1AAV = Nb_I_vols_acces_vehic_IVM_1AAV + Nb_I_vols_ds_vehic_IVM_1AAV + 
            Nb_I_vols_de_vehic_IVM_1AAV,
-         Nb_I_bless_famil_homic_IVM_1AAV = Nb_I_bless_famil_IVM_1AAV + Nb_I_bless_horsfamil_IVM_1AAV +
+         Nb_I_bless_hfamil_homic_IVM_1AAV = Nb_I_bless_horsfamil_IVM_1AAV +
            Nb_I_homic_IVM_1AAV,
          Nb_I_vols_violents_IVM_1AAV = Nb_I_vols_armes_IVM_1AAV + Nb_I_vols_viol_sansarme_IVM_1AAV,
          Nb_I_vols_vehic_IVM_1CENTR = Nb_I_vols_acces_vehic_IVM_1CENTR + Nb_I_vols_ds_vehic_IVM_1CENTR + 
            Nb_I_vols_de_vehic_IVM_1CENTR,
-         Nb_I_bless_famil_homic_IVM_1CENTR = Nb_I_bless_famil_IVM_1CENTR + Nb_I_bless_horsfamil_IVM_1CENTR +
+         Nb_I_bless_hfamil_homic_IVM_1CENTR = Nb_I_bless_horsfamil_IVM_1CENTR +
            Nb_I_homic_IVM_1CENTR,
          Nb_I_vols_violents_IVM_1CENTR = Nb_I_vols_armes_IVM_1CENTR + Nb_I_vols_viol_sansarme_IVM_1CENTR,
          Nb_V_vols_vehic = Nb_V_vols_acces_vehic + Nb_V_vols_ds_vehic + 
            Nb_V_vols_de_vehic,
-         Nb_V_bless_famil_homic = Nb_V_bless_famil + Nb_V_bless_horsfamil +
+         Nb_V_bless_hfamil_homic = Nb_V_bless_horsfamil +
            Nb_V_homic,
          Nb_V_vols_violents = Nb_V_vols_armes + Nb_V_vols_viol_sansarme,
          Nb_M_vols_vehic = Nb_M_vols_acces_vehic + Nb_M_vols_ds_vehic + 
            Nb_M_vols_de_vehic,
-         Nb_M_bless_famil_homic = Nb_M_bless_famil + Nb_M_bless_horsfamil +
+         Nb_M_bless_hfamil_homic = Nb_M_bless_horsfamil +
            Nb_M_homic,
          Nb_M_vols_violents = Nb_M_vols_armes + Nb_M_vols_viol_sansarme,
          ) %>%
          mutate(
-        Nb_I_corpo = Nb_I_bless_famil_homic + Nb_I_viol_sex,
-        Nb_V_corpo = Nb_V_bless_famil_homic + Nb_V_viol_sex,
-        Nb_M_corpo = Nb_M_bless_famil_homic + Nb_M_viol_sex,
-        Nb_I_corpo_IV_1ZE = Nb_I_bless_famil_homic_IV_1ZE + Nb_I_viol_sex_IV_1ZE,
-        Nb_I_corpo_IV_1BV = Nb_I_bless_famil_homic_IV_1BV + Nb_I_viol_sex_IV_1BV,
-        Nb_I_corpo_IV_1GD = Nb_I_bless_famil_homic_IV_1GD + Nb_I_viol_sex_IV_1GD,
-        Nb_I_corpo_IV_1UU = Nb_I_bless_famil_homic_IV_1UU + Nb_I_viol_sex_IV_1UU,
-        Nb_I_corpo_IV_1AAV = Nb_I_bless_famil_homic_IV_1AAV + Nb_I_viol_sex_IV_1AAV,
-        Nb_I_corpo_IV_1CENTR = Nb_I_bless_famil_homic_IV_1CENTR + Nb_I_viol_sex_IV_1CENTR,
-        Nb_I_corpo_IVM_1ZE = Nb_I_bless_famil_homic_IVM_1ZE + Nb_I_viol_sex_IVM_1ZE,
-        Nb_I_corpo_IVM_1BV = Nb_I_bless_famil_homic_IVM_1BV + Nb_I_viol_sex_IVM_1BV,
-        Nb_I_corpo_IVM_1GD = Nb_I_bless_famil_homic_IVM_1GD + Nb_I_viol_sex_IVM_1GD,
-        Nb_I_corpo_IVM_1UU = Nb_I_bless_famil_homic_IVM_1UU + Nb_I_viol_sex_IVM_1UU,
-        Nb_I_corpo_IVM_1AAV = Nb_I_bless_famil_homic_IVM_1AAV + Nb_I_viol_sex_IVM_1AAV,
-        Nb_I_corpo_IVM_1CENTR = Nb_I_bless_famil_homic_IVM_1CENTR + Nb_I_viol_sex_IVM_1CENTR)
+        Nb_I_corpo = Nb_I_bless_famil + Nb_I_bless_hfamil_homic + Nb_I_viol_sex,
+        Nb_V_corpo = Nb_V_bless_famil + Nb_V_bless_hfamil_homic + Nb_V_viol_sex,
+        Nb_M_corpo = Nb_M_bless_famil + Nb_M_bless_hfamil_homic + Nb_M_viol_sex,
+        Nb_I_corpo_IV_1ZE = Nb_I_bless_famil_IV_1ZE + Nb_I_bless_hfamil_homic_IV_1ZE + Nb_I_viol_sex_IV_1ZE,
+        Nb_I_corpo_IV_1BV = Nb_I_bless_famil_IV_1BV + Nb_I_bless_hfamil_homic_IV_1BV + Nb_I_viol_sex_IV_1BV,
+        Nb_I_corpo_IV_1GD = Nb_I_bless_famil_IV_1GD + Nb_I_bless_hfamil_homic_IV_1GD + Nb_I_viol_sex_IV_1GD,
+        Nb_I_corpo_IV_1UU = Nb_I_bless_famil_IV_1UU + Nb_I_bless_hfamil_homic_IV_1UU + Nb_I_viol_sex_IV_1UU,
+        Nb_I_corpo_IV_1AAV = Nb_I_bless_famil_IV_1AAV + Nb_I_bless_hfamil_homic_IV_1AAV + Nb_I_viol_sex_IV_1AAV,
+        Nb_I_corpo_IV_1CENTR = Nb_I_bless_famil_IV_1CENTR + Nb_I_bless_hfamil_homic_IV_1CENTR + Nb_I_viol_sex_IV_1CENTR,
+        Nb_I_corpo_IVM_1ZE = Nb_I_bless_famil_IVM_1ZE + Nb_I_bless_hfamil_homic_IVM_1ZE + Nb_I_viol_sex_IVM_1ZE,
+        Nb_I_corpo_IVM_1BV = Nb_I_bless_famil_IVM_1BV + Nb_I_bless_hfamil_homic_IVM_1BV + Nb_I_viol_sex_IVM_1BV,
+        Nb_I_corpo_IVM_1GD = Nb_I_bless_famil_IVM_1GD + Nb_I_bless_hfamil_homic_IVM_1GD + Nb_I_viol_sex_IVM_1GD,
+        Nb_I_corpo_IVM_1UU = Nb_I_bless_famil_IVM_1UU + Nb_I_bless_hfamil_homic_IVM_1UU + Nb_I_viol_sex_IVM_1UU,
+        Nb_I_corpo_IVM_1AAV = Nb_I_bless_famil_IVM_1AAV + Nb_I_bless_hfamil_homic_IVM_1AAV + Nb_I_viol_sex_IVM_1AAV,
+        Nb_I_corpo_IVM_1CENTR = Nb_I_bless_famil_IVM_1CENTR + Nb_I_bless_hfamil_homic_IVM_1CENTR + Nb_I_viol_sex_IVM_1CENTR)
 
 
 # Calcul de toutes les variables relatives au volume de délinquance (pour 1000 habitants):
@@ -867,10 +889,10 @@ delinquance_com <- delinquance_com %>%
                      I_vols_acces_vehic = Nb_I_vols_acces_vehic/P19_POP*1000,
                      I_vols_ds_vehic = Nb_I_vols_ds_vehic/P19_POP*1000,
                      I_vols_de_vehic = Nb_I_vols_de_vehic/P19_POP*1000,
-                     I_vols_sansviol = Nb_I_vols_sansviol/P19_POP*1000,
+                     I_vols_sansviolence = Nb_I_vols_sansviol/P19_POP*1000,
                      I_vols_viol_sansarme = Nb_I_vols_viol_sansarme/P19_POP*1000,
                      I_vols_vehic = Nb_I_vols_vehic/P19_POP*1000,
-                     I_bless_famil_homic = Nb_I_bless_famil_homic/P19_POP*1000,
+                     I_bless_hfamil_homic = Nb_I_bless_hfamil_homic/P19_POP*1000,
                      I_vols_violents = Nb_I_vols_violents/P19_POP*1000,
                      I_corpo = Nb_I_corpo/P19_POP*1000)
                 
@@ -889,10 +911,10 @@ delinquance_com <- delinquance_com %>%
     V_vols_acces_vehic = Nb_V_vols_acces_vehic/P19_POP*1000,
     V_vols_ds_vehic = Nb_V_vols_ds_vehic/P19_POP*1000,
     V_vols_de_vehic = Nb_V_vols_de_vehic/P19_POP*1000,
-    V_vols_sansviol = Nb_V_vols_sansviol/P19_POP*1000,
+    V_vols_sansviolence = Nb_V_vols_sansviol/P19_POP*1000,
     V_vols_viol_sansarme = Nb_V_vols_viol_sansarme/P19_POP*1000,
     V_vols_vehic = Nb_V_vols_vehic/P19_POP*1000,
-    V_bless_famil_homic = Nb_V_bless_famil_homic/P19_POP*1000,
+    V_bless_hfamil_homic = Nb_V_bless_hfamil_homic/P19_POP*1000,
     V_vols_violents = Nb_V_vols_violents/P19_POP*1000,
     V_corpo = Nb_V_corpo/P19_POP*1000
     )
@@ -912,10 +934,10 @@ delinquance_com <- delinquance_com %>%
     M_vols_acces_vehic = Nb_M_vols_acces_vehic/P19_POP*1000,
     M_vols_ds_vehic = Nb_M_vols_ds_vehic/P19_POP*1000,
     M_vols_de_vehic = Nb_M_vols_de_vehic/P19_POP*1000,
-    M_vols_sansviol = Nb_M_vols_sansviol/P19_POP*1000,
+    M_vols_sansviolence = Nb_M_vols_sansviol/P19_POP*1000,
     M_vols_viol_sansarme = Nb_M_vols_viol_sansarme/P19_POP*1000,
     M_vols_vehic = Nb_M_vols_vehic/P19_POP*1000,
-    M_bless_famil_homic = Nb_M_bless_famil_homic/P19_POP*1000,
+    M_bless_hfamil_homic = Nb_M_bless_hfamil_homic/P19_POP*1000,
     M_vols_violents = Nb_M_vols_violents/P19_POP*1000,
     M_corpo = Nb_M_corpo/P19_POP*1000
     )
@@ -934,10 +956,10 @@ delinquance_com <- delinquance_com %>%
     P_I_vols_acces_vehic = Nb_I_vols_acces_vehic/Nb_I*100,
     P_I_vols_ds_vehic = Nb_I_vols_ds_vehic/Nb_I*100,
     P_I_vols_de_vehic = Nb_I_vols_de_vehic/Nb_I*100,
-    P_I_vols_sansviol = Nb_I_vols_sansviol/Nb_I*100,
+    P_I_vols_sansviolence = Nb_I_vols_sansviol/Nb_I*100,
     P_I_vols_viol_sansarme = Nb_I_vols_viol_sansarme/Nb_I*100,
     P_I_vols_vehic = Nb_I_vols_vehic/Nb_I*100,
-    P_I_bless_famil_homic = Nb_I_bless_famil_homic/Nb_I*100,
+    P_I_bless_hfamil_homic = Nb_I_bless_hfamil_homic/Nb_I*100,
     P_I_vols_violents = Nb_I_vols_violents/Nb_I*100,
     P_I_corpo = Nb_I_corpo/Nb_I*100)
 
@@ -959,10 +981,10 @@ P_I_vols_armes_IV_1ZE = Nb_I_vols_armes_IV_1ZE/Nb_I_vols_armes*100,
 P_I_vols_acces_vehic_IV_1ZE = Nb_I_vols_acces_vehic_IV_1ZE/Nb_I_vols_acces_vehic*100,
 P_I_vols_ds_vehic_IV_1ZE = Nb_I_vols_ds_vehic_IV_1ZE/Nb_I_vols_ds_vehic*100,
 P_I_vols_de_vehic_IV_1ZE = Nb_I_vols_de_vehic_IV_1ZE/Nb_I_vols_de_vehic*100,
-P_I_vols_sansviol_IV_1ZE = Nb_I_vols_sansviol_IV_1ZE/Nb_I_vols_sansviol*100,
+P_I_vols_sansviolence_IV_1ZE = Nb_I_vols_sansviol_IV_1ZE/Nb_I_vols_sansviol*100,
 P_I_vols_viol_sansarme_IV_1ZE = Nb_I_vols_viol_sansarme_IV_1ZE/Nb_I_vols_viol_sansarme*100,
 P_I_vols_vehic_IV_1ZE = Nb_I_vols_vehic_IV_1ZE/Nb_I_vols_vehic*100,
-P_I_bless_famil_homic_IV_1ZE = Nb_I_bless_famil_homic_IV_1ZE/Nb_I_bless_famil_homic*100,
+P_I_bless_hfamil_homic_IV_1ZE = Nb_I_bless_hfamil_homic_IV_1ZE/Nb_I_bless_hfamil_homic*100,
 P_I_vols_violents_IV_1ZE = Nb_I_vols_violents_IV_1ZE/Nb_I_vols_violents*100,
 P_I_corpo_IV_1ZE = Nb_I_corpo_IV_1ZE/Nb_I_corpo*100,
 # (I,V) dans même BV:
@@ -977,10 +999,10 @@ P_I_vols_armes_IV_1BV = Nb_I_vols_armes_IV_1BV/Nb_I_vols_armes*100,
 P_I_vols_acces_vehic_IV_1BV = Nb_I_vols_acces_vehic_IV_1BV/Nb_I_vols_acces_vehic*100,
 P_I_vols_ds_vehic_IV_1BV = Nb_I_vols_ds_vehic_IV_1BV/Nb_I_vols_ds_vehic*100,
 P_I_vols_de_vehic_IV_1BV = Nb_I_vols_de_vehic_IV_1BV/Nb_I_vols_de_vehic*100,
-P_I_vols_sansviol_IV_1BV = Nb_I_vols_sansviol_IV_1BV/Nb_I_vols_sansviol*100,
+P_I_vols_sansviolence_IV_1BV = Nb_I_vols_sansviol_IV_1BV/Nb_I_vols_sansviol*100,
 P_I_vols_viol_sansarme_IV_1BV = Nb_I_vols_viol_sansarme_IV_1BV/Nb_I_vols_viol_sansarme*100,
 P_I_vols_vehic_IV_1BV = Nb_I_vols_vehic_IV_1BV/Nb_I_vols_vehic*100,
-P_I_bless_famil_homic_IV_1BV = Nb_I_bless_famil_homic_IV_1BV/Nb_I_bless_famil_homic*100,
+P_I_bless_hfamil_homic_IV_1BV = Nb_I_bless_hfamil_homic_IV_1BV/Nb_I_bless_hfamil_homic*100,
 P_I_vols_violents_IV_1BV = Nb_I_vols_violents_IV_1BV/Nb_I_vols_violents*100,
 P_I_corpo_IV_1BV = Nb_I_corpo_IV_1BV/Nb_I_corpo*100,
 # (I,V) dans même GD:
@@ -995,10 +1017,10 @@ P_I_vols_armes_IV_1GD = Nb_I_vols_armes_IV_1GD/Nb_I_vols_armes*100,
 P_I_vols_acces_vehic_IV_1GD = Nb_I_vols_acces_vehic_IV_1GD/Nb_I_vols_acces_vehic*100,
 P_I_vols_ds_vehic_IV_1GD = Nb_I_vols_ds_vehic_IV_1GD/Nb_I_vols_ds_vehic*100,
 P_I_vols_de_vehic_IV_1GD = Nb_I_vols_de_vehic_IV_1GD/Nb_I_vols_de_vehic*100,
-P_I_vols_sansviol_IV_1GD = Nb_I_vols_sansviol_IV_1GD/Nb_I_vols_sansviol*100,
+P_I_vols_sansviolence_IV_1GD = Nb_I_vols_sansviol_IV_1GD/Nb_I_vols_sansviol*100,
 P_I_vols_viol_sansarme_IV_1GD = Nb_I_vols_viol_sansarme_IV_1GD/Nb_I_vols_viol_sansarme*100,
 P_I_vols_vehic_IV_1GD = Nb_I_vols_vehic_IV_1GD/Nb_I_vols_vehic*100,
-P_I_bless_famil_homic_IV_1GD = Nb_I_bless_famil_homic_IV_1GD/Nb_I_bless_famil_homic*100,
+P_I_bless_hfamil_homic_IV_1GD = Nb_I_bless_hfamil_homic_IV_1GD/Nb_I_bless_hfamil_homic*100,
 P_I_vols_violents_IV_1GD = Nb_I_vols_violents_IV_1GD/Nb_I_vols_violents*100,
 P_I_corpo_IV_1GD = Nb_I_corpo_IV_1GD/Nb_I_corpo*100,
 # (I,V) dans même UU:
@@ -1013,10 +1035,10 @@ P_I_vols_armes_IV_1UU = Nb_I_vols_armes_IV_1UU/Nb_I_vols_armes*100,
 P_I_vols_acces_vehic_IV_1UU = Nb_I_vols_acces_vehic_IV_1UU/Nb_I_vols_acces_vehic*100,
 P_I_vols_ds_vehic_IV_1UU = Nb_I_vols_ds_vehic_IV_1UU/Nb_I_vols_ds_vehic*100,
 P_I_vols_de_vehic_IV_1UU = Nb_I_vols_de_vehic_IV_1UU/Nb_I_vols_de_vehic*100,
-P_I_vols_sansviol_IV_1UU = Nb_I_vols_sansviol_IV_1UU/Nb_I_vols_sansviol*100,
+P_I_vols_sansviolence_IV_1UU = Nb_I_vols_sansviol_IV_1UU/Nb_I_vols_sansviol*100,
 P_I_vols_viol_sansarme_IV_1UU = Nb_I_vols_viol_sansarme_IV_1UU/Nb_I_vols_viol_sansarme*100,
 P_I_vols_vehic_IV_1UU = Nb_I_vols_vehic_IV_1UU/Nb_I_vols_vehic*100,
-P_I_bless_famil_homic_IV_1UU = Nb_I_bless_famil_homic_IV_1UU/Nb_I_bless_famil_homic*100,
+P_I_bless_hfamil_homic_IV_1UU = Nb_I_bless_hfamil_homic_IV_1UU/Nb_I_bless_hfamil_homic*100,
 P_I_vols_violents_IV_1UU = Nb_I_vols_violents_IV_1UU/Nb_I_vols_violents*100,
 P_I_corpo_IV_1UU = Nb_I_corpo_IV_1UU/Nb_I_corpo*100,
 # (I,V) dans même AAV:
@@ -1031,10 +1053,10 @@ P_I_vols_armes_IV_1AAV = Nb_I_vols_armes_IV_1AAV/Nb_I_vols_armes*100,
 P_I_vols_acces_vehic_IV_1AAV = Nb_I_vols_acces_vehic_IV_1AAV/Nb_I_vols_acces_vehic*100,
 P_I_vols_ds_vehic_IV_1AAV = Nb_I_vols_ds_vehic_IV_1AAV/Nb_I_vols_ds_vehic*100,
 P_I_vols_de_vehic_IV_1AAV = Nb_I_vols_de_vehic_IV_1AAV/Nb_I_vols_de_vehic*100,
-P_I_vols_sansviol_IV_1AAV = Nb_I_vols_sansviol_IV_1AAV/Nb_I_vols_sansviol*100,
+P_I_vols_sansviolence_IV_1AAV = Nb_I_vols_sansviol_IV_1AAV/Nb_I_vols_sansviol*100,
 P_I_vols_viol_sansarme_IV_1AAV = Nb_I_vols_viol_sansarme_IV_1AAV/Nb_I_vols_viol_sansarme*100,
 P_I_vols_vehic_IV_1AAV = Nb_I_vols_vehic_IV_1AAV/Nb_I_vols_vehic*100,
-P_I_bless_famil_homic_IV_1AAV = Nb_I_bless_famil_homic_IV_1AAV/Nb_I_bless_famil_homic*100,
+P_I_bless_hfamil_homic_IV_1AAV = Nb_I_bless_hfamil_homic_IV_1AAV/Nb_I_bless_hfamil_homic*100,
 P_I_vols_violents_IV_1AAV = Nb_I_vols_violents_IV_1AAV/Nb_I_vols_violents*100,
 P_I_corpo_IV_1AAV = Nb_I_corpo_IV_1AAV/Nb_I_corpo*100,
 # (I,V) dans même CENTR:
@@ -1049,10 +1071,10 @@ P_I_vols_armes_IV_1CENTR = Nb_I_vols_armes_IV_1CENTR/Nb_I_vols_armes*100,
 P_I_vols_acces_vehic_IV_1CENTR = Nb_I_vols_acces_vehic_IV_1CENTR/Nb_I_vols_acces_vehic*100,
 P_I_vols_ds_vehic_IV_1CENTR = Nb_I_vols_ds_vehic_IV_1CENTR/Nb_I_vols_ds_vehic*100,
 P_I_vols_de_vehic_IV_1CENTR = Nb_I_vols_de_vehic_IV_1CENTR/Nb_I_vols_de_vehic*100,
-P_I_vols_sansviol_IV_1CENTR = Nb_I_vols_sansviol_IV_1CENTR/Nb_I_vols_sansviol*100,
+P_I_vols_sansviolence_IV_1CENTR = Nb_I_vols_sansviol_IV_1CENTR/Nb_I_vols_sansviol*100,
 P_I_vols_viol_sansarme_IV_1CENTR = Nb_I_vols_viol_sansarme_IV_1CENTR/Nb_I_vols_viol_sansarme*100,
 P_I_vols_vehic_IV_1CENTR = Nb_I_vols_vehic_IV_1CENTR/Nb_I_vols_vehic*100,
-P_I_bless_famil_homic_IV_1CENTR = Nb_I_bless_famil_homic_IV_1CENTR/Nb_I_bless_famil_homic*100,
+P_I_bless_hfamil_homic_IV_1CENTR = Nb_I_bless_hfamil_homic_IV_1CENTR/Nb_I_bless_hfamil_homic*100,
 P_I_vols_violents_IV_1CENTR = Nb_I_vols_violents_IV_1CENTR/Nb_I_vols_violents*100,
 P_I_corpo_IV_1CENTR = Nb_I_corpo_IV_1CENTR/Nb_I_corpo*100,
 # (I,V,M) dans même ZE:
@@ -1066,10 +1088,10 @@ P_I_vols_armes_IVM_1ZE = Nb_I_vols_armes_IVM_1ZE/Nb_I_vols_armes*100,
 P_I_vols_acces_vehic_IVM_1ZE = Nb_I_vols_acces_vehic_IVM_1ZE/Nb_I_vols_acces_vehic*100,
 P_I_vols_ds_vehic_IVM_1ZE = Nb_I_vols_ds_vehic_IVM_1ZE/Nb_I_vols_ds_vehic*100,
 P_I_vols_de_vehic_IVM_1ZE = Nb_I_vols_de_vehic_IVM_1ZE/Nb_I_vols_de_vehic*100,
-P_I_vols_sansviol_IVM_1ZE = Nb_I_vols_sansviol_IVM_1ZE/Nb_I_vols_sansviol*100,
+P_I_vols_sansviolence_IVM_1ZE = Nb_I_vols_sansviol_IVM_1ZE/Nb_I_vols_sansviol*100,
 P_I_vols_viol_sansarme_IVM_1ZE = Nb_I_vols_viol_sansarme_IVM_1ZE/Nb_I_vols_viol_sansarme*100,
 P_I_vols_vehic_IVM_1ZE = Nb_I_vols_vehic_IVM_1ZE/Nb_I_vols_vehic*100,
-P_I_bless_famil_homic_IVM_1ZE = Nb_I_bless_famil_homic_IVM_1ZE/Nb_I_bless_famil_homic*100,
+P_I_bless_hfamil_homic_IVM_1ZE = Nb_I_bless_hfamil_homic_IVM_1ZE/Nb_I_bless_hfamil_homic*100,
 P_I_vols_violents_IVM_1ZE = Nb_I_vols_violents_IVM_1ZE/Nb_I_vols_violents*100,
 P_I_corpo_IVM_1ZE = Nb_I_corpo_IVM_1ZE/Nb_I_corpo*100,
 # (I,V,M) dans même BV:
@@ -1083,10 +1105,10 @@ P_I_vols_armes_IVM_1BV = Nb_I_vols_armes_IVM_1BV/Nb_I_vols_armes*100,
 P_I_vols_acces_vehic_IVM_1BV = Nb_I_vols_acces_vehic_IVM_1BV/Nb_I_vols_acces_vehic*100,
 P_I_vols_ds_vehic_IVM_1BV = Nb_I_vols_ds_vehic_IVM_1BV/Nb_I_vols_ds_vehic*100,
 P_I_vols_de_vehic_IVM_1BV = Nb_I_vols_de_vehic_IVM_1BV/Nb_I_vols_de_vehic*100,
-P_I_vols_sansviol_IVM_1BV = Nb_I_vols_sansviol_IVM_1BV/Nb_I_vols_sansviol*100,
+P_I_vols_sansviolence_IVM_1BV = Nb_I_vols_sansviol_IVM_1BV/Nb_I_vols_sansviol*100,
 P_I_vols_viol_sansarme_IVM_1BV = Nb_I_vols_viol_sansarme_IVM_1BV/Nb_I_vols_viol_sansarme*100,
 P_I_vols_vehic_IVM_1BV = Nb_I_vols_vehic_IVM_1BV/Nb_I_vols_vehic*100,
-P_I_bless_famil_homic_IVM_1BV = Nb_I_bless_famil_homic_IVM_1BV/Nb_I_bless_famil_homic*100,
+P_I_bless_hfamil_homic_IVM_1BV = Nb_I_bless_hfamil_homic_IVM_1BV/Nb_I_bless_hfamil_homic*100,
 P_I_vols_violents_IVM_1BV = Nb_I_vols_violents_IVM_1BV/Nb_I_vols_violents*100,
 P_I_corpo_IVM_1BV = Nb_I_corpo_IVM_1BV/Nb_I_corpo*100,
 # (I,V,M) dans même GD:
@@ -1100,10 +1122,10 @@ P_I_vols_armes_IVM_1GD = Nb_I_vols_armes_IVM_1GD/Nb_I_vols_armes*100,
 P_I_vols_acces_vehic_IVM_1GD = Nb_I_vols_acces_vehic_IVM_1GD/Nb_I_vols_acces_vehic*100,
 P_I_vols_ds_vehic_IVM_1GD = Nb_I_vols_ds_vehic_IVM_1GD/Nb_I_vols_ds_vehic*100,
 P_I_vols_de_vehic_IVM_1GD = Nb_I_vols_de_vehic_IVM_1GD/Nb_I_vols_de_vehic*100,
-P_I_vols_sansviol_IVM_1GD = Nb_I_vols_sansviol_IVM_1GD/Nb_I_vols_sansviol*100,
+P_I_vols_sansviolence_IVM_1GD = Nb_I_vols_sansviol_IVM_1GD/Nb_I_vols_sansviol*100,
 P_I_vols_viol_sansarme_IVM_1GD = Nb_I_vols_viol_sansarme_IVM_1GD/Nb_I_vols_viol_sansarme*100,
 P_I_vols_vehic_IVM_1GD = Nb_I_vols_vehic_IVM_1GD/Nb_I_vols_vehic*100,
-P_I_bless_famil_homic_IVM_1GD = Nb_I_bless_famil_homic_IVM_1GD/Nb_I_bless_famil_homic*100,
+P_I_bless_hfamil_homic_IVM_1GD = Nb_I_bless_hfamil_homic_IVM_1GD/Nb_I_bless_hfamil_homic*100,
 P_I_vols_violents_IVM_1GD = Nb_I_vols_violents_IVM_1GD/Nb_I_vols_violents*100,
 P_I_corpo_IVM_1GD = Nb_I_corpo_IVM_1GD/Nb_I_corpo*100,
 # (I,V,M) dans même UU:
@@ -1117,10 +1139,10 @@ P_I_vols_armes_IVM_1UU = Nb_I_vols_armes_IVM_1UU/Nb_I_vols_armes*100,
 P_I_vols_acces_vehic_IVM_1UU = Nb_I_vols_acces_vehic_IVM_1UU/Nb_I_vols_acces_vehic*100,
 P_I_vols_ds_vehic_IVM_1UU = Nb_I_vols_ds_vehic_IVM_1UU/Nb_I_vols_ds_vehic*100,
 P_I_vols_de_vehic_IVM_1UU = Nb_I_vols_de_vehic_IVM_1UU/Nb_I_vols_de_vehic*100,
-P_I_vols_sansviol_IVM_1UU = Nb_I_vols_sansviol_IVM_1UU/Nb_I_vols_sansviol*100,
+P_I_vols_sansviolence_IVM_1UU = Nb_I_vols_sansviol_IVM_1UU/Nb_I_vols_sansviol*100,
 P_I_vols_viol_sansarme_IVM_1UU = Nb_I_vols_viol_sansarme_IVM_1UU/Nb_I_vols_viol_sansarme*100,
 P_I_vols_vehic_IVM_1UU = Nb_I_vols_vehic_IVM_1UU/Nb_I_vols_vehic*100,
-P_I_bless_famil_homic_IVM_1UU = Nb_I_bless_famil_homic_IVM_1UU/Nb_I_bless_famil_homic*100,
+P_I_bless_hfamil_homic_IVM_1UU = Nb_I_bless_hfamil_homic_IVM_1UU/Nb_I_bless_hfamil_homic*100,
 P_I_vols_violents_IVM_1UU = Nb_I_vols_violents_IVM_1UU/Nb_I_vols_violents*100,
 P_I_corpo_IVM_1UU = Nb_I_corpo_IVM_1UU/Nb_I_corpo*100,
 # (I,V,M) dans même AAV:
@@ -1134,10 +1156,10 @@ P_I_vols_armes_IVM_1AAV = Nb_I_vols_armes_IVM_1AAV/Nb_I_vols_armes*100,
 P_I_vols_acces_vehic_IVM_1AAV = Nb_I_vols_acces_vehic_IVM_1AAV/Nb_I_vols_acces_vehic*100,
 P_I_vols_ds_vehic_IVM_1AAV = Nb_I_vols_ds_vehic_IVM_1AAV/Nb_I_vols_ds_vehic*100,
 P_I_vols_de_vehic_IVM_1AAV = Nb_I_vols_de_vehic_IVM_1AAV/Nb_I_vols_de_vehic*100,
-P_I_vols_sansviol_IVM_1AAV = Nb_I_vols_sansviol_IVM_1AAV/Nb_I_vols_sansviol*100,
+P_I_vols_sansviolence_IVM_1AAV = Nb_I_vols_sansviol_IVM_1AAV/Nb_I_vols_sansviol*100,
 P_I_vols_viol_sansarme_IVM_1AAV = Nb_I_vols_viol_sansarme_IVM_1AAV/Nb_I_vols_viol_sansarme*100,
 P_I_vols_vehic_IVM_1AAV = Nb_I_vols_vehic_IVM_1AAV/Nb_I_vols_vehic*100,
-P_I_bless_famil_homic_IVM_1AAV = Nb_I_bless_famil_homic_IVM_1AAV/Nb_I_bless_famil_homic*100,
+P_I_bless_hfamil_homic_IVM_1AAV = Nb_I_bless_hfamil_homic_IVM_1AAV/Nb_I_bless_hfamil_homic*100,
 P_I_vols_violents_IVM_1AAV = Nb_I_vols_violents_IVM_1AAV/Nb_I_vols_violents*100,
 P_I_corpo_IVM_1AAV = Nb_I_corpo_IVM_1AAV/Nb_I_corpo*100,
 # (I,V,M) dans même CENTR:
@@ -1151,10 +1173,10 @@ P_I_vols_armes_IVM_1CENTR = Nb_I_vols_armes_IVM_1CENTR/Nb_I_vols_armes*100,
 P_I_vols_acces_vehic_IVM_1CENTR = Nb_I_vols_acces_vehic_IVM_1CENTR/Nb_I_vols_acces_vehic*100,
 P_I_vols_ds_vehic_IVM_1CENTR = Nb_I_vols_ds_vehic_IVM_1CENTR/Nb_I_vols_ds_vehic*100,
 P_I_vols_de_vehic_IVM_1CENTR = Nb_I_vols_de_vehic_IVM_1CENTR/Nb_I_vols_de_vehic*100,
-P_I_vols_sansviol_IVM_1CENTR = Nb_I_vols_sansviol_IVM_1CENTR/Nb_I_vols_sansviol*100,
+P_I_vols_sansviolence_IVM_1CENTR = Nb_I_vols_sansviol_IVM_1CENTR/Nb_I_vols_sansviol*100,
 P_I_vols_viol_sansarme_IVM_1CENTR = Nb_I_vols_viol_sansarme_IVM_1CENTR/Nb_I_vols_viol_sansarme*100,
 P_I_vols_vehic_IVM_1CENTR = Nb_I_vols_vehic_IVM_1CENTR/Nb_I_vols_vehic*100,
-P_I_bless_famil_homic_IVM_1CENTR = Nb_I_bless_famil_homic_IVM_1CENTR/Nb_I_bless_famil_homic*100,
+P_I_bless_hfamil_homic_IVM_1CENTR = Nb_I_bless_hfamil_homic_IVM_1CENTR/Nb_I_bless_hfamil_homic*100,
 P_I_vols_violents_IVM_1CENTR = Nb_I_vols_violents_IVM_1CENTR/Nb_I_vols_violents*100,
 P_I_corpo_IVM_1CENTR = Nb_I_corpo_IVM_1CENTR/Nb_I_corpo*100)
 
@@ -1179,20 +1201,96 @@ delinquance_com <- delinquance_com %>%
 
 # Ajout de l'information sur les distances médianes entre les communes I,V et M:
 
-# Calcul de la distance médiane I->V, I->M, V->M pour chaque commune:
-dist_mediane_com <-atteintes[, .(dist_mediane_I_V=median(dist_inf_vict,na.rm=TRUE),
-                                 dist_mediane_I_M=median(dist_inf_mec,na.rm=TRUE),
-                                 dist_mediane_V_M=median(dist_vict_mec,na.rm=TRUE)
-                                 ),by=.(cog_com_22_inf)]
+# Calcul de la distance médiane I->V pour toutes les atteintes de chaque commune:
+dist_mediane_IV_com <-atteintes[, .(dist_I_V=median(dist_inf_vict,na.rm=TRUE))
+                                 ,by=.(cog_com_22_inf)]
 # Transformation en tibble:
-dist_mediane_com <- as_tibble(dist_mediane_com)
+dist_mediane_IV_com <- as_tibble(dist_mediane_IV_com)
 
 # Appariement:
 delinquance_com <- delinquance_com %>%
-  left_join(y = dist_mediane_com, 
+  left_join(y = dist_mediane_IV_com, 
             by = c("cog_com_22_inf" = "cog_com_22_inf"))
 
-                                                                                       
+# Raffinement: on peut calculer des distances médianes par atteinte:
+
+# a) Atteintes corporelles: on peut calculer la médiane sur les 3 distances I->V, I->M et V->M
+dist_mediane_com_corpo <-atteintes[classe %chin% c("Coups et blessures volontaires dans la sphère familiale",
+                                                   "Coups et blessures volontaires en dehors de la sphère familiale",
+                                                    "Homicides",
+                                                    "Violences sexuelles"), 
+                                .(dist_I_V=median(dist_inf_vict,na.rm=TRUE),
+                                 dist_I_M=median(dist_inf_mec,na.rm=TRUE),
+                                 dist_V_M=median(dist_vict_mec,na.rm=TRUE)
+),by=.(cog_com_22_inf,classe2)]
+# Transformation en tibble:
+dist_mediane_com_corpo <- as_tibble(dist_mediane_com_corpo)
+
+dist_mediane_com_corpo <- dist_mediane_com_corpo %>%
+  pivot_wider(id_cols =cog_com_22_inf,  
+              names_from = classe2, 
+              values_from = c("dist_I_V","dist_I_M","dist_V_M")) 
+
+# Appariement:
+delinquance_com <- delinquance_com %>%
+  left_join(y = dist_mediane_com_corpo, 
+            by = c("cog_com_22_inf" = "cog_com_22_inf"))
+
+dist_mediane_com_corpo2 <-atteintes[classe %chin% c("Coups et blessures volontaires dans la sphère familiale",
+                                                   "Coups et blessures volontaires en dehors de la sphère familiale",
+                                                   "Homicides",
+                                                   "Violences sexuelles"), 
+                                   .(dist_I_V_corpo=median(dist_inf_vict,na.rm=TRUE),
+                                     dist_I_M_corpo=median(dist_inf_mec,na.rm=TRUE),
+                                     dist_V_M_corpo=median(dist_vict_mec,na.rm=TRUE)
+                                   ),by=.(cog_com_22_inf)]
+# Transformation en tibble:
+dist_mediane_com_corpo2 <- as_tibble(dist_mediane_com_corpo2)
+
+# Appariement:
+delinquance_com <- delinquance_com %>%
+  left_join(y = dist_mediane_com_corpo2, 
+            by = c("cog_com_22_inf" = "cog_com_22_inf"))
+
+
+# b) Atteintes non corporelles: on peut calculer la médiane sur la distance I->V
+dist_mediane_com_noncorpo <-atteintes[!(classe %chin% c("Coups et blessures volontaires dans la sphère familiale",
+                                                   "Coups et blessures volontaires en dehors de la sphère familiale",
+                                                   "Homicides",
+                                                   "Violences sexuelles")), 
+                                   .(dist_I_V=median(dist_inf_vict,na.rm=TRUE)
+                                   ),by=.(cog_com_22_inf,classe2)]
+# Transformation en tibble:
+dist_mediane_com_noncorpo <- as_tibble(dist_mediane_com_noncorpo)
+
+dist_mediane_com_noncorpo <- dist_mediane_com_noncorpo %>%
+  pivot_wider(id_cols =cog_com_22_inf,  
+              names_from = classe2, 
+              values_from = dist_I_V,
+              names_prefix = "dist_I_V_") 
+
+# Appariement:
+delinquance_com <- delinquance_com %>%
+  left_join(y = dist_mediane_com_noncorpo, 
+            by = c("cog_com_22_inf" = "cog_com_22_inf"))
+
+dist_mediane_com_noncorpo2 <-atteintes[!(classe %chin% c("Coups et blessures volontaires dans la sphère familiale",
+                                                    "Coups et blessures volontaires en dehors de la sphère familiale",
+                                                    "Homicides",
+                                                    "Violences sexuelles")), 
+                                    .(dist_I_V_noncorpo=median(dist_inf_vict,na.rm=TRUE)
+                                    ),by=.(cog_com_22_inf)]
+# Transformation en tibble:
+dist_mediane_com_noncorpo2 <- as_tibble(dist_mediane_com_noncorpo2)
+
+# Appariement:
+delinquance_com <- delinquance_com %>%
+  left_join(y = dist_mediane_com_noncorpo2, 
+            by = c("cog_com_22_inf" = "cog_com_22_inf"))
+
+
+#############################################################################################################
+
 
 # 3- Construction de la base "delinquance_dep" (analyse au niveau du département.)
 
@@ -1260,6 +1358,8 @@ delinquance_dep <- delinquance_dep %>%
 
 # Calcul de toutes les variables relatives au volume de délinquance (pour 1000 habitants):
 
+# Calcul de toutes les variables relatives au volume de délinquance (pour 1000 habitants):
+
 delinquance_dep <- delinquance_dep %>%
   mutate(
     I = Nb_I/P19_POP*1000,
@@ -1273,13 +1373,12 @@ delinquance_dep <- delinquance_dep %>%
     I_vols_acces_vehic = Nb_I_vols_acces_vehic/P19_POP*1000,
     I_vols_ds_vehic = Nb_I_vols_ds_vehic/P19_POP*1000,
     I_vols_de_vehic = Nb_I_vols_de_vehic/P19_POP*1000,
-    I_vols_sansviol = Nb_I_vols_sansviol/P19_POP*1000,
+    I_vols_sansviolence = Nb_I_vols_sansviol/P19_POP*1000,
     I_vols_viol_sansarme = Nb_I_vols_viol_sansarme/P19_POP*1000,
     I_vols_vehic = Nb_I_vols_vehic/P19_POP*1000,
-    I_bless_famil_homic = Nb_I_bless_famil_homic/P19_POP*1000,
+    I_bless_hfamil_homic = Nb_I_bless_hfamil_homic/P19_POP*1000,
     I_vols_violents = Nb_I_vols_violents/P19_POP*1000,
     I_corpo = Nb_I_corpo/P19_POP*1000)
-
 
 # Calcul de toutes les variables relatives au volume de victimes (pour 1000 habitants):
 
@@ -1296,10 +1395,10 @@ delinquance_dep <- delinquance_dep %>%
     V_vols_acces_vehic = Nb_V_vols_acces_vehic/P19_POP*1000,
     V_vols_ds_vehic = Nb_V_vols_ds_vehic/P19_POP*1000,
     V_vols_de_vehic = Nb_V_vols_de_vehic/P19_POP*1000,
-    V_vols_sansviol = Nb_V_vols_sansviol/P19_POP*1000,
+    V_vols_sansviolence = Nb_V_vols_sansviol/P19_POP*1000,
     V_vols_viol_sansarme = Nb_V_vols_viol_sansarme/P19_POP*1000,
     V_vols_vehic = Nb_V_vols_vehic/P19_POP*1000,
-    V_bless_famil_homic = Nb_V_bless_famil_homic/P19_POP*1000,
+    V_bless_hfamil_homic = Nb_V_bless_hfamil_homic/P19_POP*1000,
     V_vols_violents = Nb_V_vols_violents/P19_POP*1000,
     V_corpo = Nb_V_corpo/P19_POP*1000
   )
@@ -1319,10 +1418,10 @@ delinquance_dep <- delinquance_dep %>%
     M_vols_acces_vehic = Nb_M_vols_acces_vehic/P19_POP*1000,
     M_vols_ds_vehic = Nb_M_vols_ds_vehic/P19_POP*1000,
     M_vols_de_vehic = Nb_M_vols_de_vehic/P19_POP*1000,
-    M_vols_sansviol = Nb_M_vols_sansviol/P19_POP*1000,
+    M_vols_sansviolence = Nb_M_vols_sansviol/P19_POP*1000,
     M_vols_viol_sansarme = Nb_M_vols_viol_sansarme/P19_POP*1000,
     M_vols_vehic = Nb_M_vols_vehic/P19_POP*1000,
-    M_bless_famil_homic = Nb_M_bless_famil_homic/P19_POP*1000,
+    M_bless_hfamil_homic = Nb_M_bless_hfamil_homic/P19_POP*1000,
     M_vols_violents = Nb_M_vols_violents/P19_POP*1000,
     M_corpo = Nb_M_corpo/P19_POP*1000
   )
@@ -1341,10 +1440,10 @@ delinquance_dep <- delinquance_dep %>%
     P_I_vols_acces_vehic = Nb_I_vols_acces_vehic/Nb_I*100,
     P_I_vols_ds_vehic = Nb_I_vols_ds_vehic/Nb_I*100,
     P_I_vols_de_vehic = Nb_I_vols_de_vehic/Nb_I*100,
-    P_I_vols_sansviol = Nb_I_vols_sansviol/Nb_I*100,
+    P_I_vols_sansviolence = Nb_I_vols_sansviol/Nb_I*100,
     P_I_vols_viol_sansarme = Nb_I_vols_viol_sansarme/Nb_I*100,
     P_I_vols_vehic = Nb_I_vols_vehic/Nb_I*100,
-    P_I_bless_famil_homic = Nb_I_bless_famil_homic/Nb_I*100,
+    P_I_bless_hfamil_homic = Nb_I_bless_hfamil_homic/Nb_I*100,
     P_I_vols_violents = Nb_I_vols_violents/Nb_I*100,
     P_I_corpo = Nb_I_corpo/Nb_I*100)
 
@@ -1366,10 +1465,10 @@ delinquance_dep <- delinquance_dep %>%
     P_I_vols_acces_vehic_IV_1ZE = Nb_I_vols_acces_vehic_IV_1ZE/Nb_I_vols_acces_vehic*100,
     P_I_vols_ds_vehic_IV_1ZE = Nb_I_vols_ds_vehic_IV_1ZE/Nb_I_vols_ds_vehic*100,
     P_I_vols_de_vehic_IV_1ZE = Nb_I_vols_de_vehic_IV_1ZE/Nb_I_vols_de_vehic*100,
-    P_I_vols_sansviol_IV_1ZE = Nb_I_vols_sansviol_IV_1ZE/Nb_I_vols_sansviol*100,
+    P_I_vols_sansviolence_IV_1ZE = Nb_I_vols_sansviol_IV_1ZE/Nb_I_vols_sansviol*100,
     P_I_vols_viol_sansarme_IV_1ZE = Nb_I_vols_viol_sansarme_IV_1ZE/Nb_I_vols_viol_sansarme*100,
     P_I_vols_vehic_IV_1ZE = Nb_I_vols_vehic_IV_1ZE/Nb_I_vols_vehic*100,
-    P_I_bless_famil_homic_IV_1ZE = Nb_I_bless_famil_homic_IV_1ZE/Nb_I_bless_famil_homic*100,
+    P_I_bless_hfamil_homic_IV_1ZE = Nb_I_bless_hfamil_homic_IV_1ZE/Nb_I_bless_hfamil_homic*100,
     P_I_vols_violents_IV_1ZE = Nb_I_vols_violents_IV_1ZE/Nb_I_vols_violents*100,
     P_I_corpo_IV_1ZE = Nb_I_corpo_IV_1ZE/Nb_I_corpo*100,
     # (I,V) dans même BV:
@@ -1384,10 +1483,10 @@ delinquance_dep <- delinquance_dep %>%
     P_I_vols_acces_vehic_IV_1BV = Nb_I_vols_acces_vehic_IV_1BV/Nb_I_vols_acces_vehic*100,
     P_I_vols_ds_vehic_IV_1BV = Nb_I_vols_ds_vehic_IV_1BV/Nb_I_vols_ds_vehic*100,
     P_I_vols_de_vehic_IV_1BV = Nb_I_vols_de_vehic_IV_1BV/Nb_I_vols_de_vehic*100,
-    P_I_vols_sansviol_IV_1BV = Nb_I_vols_sansviol_IV_1BV/Nb_I_vols_sansviol*100,
+    P_I_vols_sansviolence_IV_1BV = Nb_I_vols_sansviol_IV_1BV/Nb_I_vols_sansviol*100,
     P_I_vols_viol_sansarme_IV_1BV = Nb_I_vols_viol_sansarme_IV_1BV/Nb_I_vols_viol_sansarme*100,
     P_I_vols_vehic_IV_1BV = Nb_I_vols_vehic_IV_1BV/Nb_I_vols_vehic*100,
-    P_I_bless_famil_homic_IV_1BV = Nb_I_bless_famil_homic_IV_1BV/Nb_I_bless_famil_homic*100,
+    P_I_bless_hfamil_homic_IV_1BV = Nb_I_bless_hfamil_homic_IV_1BV/Nb_I_bless_hfamil_homic*100,
     P_I_vols_violents_IV_1BV = Nb_I_vols_violents_IV_1BV/Nb_I_vols_violents*100,
     P_I_corpo_IV_1BV = Nb_I_corpo_IV_1BV/Nb_I_corpo*100,
     # (I,V) dans même GD:
@@ -1402,10 +1501,10 @@ delinquance_dep <- delinquance_dep %>%
     P_I_vols_acces_vehic_IV_1GD = Nb_I_vols_acces_vehic_IV_1GD/Nb_I_vols_acces_vehic*100,
     P_I_vols_ds_vehic_IV_1GD = Nb_I_vols_ds_vehic_IV_1GD/Nb_I_vols_ds_vehic*100,
     P_I_vols_de_vehic_IV_1GD = Nb_I_vols_de_vehic_IV_1GD/Nb_I_vols_de_vehic*100,
-    P_I_vols_sansviol_IV_1GD = Nb_I_vols_sansviol_IV_1GD/Nb_I_vols_sansviol*100,
+    P_I_vols_sansviolence_IV_1GD = Nb_I_vols_sansviol_IV_1GD/Nb_I_vols_sansviol*100,
     P_I_vols_viol_sansarme_IV_1GD = Nb_I_vols_viol_sansarme_IV_1GD/Nb_I_vols_viol_sansarme*100,
     P_I_vols_vehic_IV_1GD = Nb_I_vols_vehic_IV_1GD/Nb_I_vols_vehic*100,
-    P_I_bless_famil_homic_IV_1GD = Nb_I_bless_famil_homic_IV_1GD/Nb_I_bless_famil_homic*100,
+    P_I_bless_hfamil_homic_IV_1GD = Nb_I_bless_hfamil_homic_IV_1GD/Nb_I_bless_hfamil_homic*100,
     P_I_vols_violents_IV_1GD = Nb_I_vols_violents_IV_1GD/Nb_I_vols_violents*100,
     P_I_corpo_IV_1GD = Nb_I_corpo_IV_1GD/Nb_I_corpo*100,
     # (I,V) dans même UU:
@@ -1420,10 +1519,10 @@ delinquance_dep <- delinquance_dep %>%
     P_I_vols_acces_vehic_IV_1UU = Nb_I_vols_acces_vehic_IV_1UU/Nb_I_vols_acces_vehic*100,
     P_I_vols_ds_vehic_IV_1UU = Nb_I_vols_ds_vehic_IV_1UU/Nb_I_vols_ds_vehic*100,
     P_I_vols_de_vehic_IV_1UU = Nb_I_vols_de_vehic_IV_1UU/Nb_I_vols_de_vehic*100,
-    P_I_vols_sansviol_IV_1UU = Nb_I_vols_sansviol_IV_1UU/Nb_I_vols_sansviol*100,
+    P_I_vols_sansviolence_IV_1UU = Nb_I_vols_sansviol_IV_1UU/Nb_I_vols_sansviol*100,
     P_I_vols_viol_sansarme_IV_1UU = Nb_I_vols_viol_sansarme_IV_1UU/Nb_I_vols_viol_sansarme*100,
     P_I_vols_vehic_IV_1UU = Nb_I_vols_vehic_IV_1UU/Nb_I_vols_vehic*100,
-    P_I_bless_famil_homic_IV_1UU = Nb_I_bless_famil_homic_IV_1UU/Nb_I_bless_famil_homic*100,
+    P_I_bless_hfamil_homic_IV_1UU = Nb_I_bless_hfamil_homic_IV_1UU/Nb_I_bless_hfamil_homic*100,
     P_I_vols_violents_IV_1UU = Nb_I_vols_violents_IV_1UU/Nb_I_vols_violents*100,
     P_I_corpo_IV_1UU = Nb_I_corpo_IV_1UU/Nb_I_corpo*100,
     # (I,V) dans même AAV:
@@ -1438,10 +1537,10 @@ delinquance_dep <- delinquance_dep %>%
     P_I_vols_acces_vehic_IV_1AAV = Nb_I_vols_acces_vehic_IV_1AAV/Nb_I_vols_acces_vehic*100,
     P_I_vols_ds_vehic_IV_1AAV = Nb_I_vols_ds_vehic_IV_1AAV/Nb_I_vols_ds_vehic*100,
     P_I_vols_de_vehic_IV_1AAV = Nb_I_vols_de_vehic_IV_1AAV/Nb_I_vols_de_vehic*100,
-    P_I_vols_sansviol_IV_1AAV = Nb_I_vols_sansviol_IV_1AAV/Nb_I_vols_sansviol*100,
+    P_I_vols_sansviolence_IV_1AAV = Nb_I_vols_sansviol_IV_1AAV/Nb_I_vols_sansviol*100,
     P_I_vols_viol_sansarme_IV_1AAV = Nb_I_vols_viol_sansarme_IV_1AAV/Nb_I_vols_viol_sansarme*100,
     P_I_vols_vehic_IV_1AAV = Nb_I_vols_vehic_IV_1AAV/Nb_I_vols_vehic*100,
-    P_I_bless_famil_homic_IV_1AAV = Nb_I_bless_famil_homic_IV_1AAV/Nb_I_bless_famil_homic*100,
+    P_I_bless_hfamil_homic_IV_1AAV = Nb_I_bless_hfamil_homic_IV_1AAV/Nb_I_bless_hfamil_homic*100,
     P_I_vols_violents_IV_1AAV = Nb_I_vols_violents_IV_1AAV/Nb_I_vols_violents*100,
     P_I_corpo_IV_1AAV = Nb_I_corpo_IV_1AAV/Nb_I_corpo*100,
     # (I,V) dans même CENTR:
@@ -1456,10 +1555,10 @@ delinquance_dep <- delinquance_dep %>%
     P_I_vols_acces_vehic_IV_1CENTR = Nb_I_vols_acces_vehic_IV_1CENTR/Nb_I_vols_acces_vehic*100,
     P_I_vols_ds_vehic_IV_1CENTR = Nb_I_vols_ds_vehic_IV_1CENTR/Nb_I_vols_ds_vehic*100,
     P_I_vols_de_vehic_IV_1CENTR = Nb_I_vols_de_vehic_IV_1CENTR/Nb_I_vols_de_vehic*100,
-    P_I_vols_sansviol_IV_1CENTR = Nb_I_vols_sansviol_IV_1CENTR/Nb_I_vols_sansviol*100,
+    P_I_vols_sansviolence_IV_1CENTR = Nb_I_vols_sansviol_IV_1CENTR/Nb_I_vols_sansviol*100,
     P_I_vols_viol_sansarme_IV_1CENTR = Nb_I_vols_viol_sansarme_IV_1CENTR/Nb_I_vols_viol_sansarme*100,
     P_I_vols_vehic_IV_1CENTR = Nb_I_vols_vehic_IV_1CENTR/Nb_I_vols_vehic*100,
-    P_I_bless_famil_homic_IV_1CENTR = Nb_I_bless_famil_homic_IV_1CENTR/Nb_I_bless_famil_homic*100,
+    P_I_bless_hfamil_homic_IV_1CENTR = Nb_I_bless_hfamil_homic_IV_1CENTR/Nb_I_bless_hfamil_homic*100,
     P_I_vols_violents_IV_1CENTR = Nb_I_vols_violents_IV_1CENTR/Nb_I_vols_violents*100,
     P_I_corpo_IV_1CENTR = Nb_I_corpo_IV_1CENTR/Nb_I_corpo*100,
     # (I,V,M) dans même ZE:
@@ -1473,10 +1572,10 @@ delinquance_dep <- delinquance_dep %>%
     P_I_vols_acces_vehic_IVM_1ZE = Nb_I_vols_acces_vehic_IVM_1ZE/Nb_I_vols_acces_vehic*100,
     P_I_vols_ds_vehic_IVM_1ZE = Nb_I_vols_ds_vehic_IVM_1ZE/Nb_I_vols_ds_vehic*100,
     P_I_vols_de_vehic_IVM_1ZE = Nb_I_vols_de_vehic_IVM_1ZE/Nb_I_vols_de_vehic*100,
-    P_I_vols_sansviol_IVM_1ZE = Nb_I_vols_sansviol_IVM_1ZE/Nb_I_vols_sansviol*100,
+    P_I_vols_sansviolence_IVM_1ZE = Nb_I_vols_sansviol_IVM_1ZE/Nb_I_vols_sansviol*100,
     P_I_vols_viol_sansarme_IVM_1ZE = Nb_I_vols_viol_sansarme_IVM_1ZE/Nb_I_vols_viol_sansarme*100,
     P_I_vols_vehic_IVM_1ZE = Nb_I_vols_vehic_IVM_1ZE/Nb_I_vols_vehic*100,
-    P_I_bless_famil_homic_IVM_1ZE = Nb_I_bless_famil_homic_IVM_1ZE/Nb_I_bless_famil_homic*100,
+    P_I_bless_hfamil_homic_IVM_1ZE = Nb_I_bless_hfamil_homic_IVM_1ZE/Nb_I_bless_hfamil_homic*100,
     P_I_vols_violents_IVM_1ZE = Nb_I_vols_violents_IVM_1ZE/Nb_I_vols_violents*100,
     P_I_corpo_IVM_1ZE = Nb_I_corpo_IVM_1ZE/Nb_I_corpo*100,
     # (I,V,M) dans même BV:
@@ -1490,10 +1589,10 @@ delinquance_dep <- delinquance_dep %>%
     P_I_vols_acces_vehic_IVM_1BV = Nb_I_vols_acces_vehic_IVM_1BV/Nb_I_vols_acces_vehic*100,
     P_I_vols_ds_vehic_IVM_1BV = Nb_I_vols_ds_vehic_IVM_1BV/Nb_I_vols_ds_vehic*100,
     P_I_vols_de_vehic_IVM_1BV = Nb_I_vols_de_vehic_IVM_1BV/Nb_I_vols_de_vehic*100,
-    P_I_vols_sansviol_IVM_1BV = Nb_I_vols_sansviol_IVM_1BV/Nb_I_vols_sansviol*100,
+    P_I_vols_sansviolence_IVM_1BV = Nb_I_vols_sansviol_IVM_1BV/Nb_I_vols_sansviol*100,
     P_I_vols_viol_sansarme_IVM_1BV = Nb_I_vols_viol_sansarme_IVM_1BV/Nb_I_vols_viol_sansarme*100,
     P_I_vols_vehic_IVM_1BV = Nb_I_vols_vehic_IVM_1BV/Nb_I_vols_vehic*100,
-    P_I_bless_famil_homic_IVM_1BV = Nb_I_bless_famil_homic_IVM_1BV/Nb_I_bless_famil_homic*100,
+    P_I_bless_hfamil_homic_IVM_1BV = Nb_I_bless_hfamil_homic_IVM_1BV/Nb_I_bless_hfamil_homic*100,
     P_I_vols_violents_IVM_1BV = Nb_I_vols_violents_IVM_1BV/Nb_I_vols_violents*100,
     P_I_corpo_IVM_1BV = Nb_I_corpo_IVM_1BV/Nb_I_corpo*100,
     # (I,V,M) dans même GD:
@@ -1507,10 +1606,10 @@ delinquance_dep <- delinquance_dep %>%
     P_I_vols_acces_vehic_IVM_1GD = Nb_I_vols_acces_vehic_IVM_1GD/Nb_I_vols_acces_vehic*100,
     P_I_vols_ds_vehic_IVM_1GD = Nb_I_vols_ds_vehic_IVM_1GD/Nb_I_vols_ds_vehic*100,
     P_I_vols_de_vehic_IVM_1GD = Nb_I_vols_de_vehic_IVM_1GD/Nb_I_vols_de_vehic*100,
-    P_I_vols_sansviol_IVM_1GD = Nb_I_vols_sansviol_IVM_1GD/Nb_I_vols_sansviol*100,
+    P_I_vols_sansviolence_IVM_1GD = Nb_I_vols_sansviol_IVM_1GD/Nb_I_vols_sansviol*100,
     P_I_vols_viol_sansarme_IVM_1GD = Nb_I_vols_viol_sansarme_IVM_1GD/Nb_I_vols_viol_sansarme*100,
     P_I_vols_vehic_IVM_1GD = Nb_I_vols_vehic_IVM_1GD/Nb_I_vols_vehic*100,
-    P_I_bless_famil_homic_IVM_1GD = Nb_I_bless_famil_homic_IVM_1GD/Nb_I_bless_famil_homic*100,
+    P_I_bless_hfamil_homic_IVM_1GD = Nb_I_bless_hfamil_homic_IVM_1GD/Nb_I_bless_hfamil_homic*100,
     P_I_vols_violents_IVM_1GD = Nb_I_vols_violents_IVM_1GD/Nb_I_vols_violents*100,
     P_I_corpo_IVM_1GD = Nb_I_corpo_IVM_1GD/Nb_I_corpo*100,
     # (I,V,M) dans même UU:
@@ -1524,10 +1623,10 @@ delinquance_dep <- delinquance_dep %>%
     P_I_vols_acces_vehic_IVM_1UU = Nb_I_vols_acces_vehic_IVM_1UU/Nb_I_vols_acces_vehic*100,
     P_I_vols_ds_vehic_IVM_1UU = Nb_I_vols_ds_vehic_IVM_1UU/Nb_I_vols_ds_vehic*100,
     P_I_vols_de_vehic_IVM_1UU = Nb_I_vols_de_vehic_IVM_1UU/Nb_I_vols_de_vehic*100,
-    P_I_vols_sansviol_IVM_1UU = Nb_I_vols_sansviol_IVM_1UU/Nb_I_vols_sansviol*100,
+    P_I_vols_sansviolence_IVM_1UU = Nb_I_vols_sansviol_IVM_1UU/Nb_I_vols_sansviol*100,
     P_I_vols_viol_sansarme_IVM_1UU = Nb_I_vols_viol_sansarme_IVM_1UU/Nb_I_vols_viol_sansarme*100,
     P_I_vols_vehic_IVM_1UU = Nb_I_vols_vehic_IVM_1UU/Nb_I_vols_vehic*100,
-    P_I_bless_famil_homic_IVM_1UU = Nb_I_bless_famil_homic_IVM_1UU/Nb_I_bless_famil_homic*100,
+    P_I_bless_hfamil_homic_IVM_1UU = Nb_I_bless_hfamil_homic_IVM_1UU/Nb_I_bless_hfamil_homic*100,
     P_I_vols_violents_IVM_1UU = Nb_I_vols_violents_IVM_1UU/Nb_I_vols_violents*100,
     P_I_corpo_IVM_1UU = Nb_I_corpo_IVM_1UU/Nb_I_corpo*100,
     # (I,V,M) dans même AAV:
@@ -1541,10 +1640,10 @@ delinquance_dep <- delinquance_dep %>%
     P_I_vols_acces_vehic_IVM_1AAV = Nb_I_vols_acces_vehic_IVM_1AAV/Nb_I_vols_acces_vehic*100,
     P_I_vols_ds_vehic_IVM_1AAV = Nb_I_vols_ds_vehic_IVM_1AAV/Nb_I_vols_ds_vehic*100,
     P_I_vols_de_vehic_IVM_1AAV = Nb_I_vols_de_vehic_IVM_1AAV/Nb_I_vols_de_vehic*100,
-    P_I_vols_sansviol_IVM_1AAV = Nb_I_vols_sansviol_IVM_1AAV/Nb_I_vols_sansviol*100,
+    P_I_vols_sansviolence_IVM_1AAV = Nb_I_vols_sansviol_IVM_1AAV/Nb_I_vols_sansviol*100,
     P_I_vols_viol_sansarme_IVM_1AAV = Nb_I_vols_viol_sansarme_IVM_1AAV/Nb_I_vols_viol_sansarme*100,
     P_I_vols_vehic_IVM_1AAV = Nb_I_vols_vehic_IVM_1AAV/Nb_I_vols_vehic*100,
-    P_I_bless_famil_homic_IVM_1AAV = Nb_I_bless_famil_homic_IVM_1AAV/Nb_I_bless_famil_homic*100,
+    P_I_bless_hfamil_homic_IVM_1AAV = Nb_I_bless_hfamil_homic_IVM_1AAV/Nb_I_bless_hfamil_homic*100,
     P_I_vols_violents_IVM_1AAV = Nb_I_vols_violents_IVM_1AAV/Nb_I_vols_violents*100,
     P_I_corpo_IVM_1AAV = Nb_I_corpo_IVM_1AAV/Nb_I_corpo*100,
     # (I,V,M) dans même CENTR:
@@ -1558,10 +1657,10 @@ delinquance_dep <- delinquance_dep %>%
     P_I_vols_acces_vehic_IVM_1CENTR = Nb_I_vols_acces_vehic_IVM_1CENTR/Nb_I_vols_acces_vehic*100,
     P_I_vols_ds_vehic_IVM_1CENTR = Nb_I_vols_ds_vehic_IVM_1CENTR/Nb_I_vols_ds_vehic*100,
     P_I_vols_de_vehic_IVM_1CENTR = Nb_I_vols_de_vehic_IVM_1CENTR/Nb_I_vols_de_vehic*100,
-    P_I_vols_sansviol_IVM_1CENTR = Nb_I_vols_sansviol_IVM_1CENTR/Nb_I_vols_sansviol*100,
+    P_I_vols_sansviolence_IVM_1CENTR = Nb_I_vols_sansviol_IVM_1CENTR/Nb_I_vols_sansviol*100,
     P_I_vols_viol_sansarme_IVM_1CENTR = Nb_I_vols_viol_sansarme_IVM_1CENTR/Nb_I_vols_viol_sansarme*100,
     P_I_vols_vehic_IVM_1CENTR = Nb_I_vols_vehic_IVM_1CENTR/Nb_I_vols_vehic*100,
-    P_I_bless_famil_homic_IVM_1CENTR = Nb_I_bless_famil_homic_IVM_1CENTR/Nb_I_bless_famil_homic*100,
+    P_I_bless_hfamil_homic_IVM_1CENTR = Nb_I_bless_hfamil_homic_IVM_1CENTR/Nb_I_bless_hfamil_homic*100,
     P_I_vols_violents_IVM_1CENTR = Nb_I_vols_violents_IVM_1CENTR/Nb_I_vols_violents*100,
     P_I_corpo_IVM_1CENTR = Nb_I_corpo_IVM_1CENTR/Nb_I_corpo*100)
 
@@ -1586,29 +1685,91 @@ delinquance_dep <- delinquance_dep %>%
 
 # Ajout de l'information sur les distances médianes entre les communes I,V et M:
 
-# Calcul de la distance médiane I->V, I->M, V->M pour chaque département:
-dist_mediane_dep <-atteintes[, .(dist_mediane_I_V=median(dist_inf_vict,na.rm=TRUE),
-                                 dist_mediane_I_M=median(dist_inf_mec,na.rm=TRUE),
-                                 dist_mediane_V_M=median(dist_vict_mec,na.rm=TRUE)
-),by=.(DEP_inf)]
+# Calcul de la distance médiane I->V pour toutes les atteintes de chaque commune:
+dist_mediane_IV_dep <-atteintes[, .(dist_I_V=median(dist_inf_vict,na.rm=TRUE))
+                                ,by=.(DEP_inf)]
 # Transformation en tibble:
-dist_mediane_dep <- as_tibble(dist_mediane_dep)
+dist_mediane_IV_dep <- as_tibble(dist_mediane_IV_dep)
 
 # Appariement:
 delinquance_dep <- delinquance_dep %>%
-  left_join(y = dist_mediane_dep, 
+  left_join(y = dist_mediane_IV_dep, 
+            by = c("DEP_inf" = "DEP_inf"))
+
+# Raffinement: on peut calculer des distances médianes par atteinte:
+
+# a) Atteintes corporelles: on peut calculer la médiane sur les 3 distances I->V, I->M et V->M
+dist_mediane_dep_corpo <-atteintes[classe %chin% c("Coups et blessures volontaires dans la sphère familiale",
+                                                   "Coups et blessures volontaires en dehors de la sphère familiale",
+                                                   "Homicides",
+                                                   "Violences sexuelles"), 
+                                   .(dist_I_V=median(dist_inf_vict,na.rm=TRUE),
+                                     dist_I_M=median(dist_inf_mec,na.rm=TRUE),
+                                     dist_V_M=median(dist_vict_mec,na.rm=TRUE)
+                                   ),by=.(DEP_inf,classe2)]
+# Transformation en tibble:
+dist_mediane_dep_corpo <- as_tibble(dist_mediane_dep_corpo)
+
+dist_mediane_dep_corpo <- dist_mediane_dep_corpo %>%
+  pivot_wider(id_cols =DEP_inf,  
+              names_from = classe2, 
+              values_from = c("dist_I_V","dist_I_M","dist_V_M")) 
+
+# Appariement:
+delinquance_dep <- delinquance_dep %>%
+  left_join(y = dist_mediane_dep_corpo, 
+            by = c("DEP_inf" = "DEP_inf"))
+
+dist_mediane_dep_corpo2 <-atteintes[classe %chin% c("Coups et blessures volontaires dans la sphère familiale",
+                                                    "Coups et blessures volontaires en dehors de la sphère familiale",
+                                                    "Homicides",
+                                                    "Violences sexuelles"), 
+                                    .(dist_I_V_corpo=median(dist_inf_vict,na.rm=TRUE),
+                                      dist_I_M_corpo=median(dist_inf_mec,na.rm=TRUE),
+                                      dist_V_M_corpo=median(dist_vict_mec,na.rm=TRUE)
+                                    ),by=.(DEP_inf)]
+# Transformation en tibble:
+dist_mediane_dep_corpo2 <- as_tibble(dist_mediane_dep_corpo2)
+
+# Appariement:
+delinquance_dep <- delinquance_dep %>%
+  left_join(y = dist_mediane_dep_corpo2, 
             by = c("DEP_inf" = "DEP_inf"))
 
 
-# Raffinement: on peut calculer une distance médiane par atteinte (on retient 8 types d'atteinte ici:
-# on regroupe les 3 atteintes sur les véhicules en une seule; on regroupe les homicides avec  les
-# blessures volontaires extra-familiales)
-# Recodage de la variable catégorielle "classe" en ce sens:
+# b) Atteintes non corporelles: on peut calculer la médiane sur la distance I->V
+dist_mediane_dep_noncorpo <-atteintes[!(classe %chin% c("Coups et blessures volontaires dans la sphère familiale",
+                                                        "Coups et blessures volontaires en dehors de la sphère familiale",
+                                                        "Homicides",
+                                                        "Violences sexuelles")), 
+                                      .(dist_I_V=median(dist_inf_vict,na.rm=TRUE)
+                                      ),by=.(DEP_inf,classe2)]
+# Transformation en tibble:
+dist_mediane_dep_noncorpo <- as_tibble(dist_mediane_dep_noncorpo)
 
-# atteintes[ ,classe2 := data.table::fcase(
-#   (classe == "Cambriolages de logement"), "Cambriolages de logement",
-#   (classe == "Coups et blessures volontaires dans la sphère familiale"), "Coups et blessures volontaires dans la sphère familiale",
-#   (classe %chin% c("Coups et blessures volontaires en dehors de la sphère familiale","Homicides")), "Coups et blessures volontaires dans la sphère familiale & Homicides",
-#   (classe == "Destructions et dégradations"), "Destructions et dégradations",
-#   )
-# ]
+dist_mediane_dep_noncorpo <- dist_mediane_dep_noncorpo %>%
+  pivot_wider(id_cols =DEP_inf,  
+              names_from = classe2, 
+              values_from = dist_I_V,
+              names_prefix = "dist_I_V_") 
+
+# Appariement:
+delinquance_dep <- delinquance_dep %>%
+  left_join(y = dist_mediane_dep_noncorpo, 
+            by = c("DEP_inf" = "DEP_inf"))
+
+dist_mediane_dep_noncorpo2 <-atteintes[!(classe %chin% c("Coups et blessures volontaires dans la sphère familiale",
+                                                         "Coups et blessures volontaires en dehors de la sphère familiale",
+                                                         "Homicides",
+                                                         "Violences sexuelles")), 
+                                       .(dist_I_V_noncorpo=median(dist_inf_vict,na.rm=TRUE)
+                                       ),by=.(DEP_inf)]
+# Transformation en tibble:
+dist_mediane_dep_noncorpo2 <- as_tibble(dist_mediane_dep_noncorpo2)
+
+# Appariement:
+delinquance_dep <- delinquance_dep %>%
+  left_join(y = dist_mediane_dep_noncorpo2, 
+            by = c("DEP_inf" = "DEP_inf"))
+
+###########################################################################################################################
