@@ -248,13 +248,22 @@ source(paste0(scripts_path,"/5_Partie3_Memoire.R"))
 # Export au format PNG des figures relatives à l'ACP n°1:
 ggexport (plotlist = list(scree.plot_ACP_1,plot_PCA_1_var_axes1_2,plot_PCA_1_var_axes2_3,plot_PCA_1_ind_axes1_2,
                           plot_PCA_1_ind_axes1_2_ZE,plot_PCA_1_ind_axes1_2_BV,plot_PCA_1_ind_axes1_2_GD,
-                          plot_PCA_1_ind_axes1_2_UU,plot_PCA_1_ind_axes1_2_AAV,plot_PCA_1_ind_axes1_2_CENTR),
+                          plot_PCA_1_ind_axes1_2_UU,plot_PCA_1_ind_axes1_2_AAV,plot_PCA_1_ind_axes1_2_CENTR,plot_CAH_1_dendrogramme),
           filename = "Figures_ACP_1.png")
 
 # Export au format PNG des figures relatives à la CAH n°1:
-ggexport (plotlist = list(plot_CAH_1_dendrogramme,plot_CAH_1_gains_inertie,plot_CAH_1_arbre3D,plot_CAH_1_clusters_axes1_2
-),filename = "Figures_CAH_1.png")
+ggexport (plotlist = list(plot_CAH_1_dendrogramme2,fviz_cluster),
+          filename = "Figures_CAH_1.png")
 
+# Export au format PDF des figures relatives à la CAH n°1 et non exportables en format PNG:
+pdf ("plot_CAH_1_gains_inertie.pdf")
+print(plot_CAH_1_gains_inertie)
+dev.off ()
+
+
+# Tableau 8: Dans chaque cluster de départements, part moyenne d'atteintes associées à un couple (I,V) de communes
+# situées dans un même zonage d'étude (une colonne = type de zonage):
+write.csv(tableau8, "Tableau8.csv", row.names=FALSE)
 
 
 # Etape 6: Partie 4 du mémoire: Lien entre les clusters de communes et les zonages d'étude
