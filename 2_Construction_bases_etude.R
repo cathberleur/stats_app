@@ -766,6 +766,16 @@ delinquance_com <- delinquance_com %>%
   left_join(y = communes_zonages_inf, 
             by = c("cog_com_22_inf" = "CODGEO_inf"))
 
+# On peut apparier le fichier obtenu avec celui des centralités de la commune d'infraction:
+
+communes_centralites_inf <- as_tibble(communes_centralites_dt_inf)
+
+delinquance_com <- delinquance_com %>%
+  left_join(y = communes_centralites_inf, 
+            by = c("cog_com_22_inf" = "DC_inf"))
+
+
+
 # Pour des raisons de lisibilité, nous aurons besoin parfois de réduire le nombre de type d'atteintes à analyser:
 # en passant des 12 types atteintes du fichier du SSMSI à
 # 7 types d'atteintes, après réagrégation de certains types d'atteintes "proches". Dans le détail, nous avons pu 
@@ -1682,6 +1692,46 @@ delinquance_dep <- delinquance_dep %>%
          P_res_tourisme=RT23/P19_LOG*100,
          P_camping_1000hbt=CPG23/P19_POP*1000,
          P_hotel=HT23/P19_LOG*100) 
+
+# Ajout d'une variable de dispersion des niveaux de vie médian entre communes d'un même département:
+
+# Variable P90/P10 calculée par département à partir de la variable MED20 (médiane du niveau de vie 2020 au niveau communal):
+
+q = c(.1, .90)
+
+rapport_interdecile_MED20 <- delinquance_com %>% 
+  select(DEP_inf,MED20) %>%
+  group_by(DEP_inf) %>%
+  summarize(P10_MED20 = quantile(MED20, probs = q[1],na.rm=TRUE), 
+            P90_MED20 = quantile(MED20, probs = q[2],na.rm=TRUE))  %>%
+  mutate(R_P90_P10_MED20=P90_MED20/P10_MED20)
+
+# Appariement:
+delinquance_dep <- delinquance_dep %>%
+  left_join(y = rapport_interdecile_MED20, 
+            by = c("DEP_inf" = "DEP_inf"))
+
+# Ajout de la part de communes constituant une centralité (au sens de l'Inrae) qui sont fragiles (voir l'étude INRAE:
+# variable du score de fragilité proche de 45 -> R_SCORE==3)
+
+part_com_fragiles <- delinquance_com %>%
+                    select(DEP_inf,R_SCORE_inf,Tag_Centralite_inf,P19_POP) %>%
+                    mutate(compteur=1) %>%
+                    group_by(DEP_inf) %>%
+                    summarise(nb_centralites=sum(compteur*(Tag_Centralite_inf==1)),
+                              nb_centralites_fragiles=sum(compteur*((Tag_Centralite_inf ==1) & (R_SCORE_inf ==3))),
+                              pop_centralites=sum(P19_POP*(Tag_Centralite_inf ==1)),
+                              pop_centralites_fragiles=sum(P19_POP*((Tag_Centralite_inf ==1) & (R_SCORE_inf ==3)))
+                              ) %>%
+                    mutate(part_com_fragiles=round(nb_centralites_fragiles/nb_centralites*100,1),
+                    part_pop_com_fragiles=round(pop_centralites_fragiles/pop_centralites*100,1)) %>%
+                    select(DEP_inf,part_com_fragiles,part_pop_com_fragiles)
+
+# Appariement:
+delinquance_dep <- delinquance_dep %>%
+  left_join(y = part_com_fragiles, 
+            by = c("DEP_inf" = "DEP_inf"))
+
 
 # Ajout de l'information sur les distances médianes entre les communes I,V et M:
 

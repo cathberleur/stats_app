@@ -119,5 +119,11 @@ load("donnees.secretisees.delinquance.distances.rdata") # (tibble).
 # à Kevin et Aurélien: remplacer le fichier secrétisé par le fichier non secrétisé!!
 
 
+# Chargement des fichiers de contours:
+contours_com <- st_read("contoursGeographiques",layer = "communes-20220101-simpl04")
+contours_dep <- st_read("contoursGeographiques",layer = "departements-20220101-simpl04")
+
+
+
 
 

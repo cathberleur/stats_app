@@ -243,8 +243,18 @@ write.csv(tableau7b_ter, "Tableau7b_ter.csv", row.names=FALSE)
 
 
 # Etape 5: Partie 3 du mémoire: Classification des communes et des départements de France métropolitaine au regard de la délinquance
-# source(paste0(scripts_path,"/5_Partie3_Memoire.R"))
-# @Kevin et Aurélien: le code est en cours de finalisation et vous sera transmis très prochainement...
+source(paste0(scripts_path,"/5_Partie3_Memoire.R"))
+
+# Export au format PNG des figures relatives à l'ACP n°1:
+ggexport (plotlist = list(scree.plot_ACP_1,plot_PCA_1_var_axes1_2,plot_PCA_1_var_axes2_3,plot_PCA_1_ind_axes1_2,
+                          plot_PCA_1_ind_axes1_2_ZE,plot_PCA_1_ind_axes1_2_BV,plot_PCA_1_ind_axes1_2_GD,
+                          plot_PCA_1_ind_axes1_2_UU,plot_PCA_1_ind_axes1_2_AAV,plot_PCA_1_ind_axes1_2_CENTR),
+          filename = "Figures_ACP_1.png")
+
+# Export au format PNG des figures relatives à la CAH n°1:
+ggexport (plotlist = list(plot_CAH_1_dendrogramme,plot_CAH_1_gains_inertie,plot_CAH_1_arbre3D,plot_CAH_1_clusters_axes1_2
+),filename = "Figures_CAH_1.png")
+
 
 
 # Etape 6: Partie 4 du mémoire: Lien entre les clusters de communes et les zonages d'étude
