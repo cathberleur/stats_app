@@ -40,19 +40,19 @@ scripts_path="/Users/sklenard/Documents/GitHub/stats_app" # scripts_path pour Ga
 # par leur version non secrétisée stockée au SSMSI sous le répertoire M...
 
 # Etape 0 - Les packages utilisés dans ce projet:
-source(paste0(scripts_path,"/0_Chargement_packages.R"))
+source(paste0(scripts_path,"/0_Chargement_packages.R"),encoding = "UTF-8")
 # @Kevin et Aurélien: RAS (rien à modifier ici!)
 
 
 # Etape 1 - Le chargement des différentes sources de données utilisées dans ce projet:
-source(paste0(scripts_path,"/1_Chargement_data.R"))
+source(paste0(scripts_path,"/1_Chargement_data.R"),encoding = "UTF-8")
 # IMPORTANT! @Kevin et Aurélien: 
 # Pensez ici à remplacer les deux fichiers .Rdata secréitisés chargés dans ce script
 # par leur version non secrétisée !!
 
 
 # Etape 2: La construction des bases de données analysées dans ce projet:
-source(paste0(scripts_path,"/2_Construction_bases_etude.R"))
+source(paste0(scripts_path,"/2_Construction_bases_etude.R"),encoding = "UTF-8")
 # @Kevin et Aurélien: 1 seule chose à modifier dans ce script -> commenter le petit morceau de code 
 # qui impute des modalités explicites à la variable "classe" (à la place des lettres).
 # Il s'agit des lignes 145 à 158.
@@ -60,7 +60,7 @@ source(paste0(scripts_path,"/2_Construction_bases_etude.R"))
 
 
 # Etape 3: Partie 1 du mémoire: Les données
-source(paste0(scripts_path,"/3_Partie1_Memoire.R"))
+source(paste0(scripts_path,"/3_Partie1_Memoire.R"),encoding = "UTF-8")
 # @Kevin et Aurélien: RAS (rien à modifier ici!)
 
 # Tableau 1: Les différents types d'atteinte selon l'information spatiale disponible
@@ -68,7 +68,7 @@ write.csv(tableau1, "Tableau1.csv", row.names=FALSE)
 
 
 # Etape 4: Partie 2 du mémoire: Faits stylisés: une description fine de l'organisation spatiale de la délinquance
-source(paste0(scripts_path,"/4_Partie2_Memoire.R"))
+source(paste0(scripts_path,"/4_Partie2_Memoire.R"),encoding = "UTF-8")
 # @Kevin et Aurélien: RAS (rien à modifier ici!)
 
 # Tableau 2: Distribution du nombre d'infractions au niveau communal (pour 1000 habitants), selon le type d'atteinte
@@ -243,7 +243,7 @@ write.csv(tableau7b_ter, "Tableau7b_ter.csv", row.names=FALSE)
 
 
 # Etape 5: Partie 3 du mémoire: Classification des communes et des départements de France métropolitaine au regard de la délinquance
-source(paste0(scripts_path,"/5_Partie3_Memoire.R"))
+source(paste0(scripts_path,"/5_Partie3_Memoire.R"),encoding = "UTF-8")
 
 # Export au format PNG des figures relatives à l'ACP n°1:
 ggexport (plotlist = list(scree.plot_ACP_1,plot_PCA_1_var_axes1_2,plot_PCA_1_var_axes2_3,plot_PCA_1_ind_axes1_2,

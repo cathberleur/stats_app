@@ -18,7 +18,7 @@ q = c(.1, .25, .5, .75, .90, .95, .99)
 tableau2 <- delinquance_com %>% 
         select(cog_com_22_inf,I,I_cambr,I_bless_famil,I_bless_horsfamil,
                I_destr_degrad,I_homic,I_viol_sex,I_vols_armes,I_vols_acces_vehic,
-               I_vols_ds_vehic,I_vols_de_vehic,I_vols_sansviol,I_vols_viol_sansarme) %>%
+               I_vols_ds_vehic,I_vols_de_vehic,I_vols_sansviolence,I_vols_viol_sansarme) %>%
         pivot_longer(cols= starts_with("I"),
                      names_to = "type_atteinte",
                      values_to = "Nb_inf_pour_1000_hbts") %>%
@@ -45,7 +45,7 @@ tableau2 <- delinquance_com %>%
       type_atteinte == "I_vols_armes" ~ "11-Vols avec armes",
       type_atteinte == "I_vols_de_vehic" ~ "05-Vols de véhicules",
       type_atteinte == "I_vols_ds_vehic" ~ "03-Vols dans les véhicules",
-      type_atteinte == "I_vols_sansviol" ~ "01-Vols sans violence contre des personnes",
+      type_atteinte == "I_vols_sansviolence" ~ "01-Vols sans violence contre des personnes",
       .default = "09-Vols violents sans arme"
     )) %>%
   arrange(type) %>% select(-type_atteinte) 
@@ -83,7 +83,7 @@ plot(data.graphique1$P19_POP,data.graphique1$Nb_I_vols_viol_sansarme,main = "Vol
 data.graphique2 <-  delinquance_com %>% filter (P19_POP>0) %>%
   select(I_cambr,I_bless_famil,I_bless_horsfamil,
          I_destr_degrad,I_homic,I_viol_sex,I_vols_armes,I_vols_vehic,
-         I_vols_sansviol,I_vols_viol_sansarme) %>%
+         I_vols_sansviolence,I_vols_viol_sansarme) %>%
   drop_na()
 
 # Matrice de corrélation:
@@ -101,13 +101,13 @@ corrplot(data.graphique2.cor, type="upper", order="hclust", tl.col="black", tl.s
 data.graphique2a_annexe <-  delinquance_com %>%
                         select(I,I_cambr,I_bless_famil,I_bless_horsfamil,
                         I_destr_degrad,I_homic,I_viol_sex,I_vols_armes,I_vols_acces_vehic,
-                        I_vols_ds_vehic,I_vols_de_vehic,I_vols_sansviol,I_vols_viol_sansarme,
+                        I_vols_ds_vehic,I_vols_de_vehic,I_vols_sansviolence,I_vols_viol_sansarme,
                         V,V_cambr,V_bless_famil,V_bless_horsfamil,
                         V_destr_degrad,V_homic,V_viol_sex,V_vols_armes,V_vols_acces_vehic,
                         V_vols_ds_vehic,V_vols_de_vehic,V_vols_sansviol,V_vols_viol_sansarme) %>%
                  filter(I>0 & I_cambr>0 & I_bless_famil>0 & I_bless_horsfamil>0 & I_destr_degrad>0 &
                            I_homic>0 & I_viol_sex>0 & I_vols_armes>0 & I_vols_acces_vehic &
-                           I_vols_ds_vehic>0 & I_vols_de_vehic>0 & I_vols_sansviol>0 &
+                           I_vols_ds_vehic>0 & I_vols_de_vehic>0 & I_vols_sansviolence>0 &
                            I_vols_viol_sansarme>0 & 
                            V>0 & V_cambr>0 & V_bless_famil>0 & V_bless_horsfamil>0 & V_destr_degrad>0 &
                            V_homic>0 & V_viol_sex>0 & V_vols_armes>0 & V_vols_acces_vehic &
@@ -153,11 +153,11 @@ corrplot(data.graphique2b_annexe.cor, type="upper", order="hclust", tl.col="blac
 # Note: seules les atteintes non corporelles sont considérées ici!
 data.graphique3a <-  delinquance_com %>% filter(P19_POP>0) %>%
   select(I_cambr,I_destr_degrad,I_vols_armes,I_vols_vehic,
-         I_vols_sansviol,I_vols_viol_sansarme,
+         I_vols_sansviolence,I_vols_viol_sansarme,
          V_cambr,V_destr_degrad,V_vols_armes,V_vols_vehic,
         V_vols_sansviol,V_vols_viol_sansarme) %>%
   filter(I_cambr>0 & I_destr_degrad>0 &
-           I_vols_armes>0 & I_vols_vehic>0 & I_vols_sansviol>0 &
+           I_vols_armes>0 & I_vols_vehic>0 & I_vols_sansviolence>0 &
            I_vols_viol_sansarme>0 & 
            V_cambr>0 & V_destr_degrad>0 &
           V_vols_armes>0 &
@@ -167,7 +167,7 @@ data.graphique3a <-  delinquance_com %>% filter(P19_POP>0) %>%
          dlog_I_V_destr_degrad = I_destr_degrad - V_destr_degrad,
          dlog_I_V_vols_armes = I_vols_armes - V_vols_armes,
          dlog_I_V_vols_vehic = I_vols_vehic - V_vols_vehic,
-         dlog_I_V_vols_sansviol = I_vols_sansviol - V_vols_sansviol,
+         dlog_I_V_vols_sansviol = I_vols_sansviolence - V_vols_sansviol,
          dlog_I_V_vols_viol_sansarme = I_vols_viol_sansarme - V_vols_viol_sansarme
         ) %>% select(dlog_I_V_cambr,dlog_I_V_destr_degrad,
                      dlog_I_V_vols_armes,
