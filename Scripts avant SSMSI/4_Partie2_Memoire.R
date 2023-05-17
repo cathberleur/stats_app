@@ -4,14 +4,6 @@
 # Création du tableau 2: Distribution du nombre d'infraction au niveau communal (pour 1000 habitants), 
 # selon le type d'atteinte
 
-classe <- c("Ensemble","Vols sans violence contre des personnes","Destructions et dégradations","Vols dans les véhicules",
-            "Cambriolages de logement","Vols de véhicules","Coups et blessures volontaires en dehors de la sphère familiale",
-            "Coups et blessures volontaires dans la sphère familiale","Vols d'accessoires sur véhicules",
-            "Vols violents sans arme","Violences sexuelles","Vols avec armes","Homicides")
-
-type_atteinte <- data.frame(classe)
-type_atteinte <- as_tibble(type_atteinte)
-
 #define quantiles of interest
 q = c(.1, .25, .5, .75, .90, .95, .99)
 
@@ -51,143 +43,33 @@ tableau2 <- delinquance_com %>%
   arrange(type) %>% select(-type_atteinte) 
 
 tableau2 <-cbind(tableau2[,8],tableau2[,1:7])
-tableau2
+
 # graphique 1: lien entre nombre d'infractions dans une commune et sa taille (en termes de nombre d'habitants)
 # scatter plot par type d'atteinte (avec en ordonnée le log du nombre d'infractions au niveau communal
 # et en abscisse le nombre d'habitants en log) - le faire par type d'atteinte
 
-Graphique1 <- ggplot(delinquance_com, aes(x = P19_POP, y = Nb_I)) + geom_point() + geom_smooth(method="lm") +
-  stat_regline_equation() +
-  scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                labels = trans_format("log10", math_format(10^.x))) +
-  scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                labels = trans_format("log10", math_format(10^.x))) +
-  theme_bw() +
-  xlab("Nb. d'habitants (échelle log.)") + ylab("Nb. d'infractions (échelle log.")
-Graphique1
+data.graphique1 <- delinquance_com %>% 
+  select(Nb_I,Nb_I_cambr,Nb_I_bless_famil,Nb_I_bless_horsfamil,
+         Nb_I_destr_degrad,Nb_I_homic,Nb_I_viol_sex,Nb_I_vols_armes,Nb_I_vols_acces_vehic,
+         Nb_I_vols_ds_vehic,Nb_I_vols_de_vehic,Nb_I_vols_sansviol,Nb_I_vols_viol_sansarme,P19_POP) %>% 
+  log()
 
+plot(data.graphique1$P19_POP,data.graphique1$Nb_I,main = "", xlab="Nombre d'habitants (log)", ylab="Nombre d'infractions (log)")
+
+       
 # On génère un plot par type d'atteinte: à mettre en Annexe?
-Graphique1_cambr <- ggplot(delinquance_com, aes(x = P19_POP, y = Nb_I_cambr)) + geom_point() + geom_smooth(method="lm") +
-  stat_regline_equation() +
-  scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                labels = trans_format("log10", math_format(10^.x))) +
-  scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                labels = trans_format("log10", math_format(10^.x))) +
-  theme_bw() +
-  ggtitle("Cambriolages") +
-  xlab("Nb. d'habitants (échelle log.)") + ylab("Nb. d'infractions (échelle log.")
-Graphique1_cambr
-Graphique1_bless_famil <- ggplot(delinquance_com, aes(x = P19_POP, y = Nb_I_bless_famil)) + geom_point() + geom_smooth(method="lm") +
-  stat_regline_equation() +
-  scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                labels = trans_format("log10", math_format(10^.x))) +
-  scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                labels = trans_format("log10", math_format(10^.x))) +
-  theme_bw() +
-  ggtitle("Blessures intra-familiales") +
-  xlab("Nb. d'habitants (échelle log.)") + ylab("Nb. d'infractions (échelle log.")
-Graphique1_bless_famil
-Graphique1_bless_horsfamil <- ggplot(delinquance_com, aes(x = P19_POP, y = Nb_I_bless_horsfamil)) + geom_point() + geom_smooth(method="lm") +
-  stat_regline_equation() +
-  scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                labels = trans_format("log10", math_format(10^.x))) +
-  scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                labels = trans_format("log10", math_format(10^.x))) +
-  theme_bw() +
-  ggtitle("Blessures extra-familiales") +
-  xlab("Nb. d'habitants (échelle log.)") + ylab("Nb. d'infractions (échelle log.")
-Graphique1_bless_horsfamil
-Graphique1_destr_degrad <- ggplot(delinquance_com, aes(x = P19_POP, y = Nb_I_destr_degrad)) + geom_point() + geom_smooth(method="lm") +
-  stat_regline_equation() +
-  scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                labels = trans_format("log10", math_format(10^.x))) +
-  scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                labels = trans_format("log10", math_format(10^.x))) +
-  theme_bw() +
-  ggtitle("Destructions, dégradations") +
-  xlab("Nb. d'habitants (échelle log.)") + ylab("Nb. d'infractions (échelle log.")
-Graphique1_destr_degrad
-Graphique1_homic <- ggplot(delinquance_com, aes(x = P19_POP, y = Nb_I_homic)) + geom_point() + geom_smooth(method="lm") +
-  stat_regline_equation() +
-  scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                labels = trans_format("log10", math_format(10^.x))) +
-  scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                labels = trans_format("log10", math_format(10^.x))) +
-  theme_bw() +
-  ggtitle("Homicides") +
-  xlab("Nb. d'habitants (échelle log.)") + ylab("Nb. d'infractions (échelle log.")
-Graphique1_homic
-Graphique1_viol_sex <- ggplot(delinquance_com, aes(x = P19_POP, y = Nb_I_viol_sex)) + geom_point() + geom_smooth(method="lm") +
-  stat_regline_equation() +
-  scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                labels = trans_format("log10", math_format(10^.x))) +
-  scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                labels = trans_format("log10", math_format(10^.x))) +
-  theme_bw() +
-  ggtitle("Violences sexuelles") +
-  xlab("Nb. d'habitants (échelle log.)") + ylab("Nb. d'infractions (échelle log.")
-Graphique1_viol_sex
-Graphique1_vols_armes <- ggplot(delinquance_com, aes(x = P19_POP, y = Nb_I_vols_armes)) + geom_point() + geom_smooth(method="lm") +
-  stat_regline_equation() +
-  scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                labels = trans_format("log10", math_format(10^.x))) +
-  scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                labels = trans_format("log10", math_format(10^.x))) +
-  theme_bw() +
-  ggtitle("Violences avec armes") +
-  xlab("Nb. d'habitants (échelle log.)") + ylab("Nb. (échelle log.")
-Graphique1_vols_armes
-Graphique1_vols_acces_vehic <- ggplot(delinquance_com, aes(x = P19_POP, y = Nb_I_vols_acces_vehic)) + geom_point() + geom_smooth(method="lm") +
-  stat_regline_equation() +
-  scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                labels = trans_format("log10", math_format(10^.x))) +
-  scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                labels = trans_format("log10", math_format(10^.x))) +
-  theme_bw() +
-  ggtitle("Vols d'accessoires de véhicules") +
-  xlab("Nb. (échelle log.)") + ylab("Nb. (échelle log.")
-Graphique1_vols_acces_vehic
-Graphique1_vols_ds_vehic <- ggplot(delinquance_com, aes(x = P19_POP, y = Nb_I_vols_ds_vehic)) + geom_point() + geom_smooth(method="lm") +
-  stat_regline_equation() +
-  scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                labels = trans_format("log10", math_format(10^.x))) +
-  scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                labels = trans_format("log10", math_format(10^.x))) +
-  theme_bw() +
-  ggtitle("Vols dans les véhicules") +
-  xlab("Nb. (échelle log.)") + ylab("Nb. d'infractions (échelle log.")
-Graphique1_vols_ds_vehic
-Graphique1_vols_de_vehic <- ggplot(delinquance_com, aes(x = P19_POP, y = Nb_I_vols_de_vehic)) + geom_point() + geom_smooth(method="lm") +
-  stat_regline_equation() +
-  scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                labels = trans_format("log10", math_format(10^.x))) +
-  scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                labels = trans_format("log10", math_format(10^.x))) +
-  theme_bw() +
-  ggtitle("Vols de véhicules") +
-  xlab("Nb. d'habitants (échelle log.)") + ylab("Nb. d'infractions (échelle log.")
-Graphique1_vols_de_vehic
-Graphique1_vols_sansviol <- ggplot(delinquance_com, aes(x = P19_POP, y = Nb_I_vols_sansviol)) + geom_point() + geom_smooth(method="lm") +
-  stat_regline_equation() +
-  scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                labels = trans_format("log10", math_format(10^.x))) +
-  scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                labels = trans_format("log10", math_format(10^.x))) +
-  theme_bw() +
-  ggtitle("Vols sans violence") +
-  xlab("Nb. d'habitants (échelle log.)") + ylab("Nb. d'infractions (échelle log.")
-Graphique1_vols_sansviol
-Graphique1_vols_viol_sansarme <- ggplot(delinquance_com, aes(x = P19_POP, y = Nb_I_vols_viol_sansarme)) + geom_point() + geom_smooth(method="lm") +
-  stat_regline_equation() +
-  scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                labels = trans_format("log10", math_format(10^.x))) +
-  scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                labels = trans_format("log10", math_format(10^.x))) +
-  theme_bw() +
-  ggtitle("Vols violents sans armes") +
-  xlab("Nb. d'habitants (échelle log.)") + ylab("Nb. d'infractions (échelle log.")
-Graphique1_vols_viol_sansarme
-
+plot(data.graphique1$P19_POP,data.graphique1$Nb_I_cambr,main = "Cambriolages", xlab="Pop (log)", ylab="Nb I (log)")
+plot(data.graphique1$P19_POP,data.graphique1$Nb_I_bless_famil,main = "Blessures intra-familiales", xlab="Pop (log)", ylab="Nb I (log)")
+plot(data.graphique1$P19_POP,data.graphique1$Nb_I_bless_horsfamil,main = "Blessures extra-familiales", xlab="Pop (log)", ylab="Nb I (log)")
+plot(data.graphique1$P19_POP,data.graphique1$Nb_I_destr_degrad,main = "Destructions, dégradations", xlab="Pop (log)", ylab="Nb I (log)")
+plot(data.graphique1$P19_POP,data.graphique1$Nb_I_homic,main = "Homicides", xlab="Pop (log)", ylab="Nb I (log)")
+plot(data.graphique1$P19_POP,data.graphique1$Nb_I_viol_sex,main = "Violences sexuelles", xlab="Pop (log)", ylab="Nb I (log)")
+plot(data.graphique1$P19_POP,data.graphique1$Nb_I_vols_armes,main = "Violences avec armes", xlab="Pop (log)", ylab="Nb I (log)")
+plot(data.graphique1$P19_POP,data.graphique1$Nb_I_vols_acces_vehic,main = "Vols d'accessoires de véhicules", xlab="Pop (log)", ylab="Nb I (log)")
+plot(data.graphique1$P19_POP,data.graphique1$Nb_I_vols_ds_vehic,main = "Vols dans les véhicules", xlab="Pop (log)", ylab="Nb I (log)")
+plot(data.graphique1$P19_POP,data.graphique1$Nb_I_vols_de_vehic,main = "Vols de véhicules", xlab="Pop (log)", ylab="Nb I (log)")
+plot(data.graphique1$P19_POP,data.graphique1$Nb_I_vols_sansviol,main = "Vol sans violence", xlab="Pop (log)", ylab="Nb I (log)")
+plot(data.graphique1$P19_POP,data.graphique1$Nb_I_vols_viol_sansarme,main = "Vol violents sans armes", xlab="Pop (log)", ylab="Nb I (log)")
 
 # Graphique 2: matrice de corrélation des nombres d'infractions au niveau communal (pour 1000 habitants) par type d'atteinte
 data.graphique2 <-  delinquance_com %>% filter (P19_POP>0) %>%
@@ -214,19 +96,18 @@ data.graphique2a_annexe <-  delinquance_com %>%
                         I_vols_ds_vehic,I_vols_de_vehic,I_vols_sansviolence,I_vols_viol_sansarme,
                         V,V_cambr,V_bless_famil,V_bless_horsfamil,
                         V_destr_degrad,V_homic,V_viol_sex,V_vols_armes,V_vols_acces_vehic,
-                        V_vols_ds_vehic,V_vols_de_vehic,V_vols_sansviolence,V_vols_viol_sansarme) %>%
+                        V_vols_ds_vehic,V_vols_de_vehic,V_vols_sansviol,V_vols_viol_sansarme) %>%
                  filter(I>0 & I_cambr>0 & I_bless_famil>0 & I_bless_horsfamil>0 & I_destr_degrad>0 &
                            I_homic>0 & I_viol_sex>0 & I_vols_armes>0 & I_vols_acces_vehic &
                            I_vols_ds_vehic>0 & I_vols_de_vehic>0 & I_vols_sansviolence>0 &
                            I_vols_viol_sansarme>0 & 
                            V>0 & V_cambr>0 & V_bless_famil>0 & V_bless_horsfamil>0 & V_destr_degrad>0 &
                            V_homic>0 & V_viol_sex>0 & V_vols_armes>0 & V_vols_acces_vehic &
-                           V_vols_ds_vehic>0 & V_vols_de_vehic>0 & V_vols_sansviolence>0 &
+                           V_vols_ds_vehic>0 & V_vols_de_vehic>0 & V_vols_sansviol>0 &
                            V_vols_viol_sansarme>0) 
 
 # Matrice de corrélation:
 data.graphique2a_annexe.cor = cor(data.graphique2a_annexe)
-data.graphique2a_annexe.cor
 
 corrplot(data.graphique2a_annexe.cor, type="upper", order="hclust", tl.col="black", tl.srt=45)
 
@@ -245,8 +126,7 @@ data.graphique2b_annexe <-  delinquance_com %>%
            M_homic>0 & M_viol_sex>0) 
 
 # Matrice de corrélation:
-data.graphique2b_annexe.cor = cor(data.graphique2b_annexe)
-data.graphique2b_annexe.cor
+data.graphique2b_annexe.cor = cor(data.graphique2b)
 
 corrplot(data.graphique2b_annexe.cor, type="upper", order="hclust", tl.col="black", tl.srt=45)
 
@@ -267,19 +147,19 @@ data.graphique3a <-  delinquance_com %>% filter(P19_POP>0) %>%
   select(I_cambr,I_destr_degrad,I_vols_armes,I_vols_vehic,
          I_vols_sansviolence,I_vols_viol_sansarme,
          V_cambr,V_destr_degrad,V_vols_armes,V_vols_vehic,
-        V_vols_sansviolence,V_vols_viol_sansarme) %>%
+        V_vols_sansviol,V_vols_viol_sansarme) %>%
   filter(I_cambr>0 & I_destr_degrad>0 &
            I_vols_armes>0 & I_vols_vehic>0 & I_vols_sansviolence>0 &
            I_vols_viol_sansarme>0 & 
            V_cambr>0 & V_destr_degrad>0 &
           V_vols_armes>0 &
-           V_vols_vehic>0 & V_vols_sansviolence>0 &
+           V_vols_vehic>0 & V_vols_sansviol>0 &
            V_vols_viol_sansarme>0) %>% log() %>%
   mutate(dlog_I_V_cambr = I_cambr - V_cambr,
          dlog_I_V_destr_degrad = I_destr_degrad - V_destr_degrad,
          dlog_I_V_vols_armes = I_vols_armes - V_vols_armes,
          dlog_I_V_vols_vehic = I_vols_vehic - V_vols_vehic,
-         dlog_I_V_vols_sansviol = I_vols_sansviolence - V_vols_sansviolence,
+         dlog_I_V_vols_sansviol = I_vols_sansviolence - V_vols_sansviol,
          dlog_I_V_vols_viol_sansarme = I_vols_viol_sansarme - V_vols_viol_sansarme
         ) %>% select(dlog_I_V_cambr,dlog_I_V_destr_degrad,
                      dlog_I_V_vols_armes,
@@ -390,70 +270,17 @@ tableau3a <- atteintes[(is.na(cog_com_22_inf)==FALSE) & (is.na(cog_com_22_vict)=
   Nb_I_IV_1GD = sum(compteur*(IV_ds_meme_GD == "oui"), na.rm = TRUE),
   Nb_I_IV_1UU = sum(compteur*(IV_ds_meme_UU == "oui"), na.rm = TRUE),
   Nb_I_IV_1AAV = sum(compteur*(IV_ds_meme_AAV == "oui"), na.rm = TRUE),
-  Nb_I_IV_1CENTR = sum(compteur*(IV_ds_meme_CENTR == "oui"), na.rm = TRUE),
-  Nb_I_IV_1COM = sum(compteur*(IV_ds_meme_COM == "oui"), na.rm = TRUE),
-  Nb_I_IV_1DEP = sum(compteur*(IV_ds_meme_DEP == "oui"), na.rm = TRUE),
-  Nb_I_IV_1REG = sum(compteur*(IV_ds_meme_REG == "oui"), na.rm = TRUE),
-  Nb_I_IV_1EPCI = sum(compteur*(IV_ds_meme_EPCI == "oui"), na.rm = TRUE)
-  ),
+  Nb_I_IV_1CENTR = sum(compteur*(IV_ds_meme_CENTR == "oui"), na.rm = TRUE)),
   by= .(classe)][ , `:=`(Prop_I_IV_1UU = round(Nb_I_IV_1UU/Nb_I_IV_UU*100,1),
                          Prop_I_IV_1GD = round(Nb_I_IV_1GD/Nb_I_IV*100,1),
                          Prop_I_IV_1ZE = round(Nb_I_IV_1ZE/Nb_I_IV*100,1),
                          Prop_I_IV_1BV = round(Nb_I_IV_1BV/Nb_I_IV*100,1),
                          Prop_I_IV_1AAV = round(Nb_I_IV_1AAV/Nb_I_IV_AAV*100,1),
-                         Prop_I_IV_1CENTR = round(Nb_I_IV_1CENTR/Nb_I_IV_CENTR*100,1),
-                         Prop_I_IV_1COM = round(Nb_I_IV_1COM/Nb_I_IV*100,1),
-                         Prop_I_IV_1DEP = round(Nb_I_IV_1DEP/Nb_I_IV*100,1),
-                         Prop_I_IV_1REG = round(Nb_I_IV_1REG/Nb_I_IV*100,1),
-                         Prop_I_IV_1EPCI = round(Nb_I_IV_1EPCI/Nb_I_IV*100,1)
-                         )
-                  ][,.(classe,Prop_I_IV_1UU,Prop_I_IV_1GD,Prop_I_IV_1ZE,Prop_I_IV_1BV,Prop_I_IV_1AAV,Prop_I_IV_1CENTR,
-                       Prop_I_IV_1COM,Prop_I_IV_1DEP,Prop_I_IV_1REG,Prop_I_IV_1EPCI)
+                         Prop_I_IV_1CENTR = round(Nb_I_IV_1CENTR/Nb_I_IV_CENTR*100,1))
+                  ][,.(classe,Prop_I_IV_1UU,Prop_I_IV_1GD,Prop_I_IV_1ZE,Prop_I_IV_1BV,Prop_I_IV_1AAV,Prop_I_IV_1CENTR)
                     ][order(classe)]
 
 tableau3a
-
-# Variante: on réplique ce tableau 3a mais sur les seules atteintes pour lesquelles les communes de I et de V sont
-# différentes:
-
-tableau3a_2 <- atteintes[(is.na(cog_com_22_inf)==FALSE) & (is.na(cog_com_22_vict)==FALSE) &
-                         (is.na(BV2022_inf)==FALSE) & (is.na(BV2022_vict)==FALSE) &
-                         (is.na(ZE2020_inf)==FALSE) & (is.na(ZE2020_vict)==FALSE) &
-                         (is.na(UU2020_inf)==FALSE) & (is.na(UU2020_vict)==FALSE) &
-                         (is.na(AAV2020_inf)==FALSE) & (is.na(AAV2020_vict)==FALSE) &
-                         (is.na(TYPE_inf)==FALSE) & (is.na(TYPE_vict)==FALSE) &
-                         (is.na(P_NP5CLA_inf)==FALSE) & (is.na(P_NP5CLA_vict)==FALSE)
-                         & (IV_ds_meme_COM == "non"), .(
-                           Nb_I_IV = sum(compteur, na.rm = TRUE),
-                           Nb_I_IV_UU = sum(compteur*((I_ds_UU == "oui") & (V_ds_UU == "oui")),na.rm = TRUE),
-                           Nb_I_IV_AAV = sum(compteur*((I_ds_AAV == "oui") & (V_ds_AAV == "oui")),na.rm = TRUE),
-                           Nb_I_IV_CENTR = sum(compteur*((I_ds_CENTR == "oui") & (V_ds_CENTR == "oui")),na.rm = TRUE),
-                           Nb_I_IV_1ZE = sum(compteur*(IV_ds_meme_ZE == "oui"), na.rm = TRUE),
-                           Nb_I_IV_1BV = sum(compteur*(IV_ds_meme_BV == "oui"), na.rm = TRUE),
-                           Nb_I_IV_1GD = sum(compteur*(IV_ds_meme_GD == "oui"), na.rm = TRUE),
-                           Nb_I_IV_1UU = sum(compteur*(IV_ds_meme_UU == "oui"), na.rm = TRUE),
-                           Nb_I_IV_1AAV = sum(compteur*(IV_ds_meme_AAV == "oui"), na.rm = TRUE),
-                           Nb_I_IV_1CENTR = sum(compteur*(IV_ds_meme_CENTR == "oui"), na.rm = TRUE),
-                           Nb_I_IV_1DEP = sum(compteur*(IV_ds_meme_DEP == "oui"), na.rm = TRUE),
-                           Nb_I_IV_1REG = sum(compteur*(IV_ds_meme_REG == "oui"), na.rm = TRUE),
-                           Nb_I_IV_1EPCI = sum(compteur*(IV_ds_meme_EPCI == "oui"), na.rm = TRUE)
-                         ),
-                       by= .(classe)][ , `:=`(Prop_I_IV_1UU = round(Nb_I_IV_1UU/Nb_I_IV_UU*100,1),
-                                              Prop_I_IV_1GD = round(Nb_I_IV_1GD/Nb_I_IV*100,1),
-                                              Prop_I_IV_1ZE = round(Nb_I_IV_1ZE/Nb_I_IV*100,1),
-                                              Prop_I_IV_1BV = round(Nb_I_IV_1BV/Nb_I_IV*100,1),
-                                              Prop_I_IV_1AAV = round(Nb_I_IV_1AAV/Nb_I_IV_AAV*100,1),
-                                              Prop_I_IV_1CENTR = round(Nb_I_IV_1CENTR/Nb_I_IV_CENTR*100,1),
-                                              Prop_I_IV_1DEP = round(Nb_I_IV_1DEP/Nb_I_IV*100,1),
-                                              Prop_I_IV_1REG = round(Nb_I_IV_1REG/Nb_I_IV*100,1),
-                                              Prop_I_IV_1EPCI = round(Nb_I_IV_1EPCI/Nb_I_IV*100,1)
-                       )
-                       ][,.(classe,Prop_I_IV_1UU,Prop_I_IV_1GD,Prop_I_IV_1ZE,Prop_I_IV_1BV,Prop_I_IV_1AAV,Prop_I_IV_1CENTR,
-                            Prop_I_IV_1DEP,Prop_I_IV_1REG,Prop_I_IV_1EPCI)
-                       ][order(classe)]
-
-tableau3a_2
-
 
 # Tableau 3b: Proportion d'infractions corporelles (I) associées à un triplet de communes (I,V,M) présentes
 # dans un même zonage d'étude - selon le type d'atteinte
@@ -479,74 +306,17 @@ tableau3b <- atteintes[(is.na(cog_com_22_inf)==FALSE) & (is.na(cog_com_22_vict)=
   Nb_I_IVM_1GD = sum(compteur*(IVM_ds_meme_GD == "oui"), na.rm = TRUE),
   Nb_I_IVM_1UU = sum(compteur*(IVM_ds_meme_UU == "oui"), na.rm = TRUE),
   Nb_I_IVM_1AAV = sum(compteur*(IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
-  Nb_I_IVM_1CENTR = sum(compteur*(IVM_ds_meme_CENTR == "oui"), na.rm = TRUE),
-  Nb_I_IVM_1COM = sum(compteur*(IVM_ds_meme_COM == "oui"), na.rm = TRUE),
-  Nb_I_IVM_1DEP = sum(compteur*(IVM_ds_meme_DEP == "oui"), na.rm = TRUE),
-  Nb_I_IVM_1REG = sum(compteur*(IVM_ds_meme_REG == "oui"), na.rm = TRUE),
-  Nb_I_IVM_1EPCI = sum(compteur*(IVM_ds_meme_EPCI == "oui"), na.rm = TRUE)
-  ),
+  Nb_I_IVM_1CENTR = sum(compteur*(IVM_ds_meme_CENTR == "oui"), na.rm = TRUE)),
   by= .(classe)][ , `:=`(Prop_I_IVM_1UU = round(Nb_I_IVM_1UU/Nb_I_IVM_UU*100,1),
                          Prop_I_IVM_1GD = round(Nb_I_IVM_1GD/Nb_I_IVM*100,1),
                          Prop_I_IVM_1ZE = round(Nb_I_IVM_1ZE/Nb_I_IVM*100,1),
                          Prop_I_IVM_1BV = round(Nb_I_IVM_1BV/Nb_I_IVM*100,1),
                          Prop_I_IVM_1AAV = round(Nb_I_IVM_1AAV/Nb_I_IVM_AAV*100,1),
-                         Prop_I_IVM_1CENTR = round(Nb_I_IVM_1CENTR/Nb_I_IVM_CENTR*100,1),
-                         Prop_I_IVM_1COM = round(Nb_I_IVM_1COM/Nb_I_IVM*100,1),
-                         Prop_I_IVM_1DEP = round(Nb_I_IVM_1DEP/Nb_I_IVM*100,1),
-                         Prop_I_IVM_1REG = round(Nb_I_IVM_1REG/Nb_I_IVM*100,1),
-                         Prop_I_IVM_1EPCI = round(Nb_I_IVM_1EPCI/Nb_I_IVM*100,1)
-                         )
-  ][,.(classe,Prop_I_IVM_1UU,Prop_I_IVM_1GD,Prop_I_IVM_1ZE,Prop_I_IVM_1BV,Prop_I_IVM_1AAV,Prop_I_IVM_1CENTR,
-       Prop_I_IVM_1COM,Prop_I_IVM_1DEP,Prop_I_IVM_1REG,Prop_I_IVM_1EPCI)
+                         Prop_I_IVM_1CENTR = round(Nb_I_IVM_1CENTR/Nb_I_IVM_CENTR*100,1))
+  ][,.(classe,Prop_I_IVM_1UU,Prop_I_IVM_1GD,Prop_I_IVM_1ZE,Prop_I_IVM_1BV,Prop_I_IVM_1AAV,Prop_I_IVM_1CENTR)
   ][order(classe)]
 
 tableau3b
-
-# Variante: on réplique ce tableau 3b mais sur les seules atteintes pour lesquelles les communes de I, de V et de M
-# sont différentes:
-
-tableau3b_2 <- atteintes[(is.na(cog_com_22_inf)==FALSE) & (is.na(cog_com_22_vict)==FALSE) & (is.na(cog_com_22_mec)==FALSE) &
-                         (is.na(BV2022_inf)==FALSE) & (is.na(BV2022_vict)==FALSE) & (is.na(BV2022_mec)==FALSE) &
-                         (is.na(ZE2020_inf)==FALSE) & (is.na(ZE2020_vict)==FALSE) & (is.na(ZE2020_mec)==FALSE) &
-                         (is.na(UU2020_inf)==FALSE) & (is.na(UU2020_vict)==FALSE) & (is.na(UU2020_mec)==FALSE) &
-                         (is.na(AAV2020_inf)==FALSE) & (is.na(AAV2020_vict)==FALSE) & (is.na(AAV2020_mec)==FALSE) &
-                         (is.na(TYPE_inf)==FALSE) & (is.na(TYPE_vict)==FALSE) & (is.na(TYPE_mec)==FALSE) &
-                         (is.na(P_NP5CLA_inf)==FALSE) & (is.na(P_NP5CLA_vict)==FALSE) & (is.na(P_NP5CLA_mec)==FALSE) &
-                         (IVM_ds_meme_COM == "non") &
-                         (classe %chin% c("Coups et blessures volontaires dans la sphère familiale",
-                                          "Coups et blessures volontaires en dehors de la sphère familiale",
-                                          "Homicides",
-                                          "Violences sexuelles")), .(
-                                            Nb_I_IVM = sum(compteur, na.rm = TRUE),
-                                            Nb_I_IVM_UU = sum(compteur*((I_ds_UU == "oui") & (V_ds_UU == "oui") & (M_ds_UU == "oui")),na.rm = TRUE),
-                                            Nb_I_IVM_AAV = sum(compteur*((I_ds_AAV == "oui") & (V_ds_AAV == "oui") & (M_ds_AAV == "oui")),na.rm = TRUE),
-                                            Nb_I_IVM_CENTR = sum(compteur*((I_ds_CENTR == "oui") & (V_ds_CENTR == "oui") & (M_ds_CENTR == "oui")),na.rm = TRUE),
-                                            Nb_I_IVM_1ZE = sum(compteur*(IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
-                                            Nb_I_IVM_1BV = sum(compteur*(IVM_ds_meme_BV == "oui"), na.rm = TRUE),
-                                            Nb_I_IVM_1GD = sum(compteur*(IVM_ds_meme_GD == "oui"), na.rm = TRUE),
-                                            Nb_I_IVM_1UU = sum(compteur*(IVM_ds_meme_UU == "oui"), na.rm = TRUE),
-                                            Nb_I_IVM_1AAV = sum(compteur*(IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
-                                            Nb_I_IVM_1CENTR = sum(compteur*(IVM_ds_meme_CENTR == "oui"), na.rm = TRUE),
-                                            Nb_I_IVM_1DEP = sum(compteur*(IVM_ds_meme_DEP == "oui"), na.rm = TRUE),
-                                            Nb_I_IVM_1REG = sum(compteur*(IVM_ds_meme_REG == "oui"), na.rm = TRUE),
-                                            Nb_I_IVM_1EPCI = sum(compteur*(IVM_ds_meme_EPCI == "oui"), na.rm = TRUE)
-                                          ),
-                       by= .(classe)][ , `:=`(Prop_I_IVM_1UU = round(Nb_I_IVM_1UU/Nb_I_IVM_UU*100,1),
-                                              Prop_I_IVM_1GD = round(Nb_I_IVM_1GD/Nb_I_IVM*100,1),
-                                              Prop_I_IVM_1ZE = round(Nb_I_IVM_1ZE/Nb_I_IVM*100,1),
-                                              Prop_I_IVM_1BV = round(Nb_I_IVM_1BV/Nb_I_IVM*100,1),
-                                              Prop_I_IVM_1AAV = round(Nb_I_IVM_1AAV/Nb_I_IVM_AAV*100,1),
-                                              Prop_I_IVM_1CENTR = round(Nb_I_IVM_1CENTR/Nb_I_IVM_CENTR*100,1),
-                                              Prop_I_IVM_1DEP = round(Nb_I_IVM_1DEP/Nb_I_IVM*100,1),
-                                              Prop_I_IVM_1REG = round(Nb_I_IVM_1REG/Nb_I_IVM*100,1),
-                                              Prop_I_IVM_1EPCI = round(Nb_I_IVM_1EPCI/Nb_I_IVM*100,1)
-                       )
-                       ][,.(classe,Prop_I_IVM_1UU,Prop_I_IVM_1GD,Prop_I_IVM_1ZE,Prop_I_IVM_1BV,Prop_I_IVM_1AAV,Prop_I_IVM_1CENTR,
-                            Prop_I_IVM_1DEP,Prop_I_IVM_1REG,Prop_I_IVM_1EPCI)
-                       ][order(classe)]
-
-tableau3b_2
-
 
 # Afin de mieux comparer la pertinence des différents zonages d'étude pour appréhender la géographie des différents types
 # d'atteinte, on va tenir compte des différences de taille des différents zonages (par ex: les ZE contiennent beaucoup plus
@@ -695,142 +465,142 @@ tableau3b_bis
 
 
 
-# # Zoom sur la crise de la Covid-19: voit-on un effet sur le degré de concentration spatiale des atteintes?
-# # idée: on s'attendrait à ce que la crise sanitaire ait augmenter la proportion des atteintes associées à 
-# # un couple (I,V) ou un triplet (I,V,M) de communes présentes dans un même zonage...
-# 
-# # On refait les tableaux 3a et 3b sur les période 2016-2019 et 2020-2021:
-# 
-# # A mettre en Annexe?
-# 
-# # Tableau 3a: 2016-2019 (période pré-Covid)
-# tableau3a_2016_2019_annexe <- atteintes[annee %between% c(2016,2019) &
-#   (is.na(cog_com_22_inf)==FALSE) & (is.na(cog_com_22_vict)==FALSE) &
-#     (is.na(BV2022_inf)==FALSE) & (is.na(BV2022_vict)==FALSE) &
-#     (is.na(ZE2020_inf)==FALSE) & (is.na(ZE2020_vict)==FALSE) &
-#     (is.na(UU2020_inf)==FALSE) & (is.na(UU2020_vict)==FALSE) &
-#     (is.na(AAV2020_inf)==FALSE) & (is.na(AAV2020_vict)==FALSE) &
-#     (is.na(TYPE_inf)==FALSE) & (is.na(TYPE_vict)==FALSE) &
-#     (is.na(P_NP5CLA_inf)==FALSE) & (is.na(P_NP5CLA_vict)==FALSE), .(
-#   Nb_I_IV = sum(compteur, na.rm = TRUE),
-#   Nb_I_IV_UU = sum(compteur*((I_ds_UU == "oui") & (V_ds_UU == "oui")),na.rm = TRUE),
-#   Nb_I_IV_AAV = sum(compteur*((I_ds_AAV == "oui") & (V_ds_AAV == "oui")),na.rm = TRUE),
-#   Nb_I_IV_CENTR = sum(compteur*((I_ds_CENTR == "oui") & (V_ds_CENTR == "oui")),na.rm = TRUE),
-#   Nb_I_IV_1ZE = sum(compteur*(IV_ds_meme_ZE == "oui"), na.rm = TRUE),
-#   Nb_I_IV_1BV = sum(compteur*(IV_ds_meme_BV == "oui"), na.rm = TRUE),
-#   Nb_I_IV_1GD = sum(compteur*(IV_ds_meme_GD == "oui"), na.rm = TRUE),
-#   Nb_I_IV_1UU = sum(compteur*(IV_ds_meme_UU == "oui"), na.rm = TRUE),
-#   Nb_I_IV_1AAV = sum(compteur*(IV_ds_meme_AAV == "oui"), na.rm = TRUE),
-#   Nb_I_IV_1CENTR = sum(compteur*(IV_ds_meme_CENTR == "oui"), na.rm = TRUE)),
-#   by= .(classe)][ , `:=`(Prop_I_IV_1UU = round(Nb_I_IV_1UU/Nb_I_IV_UU*100,1),
-#                          Prop_I_IV_1GD = round(Nb_I_IV_1GD/Nb_I_IV*100,1),
-#                          Prop_I_IV_1ZE = round(Nb_I_IV_1ZE/Nb_I_IV*100,1),
-#                          Prop_I_IV_1BV = round(Nb_I_IV_1BV/Nb_I_IV*100,1),
-#                          Prop_I_IV_1AAV = round(Nb_I_IV_1AAV/Nb_I_IV_AAV*100,1),
-#                          Prop_I_IV_1CENTR = round(Nb_I_IV_1CENTR/Nb_I_IV_CENTR*100,1))
-#   ][,.(classe,Prop_I_IV_1UU,Prop_I_IV_1GD,Prop_I_IV_1ZE,Prop_I_IV_1BV,Prop_I_IV_1AAV,Prop_I_IV_1CENTR)
-#   ][order(classe)]
-# 
-# tableau3a_2016_2019_annexe
-# 
-# # Tableau 3a: 2020-2021 (période Covid)
-# tableau3a_2020_2021_annexe <- atteintes[annee %between% c(2020,2021) &
-#                                     (is.na(cog_com_22_inf)==FALSE) & (is.na(cog_com_22_vict)==FALSE) &
-#                                       (is.na(BV2022_inf)==FALSE) & (is.na(BV2022_vict)==FALSE) &
-#                                       (is.na(ZE2020_inf)==FALSE) & (is.na(ZE2020_vict)==FALSE) &
-#                                       (is.na(UU2020_inf)==FALSE) & (is.na(UU2020_vict)==FALSE) &
-#                                       (is.na(AAV2020_inf)==FALSE) & (is.na(AAV2020_vict)==FALSE) &
-#                                       (is.na(TYPE_inf)==FALSE) & (is.na(TYPE_vict)==FALSE) &
-#                                       (is.na(P_NP5CLA_inf)==FALSE) & (is.na(P_NP5CLA_vict)==FALSE), .(
-#                                       Nb_I_IV = sum(compteur, na.rm = TRUE),
-#                                       Nb_I_IV_UU = sum(compteur*((I_ds_UU == "oui") & (V_ds_UU == "oui")),na.rm = TRUE),
-#                                       Nb_I_IV_AAV = sum(compteur*((I_ds_AAV == "oui") & (V_ds_AAV == "oui")),na.rm = TRUE),
-#                                       Nb_I_IV_CENTR = sum(compteur*((I_ds_CENTR == "oui") & (V_ds_CENTR == "oui")),na.rm = TRUE),
-#                                       Nb_I_IV_1ZE = sum(compteur*(IV_ds_meme_ZE == "oui"), na.rm = TRUE),
-#                                       Nb_I_IV_1BV = sum(compteur*(IV_ds_meme_BV == "oui"), na.rm = TRUE),
-#                                       Nb_I_IV_1GD = sum(compteur*(IV_ds_meme_GD == "oui"), na.rm = TRUE),
-#                                       Nb_I_IV_1UU = sum(compteur*(IV_ds_meme_UU == "oui"), na.rm = TRUE),
-#                                       Nb_I_IV_1AAV = sum(compteur*(IV_ds_meme_AAV == "oui"), na.rm = TRUE),
-#                                       Nb_I_IV_1CENTR = sum(compteur*(IV_ds_meme_CENTR == "oui"), na.rm = TRUE)),
-#                                   by= .(classe)][ , `:=`(Prop_I_IV_1UU = round(Nb_I_IV_1UU/Nb_I_IV_UU*100,1),
-#                                                          Prop_I_IV_1GD = round(Nb_I_IV_1GD/Nb_I_IV*100,1),
-#                                                          Prop_I_IV_1ZE = round(Nb_I_IV_1ZE/Nb_I_IV*100,1),
-#                                                          Prop_I_IV_1BV = round(Nb_I_IV_1BV/Nb_I_IV*100,1),
-#                                                          Prop_I_IV_1AAV = round(Nb_I_IV_1AAV/Nb_I_IV_AAV*100,1),
-#                                                          Prop_I_IV_1CENTR = round(Nb_I_IV_1CENTR/Nb_I_IV_CENTR*100,1))
-#                                   ][,.(classe,Prop_I_IV_1UU,Prop_I_IV_1GD,Prop_I_IV_1ZE,Prop_I_IV_1BV,Prop_I_IV_1AAV,Prop_I_IV_1CENTR)
-#                                   ][order(classe)]
-# 
-# tableau3a_2020_2021_annexe
-# 
-# 
-# # Tableau 3b: 2016-2019 (période pré-Covid)
-# tableau3b_2016_2019_annexe <- atteintes[annee %between% c(2016,2019) &
-#   (is.na(cog_com_22_inf)==FALSE) & (is.na(cog_com_22_vict)==FALSE) & (is.na(cog_com_22_mec)==FALSE) &
-#     (is.na(BV2022_inf)==FALSE) & (is.na(BV2022_vict)==FALSE) & (is.na(BV2022_mec)==FALSE) &
-#     (is.na(ZE2020_inf)==FALSE) & (is.na(ZE2020_vict)==FALSE) & (is.na(ZE2020_mec)==FALSE) &
-#     (is.na(UU2020_inf)==FALSE) & (is.na(UU2020_vict)==FALSE) & (is.na(UU2020_mec)==FALSE) &
-#     (is.na(AAV2020_inf)==FALSE) & (is.na(AAV2020_vict)==FALSE) & (is.na(AAV2020_mec)==FALSE) &
-#     (is.na(GRD_inf)==FALSE) & (is.na(GRD_vict)==FALSE) & (is.na(TYPE_mec)==FALSE) &
-#     (is.na(P_NP5CLA_inf)==FALSE) & (is.na(P_NP5CLA_vict)==FALSE) & (is.na(P_NP5CLA_mec)==FALSE) &
-#                         classe %chin% c("Coups et blessures volontaires dans la sphère familiale",
-#                                          "Coups et blessures volontaires en dehors de la sphère familiale",
-#                                          "Homicides",
-#                                          "Violences sexuelles"), .(
-#                                            Nb_I_IVM = sum(compteur, na.rm = TRUE),
-#                                            Nb_I_IVM_UU = sum(compteur*((I_ds_UU == "oui") & (V_ds_UU == "oui") & (M_ds_UU == "oui")),na.rm = TRUE),
-#                                            Nb_I_IVM_AAV = sum(compteur*((I_ds_AAV == "oui") & (V_ds_AAV == "oui") & (M_ds_AAV == "oui")),na.rm = TRUE),
-#                                            Nb_I_IVM_CENTR = sum(compteur*((I_ds_CENTR == "oui") & (V_ds_CENTR == "oui") & (M_ds_CENTR == "oui")),na.rm = TRUE),
-#                                            Nb_I_IVM_1ZE = sum(compteur*(IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
-#                                            Nb_I_IVM_1BV = sum(compteur*(IVM_ds_meme_BV == "oui"), na.rm = TRUE),
-#                                            Nb_I_IVM_1GD = sum(compteur*(IVM_ds_meme_GD == "oui"), na.rm = TRUE),
-#                                            Nb_I_IVM_1UU = sum(compteur*(IVM_ds_meme_UU == "oui"), na.rm = TRUE),
-#                                            Nb_I_IVM_1AAV = sum(compteur*(IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
-#                                            Nb_I_IVM_1CENTR = sum(compteur*(IVM_ds_meme_CENTR == "oui"), na.rm = TRUE)),
-#                        by= .(classe)][ , `:=`(Prop_I_IVM_1UU = round(Nb_I_IVM_1UU/Nb_I_IVM_UU*100,1),
-#                                               Prop_I_IVM_1GD = round(Nb_I_IVM_1GD/Nb_I_IVM*100,1),
-#                                               Prop_I_IVM_1ZE = round(Nb_I_IVM_1ZE/Nb_I_IVM*100,1),
-#                                               Prop_I_IVM_1BV = round(Nb_I_IVM_1BV/Nb_I_IVM*100,1),
-#                                               Prop_I_IVM_1AAV = round(Nb_I_IVM_1AAV/Nb_I_IVM_AAV*100,1),
-#                                               Prop_I_IVM_1CENTR = round(Nb_I_IVM_1CENTR/Nb_I_IVM_CENTR*100,1))
-#                        ][,.(classe,Prop_I_IVM_1UU,Prop_I_IVM_1GD,Prop_I_IVM_1ZE,Prop_I_IVM_1BV,Prop_I_IVM_1AAV,Prop_I_IVM_1CENTR)
-#                        ][order(classe)]
-# 
-# tableau3b_2016_2019_annexe
-# 
-# # Tableau 3b: 2020_2021 (période Covid)
-# tableau3b_2020_2021_annexe <- atteintes[annee %between% c(2020,2021) &
-#                                    (is.na(cog_com_22_inf)==FALSE) & (is.na(cog_com_22_vict)==FALSE) & (is.na(cog_com_22_mec)==FALSE) &
-#                                      (is.na(BV2022_inf)==FALSE) & (is.na(BV2022_vict)==FALSE) & (is.na(BV2022_mec)==FALSE) &
-#                                      (is.na(ZE2020_inf)==FALSE) & (is.na(ZE2020_vict)==FALSE) & (is.na(ZE2020_mec)==FALSE) &
-#                                      (is.na(UU2020_inf)==FALSE) & (is.na(UU2020_vict)==FALSE) & (is.na(UU2020_mec)==FALSE) &
-#                                      (is.na(AAV2020_inf)==FALSE) & (is.na(AAV2020_vict)==FALSE) & (is.na(AAV2020_mec)==FALSE) &
-#                                      (is.na(GRD_inf)==FALSE) & (is.na(GRD_vict)==FALSE) & (is.na(GRD_mec)==FALSE) &
-#                                      (is.na(P_NP5CLA_inf)==FALSE) & (is.na(P_NP5CLA_vict)==FALSE) & (is.na(P_NP5CLA_mec)==FALSE) &
-#                                  classe %chin% c("Coups et blessures volontaires dans la sphère familiale",
-#                                                    "Coups et blessures volontaires en dehors de la sphère familiale",
-#                                                    "Homicides",
-#                                                    "Violences sexuelles"), .(
-#                                                      Nb_I_IVM = sum(compteur, na.rm = TRUE),
-#                                                      Nb_I_IVM_UU = sum(compteur*((I_ds_UU == "oui") & (V_ds_UU == "oui") & (M_ds_UU == "oui")),na.rm = TRUE),
-#                                                      Nb_I_IVM_AAV = sum(compteur*((I_ds_AAV == "oui") & (V_ds_AAV == "oui") & (M_ds_AAV == "oui")),na.rm = TRUE),
-#                                                      Nb_I_IVM_CENTR = sum(compteur*((I_ds_CENTR == "oui") & (V_ds_CENTR == "oui") & (M_ds_CENTR == "oui")),na.rm = TRUE),
-#                                                      Nb_I_IVM_1ZE = sum(compteur*(IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
-#                                                      Nb_I_IVM_1BV = sum(compteur*(IVM_ds_meme_BV == "oui"), na.rm = TRUE),
-#                                                      Nb_I_IVM_1GD = sum(compteur*(IVM_ds_meme_GD == "oui"), na.rm = TRUE),
-#                                                      Nb_I_IVM_1UU = sum(compteur*(IVM_ds_meme_UU == "oui"), na.rm = TRUE),
-#                                                      Nb_I_IVM_1AAV = sum(compteur*(IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
-#                                                      Nb_I_IVM_1CENTR = sum(compteur*(IVM_ds_meme_CENTR == "oui"), na.rm = TRUE)),
-#                                  by= .(classe)][ , `:=`(Prop_I_IVM_1UU = round(Nb_I_IVM_1UU/Nb_I_IVM_UU*100,1),
-#                                                         Prop_I_IVM_1GD = round(Nb_I_IVM_1GD/Nb_I_IVM*100,1),
-#                                                         Prop_I_IVM_1ZE = round(Nb_I_IVM_1ZE/Nb_I_IVM*100,1),
-#                                                         Prop_I_IVM_1BV = round(Nb_I_IVM_1BV/Nb_I_IVM*100,1),
-#                                                         Prop_I_IVM_1AAV = round(Nb_I_IVM_1AAV/Nb_I_IVM_AAV*100,1),
-#                                                         Prop_I_IVM_1CENTR = round(Nb_I_IVM_1CENTR/Nb_I_IVM_CENTR*100,1))
-#                                  ][,.(classe,Prop_I_IVM_1UU,Prop_I_IVM_1GD,Prop_I_IVM_1ZE,Prop_I_IVM_1BV,Prop_I_IVM_1AAV,Prop_I_IVM_1CENTR)
-#                                  ][order(classe)]
-# 
-# tableau3b_2020_2021_annexe
+# Zoom sur la crise de la Covid-19: voit-on un effet sur le degré de concentration spatiale des atteintes?
+# idée: on s'attendrait à ce que la crise sanitaire ait augmenter la proportion des atteintes associées à 
+# un couple (I,V) ou un triplet (I,V,M) de communes présentes dans un même zonage...
+
+# On refait les tableaux 3a et 3b sur les période 2016-2019 et 2020-2021:
+
+# A mettre en Annexe?
+
+# Tableau 3a: 2016-2019 (période pré-Covid)
+tableau3a_2016_2019_annexe <- atteintes[annee %between% c(2016,2019) &
+  (is.na(cog_com_22_inf)==FALSE) & (is.na(cog_com_22_vict)==FALSE) &
+    (is.na(BV2022_inf)==FALSE) & (is.na(BV2022_vict)==FALSE) &
+    (is.na(ZE2020_inf)==FALSE) & (is.na(ZE2020_vict)==FALSE) &
+    (is.na(UU2020_inf)==FALSE) & (is.na(UU2020_vict)==FALSE) &
+    (is.na(AAV2020_inf)==FALSE) & (is.na(AAV2020_vict)==FALSE) &
+    (is.na(TYPE_inf)==FALSE) & (is.na(TYPE_vict)==FALSE) &
+    (is.na(P_NP5CLA_inf)==FALSE) & (is.na(P_NP5CLA_vict)==FALSE), .(
+  Nb_I_IV = sum(compteur, na.rm = TRUE),
+  Nb_I_IV_UU = sum(compteur*((I_ds_UU == "oui") & (V_ds_UU == "oui")),na.rm = TRUE),
+  Nb_I_IV_AAV = sum(compteur*((I_ds_AAV == "oui") & (V_ds_AAV == "oui")),na.rm = TRUE),
+  Nb_I_IV_CENTR = sum(compteur*((I_ds_CENTR == "oui") & (V_ds_CENTR == "oui")),na.rm = TRUE),
+  Nb_I_IV_1ZE = sum(compteur*(IV_ds_meme_ZE == "oui"), na.rm = TRUE),
+  Nb_I_IV_1BV = sum(compteur*(IV_ds_meme_BV == "oui"), na.rm = TRUE),
+  Nb_I_IV_1GD = sum(compteur*(IV_ds_meme_GD == "oui"), na.rm = TRUE),
+  Nb_I_IV_1UU = sum(compteur*(IV_ds_meme_UU == "oui"), na.rm = TRUE),
+  Nb_I_IV_1AAV = sum(compteur*(IV_ds_meme_AAV == "oui"), na.rm = TRUE),
+  Nb_I_IV_1CENTR = sum(compteur*(IV_ds_meme_CENTR == "oui"), na.rm = TRUE)),
+  by= .(classe)][ , `:=`(Prop_I_IV_1UU = round(Nb_I_IV_1UU/Nb_I_IV_UU*100,1),
+                         Prop_I_IV_1GD = round(Nb_I_IV_1GD/Nb_I_IV*100,1),
+                         Prop_I_IV_1ZE = round(Nb_I_IV_1ZE/Nb_I_IV*100,1),
+                         Prop_I_IV_1BV = round(Nb_I_IV_1BV/Nb_I_IV*100,1),
+                         Prop_I_IV_1AAV = round(Nb_I_IV_1AAV/Nb_I_IV_AAV*100,1),
+                         Prop_I_IV_1CENTR = round(Nb_I_IV_1CENTR/Nb_I_IV_CENTR*100,1))
+  ][,.(classe,Prop_I_IV_1UU,Prop_I_IV_1GD,Prop_I_IV_1ZE,Prop_I_IV_1BV,Prop_I_IV_1AAV,Prop_I_IV_1CENTR)
+  ][order(classe)]
+
+tableau3a_2016_2019_annexe
+
+# Tableau 3a: 2020-2021 (période Covid)
+tableau3a_2020_2021_annexe <- atteintes[annee %between% c(2020,2021) &
+                                    (is.na(cog_com_22_inf)==FALSE) & (is.na(cog_com_22_vict)==FALSE) &
+                                      (is.na(BV2022_inf)==FALSE) & (is.na(BV2022_vict)==FALSE) &
+                                      (is.na(ZE2020_inf)==FALSE) & (is.na(ZE2020_vict)==FALSE) &
+                                      (is.na(UU2020_inf)==FALSE) & (is.na(UU2020_vict)==FALSE) &
+                                      (is.na(AAV2020_inf)==FALSE) & (is.na(AAV2020_vict)==FALSE) &
+                                      (is.na(TYPE_inf)==FALSE) & (is.na(TYPE_vict)==FALSE) &
+                                      (is.na(P_NP5CLA_inf)==FALSE) & (is.na(P_NP5CLA_vict)==FALSE), .(
+                                      Nb_I_IV = sum(compteur, na.rm = TRUE),
+                                      Nb_I_IV_UU = sum(compteur*((I_ds_UU == "oui") & (V_ds_UU == "oui")),na.rm = TRUE),
+                                      Nb_I_IV_AAV = sum(compteur*((I_ds_AAV == "oui") & (V_ds_AAV == "oui")),na.rm = TRUE),
+                                      Nb_I_IV_CENTR = sum(compteur*((I_ds_CENTR == "oui") & (V_ds_CENTR == "oui")),na.rm = TRUE),
+                                      Nb_I_IV_1ZE = sum(compteur*(IV_ds_meme_ZE == "oui"), na.rm = TRUE),
+                                      Nb_I_IV_1BV = sum(compteur*(IV_ds_meme_BV == "oui"), na.rm = TRUE),
+                                      Nb_I_IV_1GD = sum(compteur*(IV_ds_meme_GD == "oui"), na.rm = TRUE),
+                                      Nb_I_IV_1UU = sum(compteur*(IV_ds_meme_UU == "oui"), na.rm = TRUE),
+                                      Nb_I_IV_1AAV = sum(compteur*(IV_ds_meme_AAV == "oui"), na.rm = TRUE),
+                                      Nb_I_IV_1CENTR = sum(compteur*(IV_ds_meme_CENTR == "oui"), na.rm = TRUE)),
+                                  by= .(classe)][ , `:=`(Prop_I_IV_1UU = round(Nb_I_IV_1UU/Nb_I_IV_UU*100,1),
+                                                         Prop_I_IV_1GD = round(Nb_I_IV_1GD/Nb_I_IV*100,1),
+                                                         Prop_I_IV_1ZE = round(Nb_I_IV_1ZE/Nb_I_IV*100,1),
+                                                         Prop_I_IV_1BV = round(Nb_I_IV_1BV/Nb_I_IV*100,1),
+                                                         Prop_I_IV_1AAV = round(Nb_I_IV_1AAV/Nb_I_IV_AAV*100,1),
+                                                         Prop_I_IV_1CENTR = round(Nb_I_IV_1CENTR/Nb_I_IV_CENTR*100,1))
+                                  ][,.(classe,Prop_I_IV_1UU,Prop_I_IV_1GD,Prop_I_IV_1ZE,Prop_I_IV_1BV,Prop_I_IV_1AAV,Prop_I_IV_1CENTR)
+                                  ][order(classe)]
+
+tableau3a_2020_2021_annexe
+
+
+# Tableau 3b: 2016-2019 (période pré-Covid)
+tableau3b_2016_2019_annexe <- atteintes[annee %between% c(2016,2019) &
+  (is.na(cog_com_22_inf)==FALSE) & (is.na(cog_com_22_vict)==FALSE) & (is.na(cog_com_22_mec)==FALSE) &
+    (is.na(BV2022_inf)==FALSE) & (is.na(BV2022_vict)==FALSE) & (is.na(BV2022_mec)==FALSE) &
+    (is.na(ZE2020_inf)==FALSE) & (is.na(ZE2020_vict)==FALSE) & (is.na(ZE2020_mec)==FALSE) &
+    (is.na(UU2020_inf)==FALSE) & (is.na(UU2020_vict)==FALSE) & (is.na(UU2020_mec)==FALSE) &
+    (is.na(AAV2020_inf)==FALSE) & (is.na(AAV2020_vict)==FALSE) & (is.na(AAV2020_mec)==FALSE) &
+    (is.na(GRD_inf)==FALSE) & (is.na(GRD_vict)==FALSE) & (is.na(TYPE_mec)==FALSE) &
+    (is.na(P_NP5CLA_inf)==FALSE) & (is.na(P_NP5CLA_vict)==FALSE) & (is.na(P_NP5CLA_mec)==FALSE) &
+                        classe %chin% c("Coups et blessures volontaires dans la sphère familiale",
+                                         "Coups et blessures volontaires en dehors de la sphère familiale",
+                                         "Homicides",
+                                         "Violences sexuelles"), .(
+                                           Nb_I_IVM = sum(compteur, na.rm = TRUE),
+                                           Nb_I_IVM_UU = sum(compteur*((I_ds_UU == "oui") & (V_ds_UU == "oui") & (M_ds_UU == "oui")),na.rm = TRUE),
+                                           Nb_I_IVM_AAV = sum(compteur*((I_ds_AAV == "oui") & (V_ds_AAV == "oui") & (M_ds_AAV == "oui")),na.rm = TRUE),
+                                           Nb_I_IVM_CENTR = sum(compteur*((I_ds_CENTR == "oui") & (V_ds_CENTR == "oui") & (M_ds_CENTR == "oui")),na.rm = TRUE),
+                                           Nb_I_IVM_1ZE = sum(compteur*(IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
+                                           Nb_I_IVM_1BV = sum(compteur*(IVM_ds_meme_BV == "oui"), na.rm = TRUE),
+                                           Nb_I_IVM_1GD = sum(compteur*(IVM_ds_meme_GD == "oui"), na.rm = TRUE),
+                                           Nb_I_IVM_1UU = sum(compteur*(IVM_ds_meme_UU == "oui"), na.rm = TRUE),
+                                           Nb_I_IVM_1AAV = sum(compteur*(IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
+                                           Nb_I_IVM_1CENTR = sum(compteur*(IVM_ds_meme_CENTR == "oui"), na.rm = TRUE)),
+                       by= .(classe)][ , `:=`(Prop_I_IVM_1UU = round(Nb_I_IVM_1UU/Nb_I_IVM_UU*100,1),
+                                              Prop_I_IVM_1GD = round(Nb_I_IVM_1GD/Nb_I_IVM*100,1),
+                                              Prop_I_IVM_1ZE = round(Nb_I_IVM_1ZE/Nb_I_IVM*100,1),
+                                              Prop_I_IVM_1BV = round(Nb_I_IVM_1BV/Nb_I_IVM*100,1),
+                                              Prop_I_IVM_1AAV = round(Nb_I_IVM_1AAV/Nb_I_IVM_AAV*100,1),
+                                              Prop_I_IVM_1CENTR = round(Nb_I_IVM_1CENTR/Nb_I_IVM_CENTR*100,1))
+                       ][,.(classe,Prop_I_IVM_1UU,Prop_I_IVM_1GD,Prop_I_IVM_1ZE,Prop_I_IVM_1BV,Prop_I_IVM_1AAV,Prop_I_IVM_1CENTR)
+                       ][order(classe)]
+
+tableau3b_2016_2019_annexe
+
+# Tableau 3b: 2020_2021 (période Covid)
+tableau3b_2020_2021_annexe <- atteintes[annee %between% c(2020,2021) &
+                                   (is.na(cog_com_22_inf)==FALSE) & (is.na(cog_com_22_vict)==FALSE) & (is.na(cog_com_22_mec)==FALSE) &
+                                     (is.na(BV2022_inf)==FALSE) & (is.na(BV2022_vict)==FALSE) & (is.na(BV2022_mec)==FALSE) &
+                                     (is.na(ZE2020_inf)==FALSE) & (is.na(ZE2020_vict)==FALSE) & (is.na(ZE2020_mec)==FALSE) &
+                                     (is.na(UU2020_inf)==FALSE) & (is.na(UU2020_vict)==FALSE) & (is.na(UU2020_mec)==FALSE) &
+                                     (is.na(AAV2020_inf)==FALSE) & (is.na(AAV2020_vict)==FALSE) & (is.na(AAV2020_mec)==FALSE) &
+                                     (is.na(GRD_inf)==FALSE) & (is.na(GRD_vict)==FALSE) & (is.na(GRD_mec)==FALSE) &
+                                     (is.na(P_NP5CLA_inf)==FALSE) & (is.na(P_NP5CLA_vict)==FALSE) & (is.na(P_NP5CLA_mec)==FALSE) &
+                                 classe %chin% c("Coups et blessures volontaires dans la sphère familiale",
+                                                   "Coups et blessures volontaires en dehors de la sphère familiale",
+                                                   "Homicides",
+                                                   "Violences sexuelles"), .(
+                                                     Nb_I_IVM = sum(compteur, na.rm = TRUE),
+                                                     Nb_I_IVM_UU = sum(compteur*((I_ds_UU == "oui") & (V_ds_UU == "oui") & (M_ds_UU == "oui")),na.rm = TRUE),
+                                                     Nb_I_IVM_AAV = sum(compteur*((I_ds_AAV == "oui") & (V_ds_AAV == "oui") & (M_ds_AAV == "oui")),na.rm = TRUE),
+                                                     Nb_I_IVM_CENTR = sum(compteur*((I_ds_CENTR == "oui") & (V_ds_CENTR == "oui") & (M_ds_CENTR == "oui")),na.rm = TRUE),
+                                                     Nb_I_IVM_1ZE = sum(compteur*(IVM_ds_meme_ZE == "oui"), na.rm = TRUE),
+                                                     Nb_I_IVM_1BV = sum(compteur*(IVM_ds_meme_BV == "oui"), na.rm = TRUE),
+                                                     Nb_I_IVM_1GD = sum(compteur*(IVM_ds_meme_GD == "oui"), na.rm = TRUE),
+                                                     Nb_I_IVM_1UU = sum(compteur*(IVM_ds_meme_UU == "oui"), na.rm = TRUE),
+                                                     Nb_I_IVM_1AAV = sum(compteur*(IVM_ds_meme_AAV == "oui"), na.rm = TRUE),
+                                                     Nb_I_IVM_1CENTR = sum(compteur*(IVM_ds_meme_CENTR == "oui"), na.rm = TRUE)),
+                                 by= .(classe)][ , `:=`(Prop_I_IVM_1UU = round(Nb_I_IVM_1UU/Nb_I_IVM_UU*100,1),
+                                                        Prop_I_IVM_1GD = round(Nb_I_IVM_1GD/Nb_I_IVM*100,1),
+                                                        Prop_I_IVM_1ZE = round(Nb_I_IVM_1ZE/Nb_I_IVM*100,1),
+                                                        Prop_I_IVM_1BV = round(Nb_I_IVM_1BV/Nb_I_IVM*100,1),
+                                                        Prop_I_IVM_1AAV = round(Nb_I_IVM_1AAV/Nb_I_IVM_AAV*100,1),
+                                                        Prop_I_IVM_1CENTR = round(Nb_I_IVM_1CENTR/Nb_I_IVM_CENTR*100,1))
+                                 ][,.(classe,Prop_I_IVM_1UU,Prop_I_IVM_1GD,Prop_I_IVM_1ZE,Prop_I_IVM_1BV,Prop_I_IVM_1AAV,Prop_I_IVM_1CENTR)
+                                 ][order(classe)]
+
+tableau3b_2020_2021_annexe
 
 # 1) Statut des communes au sein du bassin de vie (BV):
 
@@ -863,7 +633,6 @@ tableau4a <- atteintes[(IV_ds_meme_BV == "oui") & (is.na(cog_com_22_inf)==FALSE)
                             Total_atteintes := sum(Nb_atteintes)
                           ][, Pct := round(Nb_atteintes/Total_atteintes*100,2)][,.(type_com_IV_ds_BV,Pct)]
 
-tableau4a
 # Tableau 4b: Répartition (en %) des atteintes associées à un triplet de communes (I,V,M) dans un même BV, selon le statut
 # respectif de la commune de I, de celle de V et de celle de M au sein du BV. 
 # Rappel: 00: "Non pôle"; 11: "Pôle partiel"; 12: "Commune associée à un pôle partiel" et 20: "Pôle".
@@ -900,7 +669,7 @@ tableau4b <- atteintes[(IVM_ds_meme_BV == "oui") & (is.na(cog_com_22_inf)==FALSE
                          ][order(type_com_IVM_ds_BV)][,
                                                      Total_atteintes := sum(Nb_atteintes)
                          ][, Pct := round(Nb_atteintes/Total_atteintes*100,2)][,.(type_com_IVM_ds_BV,Pct)]
-tableau4b
+
 # Note: On pourra éventuellement regrouper certaines modalités avec des fréquences très faibles... 
 
 # 2) Statut des communes au sein de l'unité urbaine (UU):
@@ -933,7 +702,7 @@ tableau5a <- atteintes[(IV_ds_meme_UU == "oui") & (is.na(cog_com_22_inf)==FALSE)
                          ][order(type_com_IV_ds_UU)][,
                                                      Total_atteintes := sum(Nb_atteintes)
                          ][, Pct := round(Nb_atteintes/Total_atteintes*100,2)][,.(type_com_IV_ds_UU,Pct)]
-tableau5a
+
 # Tableau 5b: Répartition (en %) des atteintes associées à un triplet de communes (I,V,M) dans une même UU, selon le statut
 # respectif de la commune de I, de celle de V et de celle de M au sein de l'UU. 
 # Rappel: H: "Hors UU"; C: "Ville-centre"; B: "Banlieue" et I: "Ville isolée".
@@ -975,7 +744,7 @@ tableau5b <- atteintes[(IVM_ds_meme_UU == "oui") & (is.na(cog_com_22_inf)==FALSE
                          ][order(type_com_IVM_ds_UU)][,
                                                      Total_atteintes := sum(Nb_atteintes)
                          ][, Pct := round(Nb_atteintes/Total_atteintes*100,2)][,.(type_com_IVM_ds_UU,Pct)]
-tableau5b
+
 # 3) Statut des communes au sein de l'aire d'attraction des villes (AAV):
 
 # Tableau 6a: Répartition (en %) des atteintes associées à un couple de communes (I,V) dans une même AAV, selon le statut
@@ -1006,7 +775,7 @@ tableau6a <- atteintes[(IV_ds_meme_AAV == "oui") & (is.na(cog_com_22_inf)==FALSE
                          default = "Autres")][, .(Nb_atteintes = sum(compteur,na.rm = TRUE)),by = .(type_com_IV_ds_AAV) 
                          ][order(type_com_IV_ds_AAV)][,Total_atteintes := sum(Nb_atteintes)
                          ][, Pct := round(Nb_atteintes/Total_atteintes*100,2)][,.(type_com_IV_ds_AAV,Pct)]
-tableau6a
+
 # Tableau 6b: Répartition (en %) des atteintes associées à un triplet de communes (I,V,M) dans une même AAV, selon le statut
 # respectif de la commune de I, de celle de V et de celle de M au sein de l'AAV. 
 # Rappel: 11: "Commune-centre"; 12: "Autre commune du pôle principal"; 13: "Commune d'un pôle secondaire";
@@ -1041,7 +810,7 @@ tableau6b <- atteintes[(IVM_ds_meme_AAV == "oui") & (is.na(cog_com_22_inf)==FALS
                          default = "Autres")][, .(Nb_atteintes = sum(compteur,na.rm = TRUE)),by = .(type_com_IVM_ds_AAV) 
                          ][order(type_com_IVM_ds_AAV)][,Total_atteintes := sum(Nb_atteintes)
                          ][, Pct := round(Nb_atteintes/Total_atteintes*100,2)][,.(type_com_IVM_ds_AAV,Pct)]
-tableau6b
+
 # TODO: on pourrait calculer les pourcentages pour chaque type d'atteinte?
 
 # 3) Type des communes (I,V) (au sens de la GD) qui se retrouvent dans un même zonage:
@@ -1090,7 +859,7 @@ tableau7a <- atteintes[(is.na(cog_com_22_inf)==FALSE) & (is.na(cog_com_22_vict)=
                                   Pct_IV_1AAV = round(Nb_IV_1AAV/Total_IV_1AAV*100,2))
                            ][,.(type_GD_IV_1zonage,Pct_IV_1ZE,Pct_IV_1BV,Pct_IV_1UU,Pct_IV_1AAV)]
 
-tableau7a
+
 # Tableau 7b: Répartition (en %) des atteintes associées à un triplet de communes (I,V,M) dans une même zonage, selon le statut
 # respectif de la commune de I, de celle de V et de celle de M au sein de la GD. 
 # Rappel: les différentes modalités de la GD sont:
@@ -1159,7 +928,6 @@ tableau7b <- atteintes[(is.na(cog_com_22_inf)==FALSE) & (is.na(cog_com_22_vict)=
            Pct_IVM_1AAV = round(Nb_IVM_1AAV/Total_IVM_1AAV*100,2))
   ][,.(type_GD_IVM_1zonage,Pct_IVM_1ZE,Pct_IVM_1BV,Pct_IVM_1UU,Pct_IVM_1AAV)]
 
-tableau7b
 # Une variante des tableaux 7: pour chaque type d'atteinte, répartition des couples de communes (I,V) selon les différentes
 # modalités de la grille de densité:
 
@@ -1208,8 +976,6 @@ tableau7a_bis <- atteintes[(is.na(cog_com_22_inf)==FALSE) & (is.na(cog_com_22_vi
            )
   ][,.(type_GD_IV,Pct_cambr,Pct_destr_degrad,Pct_vols_arme,Pct_vols_viol_sansarme,Pct_vols_sansviol,Pct_vols_vehic)]
 
-tableau7a_bis
-
 # puis on se concentre sur les seules atteintes corporelles (7b_bis):
 tableau7b_bis <- atteintes[(is.na(cog_com_22_inf)==FALSE) & (is.na(cog_com_22_vict)==FALSE) &
                              (is.na(GRD_inf)==FALSE) & (is.na(GRD_vict)==FALSE) &
@@ -1249,8 +1015,6 @@ tableau7b_bis <- atteintes[(is.na(cog_com_22_inf)==FALSE) & (is.na(cog_com_22_vi
            Pct_viol_sex = round(Nb_viol_sex/Total_viol_sex*100,2)
   )
   ][,.(type_GD_IV,Pct_bless_famil,Pct_bless_horsfamil,Pct_homicides,Pct_viol_sex)]
-
-tableau7b_bis
 
 # ultime variante sur les atteintes corporelles: on peut dupliquer le tableau 7b_bis non plus en étudiant la répartition
 # selon  le couple de communes (I,V) dans la GD mais selon le couple (M,V) dans la GD:
@@ -1293,48 +1057,6 @@ tableau7b_ter <- atteintes[(is.na(cog_com_22_mec)==FALSE) & (is.na(cog_com_22_vi
            Pct_viol_sex = round(Nb_viol_sex/Total_viol_sex*100,2)
   )
   ][,.(type_GD_MV,Pct_bless_famil,Pct_bless_horsfamil,Pct_homicides,Pct_viol_sex)]
-
-tableau7b_ter
-
-# Quelques tableaux supplémentaires...
-
-# ventilation des atteintes par type selon la grille de densité à 4 positions:
-
-tableau_a_GD <- atteintes[(is.na(cog_com_22_inf)==FALSE) & (is.na(GRD_inf)==FALSE),
-                           .(GRD_inf,classe,compteur)
-][, .(
-    Nb_cambr = sum(compteur*(classe == "Cambriolages de logement"),na.rm = TRUE),
-    Nb_destr_degrad = sum(compteur*(classe == "Destructions et dégradations"),na.rm = TRUE),
-    Nb_vols_arme = sum(compteur*(classe == "Vols avec armes"),na.rm = TRUE),
-    Nb_vols_viol_sansarme = sum(compteur*(classe == "Vols violents sans arme"),na.rm = TRUE),
-    Nb_vols_sansviol = sum(compteur*(classe == "Vols sans violence contre des personnes"),na.rm = TRUE),
-    Nb_vols_vehic = sum(compteur*(classe %chin% c("Vols d'accessoires sur véhicules","Vols dans les véhicules","Vols de véhicules")),na.rm = TRUE),
-    Nb_bless_famil = sum(compteur*(classe == "Coups et blessures volontaires dans la sphère familiale"),na.rm = TRUE),
-    Nb_bless_horsfamil = sum(compteur*(classe == "Coups et blessures volontaires en dehors de la sphère familiale"),na.rm = TRUE),
-    Nb_homicides = sum(compteur*(classe == "Homicides"),na.rm = TRUE),
-    Nb_viol_sex = sum(compteur*(classe == "Violences sexuelles"),na.rm = TRUE)
-  ),by = .(GRD_inf) 
-  ][order(GRD_inf)][,`:=`(Total_cambr = sum(Nb_cambr),Total_destr_degrad = sum(Nb_destr_degrad),
-                             Total_vols_arme = sum(Nb_vols_arme),Total_vols_viol_sansarme = sum(Nb_vols_viol_sansarme),
-                             Total_vols_sansviol = sum(Nb_vols_sansviol),Total_vols_vehic = sum(Nb_vols_vehic),
-                          Total_bless_famil = sum(Nb_bless_famil),Total_bless_horsfamil = sum(Nb_bless_horsfamil),
-                          Total_homicides = sum(Nb_homicides),Total_viol_sex = sum(Nb_viol_sex))
-  ][, `:=`(Pct_cambr = round(Nb_cambr/Total_cambr*100,2),
-           Pct_destr_degrad = round(Nb_destr_degrad/Total_destr_degrad*100,2),
-           Pct_vols_arme = round(Nb_vols_arme/Total_vols_arme*100,2),
-           Pct_vols_viol_sansarme = round(Nb_vols_viol_sansarme/Total_vols_viol_sansarme*100,2),
-           Pct_vols_sansviol = round(Nb_vols_sansviol/Total_vols_sansviol*100,2),
-           Pct_vols_vehic = round(Nb_vols_vehic/Total_vols_vehic*100,2),
-           Pct_bless_famil = round(Nb_bless_famil/Total_bless_famil*100,2),
-           Pct_bless_horsfamil = round(Nb_bless_horsfamil/Total_bless_horsfamil*100,2),
-           Pct_homicides = round(Nb_homicides/Total_homicides*100,2),
-           Pct_viol_sex = round(Nb_viol_sex/Total_viol_sex*100,2)
-  )
-  ][,.(GRD_inf,Pct_cambr,Pct_destr_degrad,Pct_vols_arme,Pct_vols_viol_sansarme,Pct_vols_sansviol,Pct_vols_vehic,Pct_bless_famil,Pct_bless_horsfamil,Pct_homicides,Pct_viol_sex)]
-
-tableau_a_GD
-
-
 
 # TODO: on peut regarder le même genre de chose avec le niveau de fragilité des centralités (étude Inrae...)
 # à faire sur le champ des atteintes associées à un couple (I,V) présent dans une centralité (pas forcément la même...)

@@ -3,22 +3,14 @@
 
 
 # a) Fichier "flouté" des atteintes géolocalisées (source: SSMSI):
-#load("donnees.secretisees.delinquance.RData") # Fichier t.del (tibble)
+load("donnees.secretisees.delinquance.RData") # Fichier t.del (tibble)
 # à Kevin et Aurélien: remplacer ce fichier par le fichier non secrétisé!!
-load("t.init.RData") # Fichier t.init (tibble)
 
 # Etant donné la volumétrie, on le transforme en un fichier data.table:
-#del_dt <- as.data.table(t.del)
-del_dt <- as.data.table(t.init)
-
-# Restriction éventuelle de la base initiale à une sous-période (définie en paramètre en début du Main.R):
-del_dt <- del_dt[annee %between% periode_etude,]
-
+del2016_2021_dt <- as.data.table(t.del)
 # suppression du fichier "tibble" (on ne travaillera a priori qu'en data.table):
-#rm(t.del)
-rm(t.init)
-
-names(del_dt)
+rm(t.del)
+names(del2016_2021_dt)
 
 
 # b) Fichier "Table d'appartenance géographique des communes" (source: Insee):
@@ -123,15 +115,9 @@ names(dossier_complet_insee)
 # Ce fichier .Rdata a été généré par le SSMSI et mis à disposition sous Osmose.
 # Téléchargez le fichier et sauvegardez-le dans votre WD.
 
-#load("donnees.secretisees.delinquance.distances.rdata") # (tibble: t.del.dist).
+load("donnees.secretisees.delinquance.distances.rdata") # (tibble).
 # à Kevin et Aurélien: remplacer le fichier secrétisé par le fichier non secrétisé!!
-load("t.init.distances.RData") # (tibble: t.init.dist).
 
-del.dist_dt <- as.data.table(t.del.dist)
-rm(t.del.dist)
-
-#del.dist_dt <- as.data.table(t.init.dist)
-#rm(t.init.dist)
 
 # Chargement des fichiers de contours:
 contours_com <- st_read("contoursGeographiques",layer = "communes-20220101-simpl04")

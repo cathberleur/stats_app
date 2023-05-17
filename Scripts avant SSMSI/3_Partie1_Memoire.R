@@ -92,4 +92,3 @@ tableau1 <- subset(tableau1, select=c(classe, Nb_atteintes,Neant,I,V,M,IV,IM,VM,
 # Output:
 tableau1
 
-rm(data_tableau1)

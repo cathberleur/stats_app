@@ -4,32 +4,15 @@
 
 # Auteurs: Catherine Berleur, Clémence Bracq, Marie Meyer et Gabriel Sklénard.
 
-# IMPORTANT: 3 paramètres à renseigner par chaque utilisateur avant d'excécuter ce programme:
+# IMPORTANT: 2 paramètres à modifier par chaque utilisateur avant d'excécuter ce programme:
 
-
-.libPaths("M:/Perso/AB/library BE/library")
-.libPaths()
-
-
-# 1) Indiquez votre WD (Working Directory):
-# mon_WD="/Users/sklenard/Documents/Statapp/WD_Gabriel" # WD de Gabriel (ordi perso).
-mon_WD="M:/Commun/BESTRP/Territoires/Zonage.StatApp/WD Gabriel Statapp" # WD de Gabriel (ordi SSMSI).
-
-setwd(mon_WD)
+# 1) Votre WD:
+setwd("/Users/sklenard/Documents/Statapp/WD_Gabriel") # WD pour Gabriel.
 # c'est à cet endroit que devront être enregistrés les différents fichiers servant  d'"inputs" pour notre travail
-# (cf. la liste juste rappelée ci-dessous); et c'est à cet endroit que seront stocké tous les outputs.
-
+# (cf. la liste juste rappelée ci-dessous)
 
 # 2) Préciser le chemin pointant vers le dossier où sont enregistrés les 8 scripts R: le Main.R + les 7 scripts associés:
-#scripts_path="/Users/sklenard/Documents" # scripts_path de Gabriel (ordi perso)
-scripts_path="M:/Commun/BESTRP/Territoires/Zonage.StatApp/WD Gabriel Statapp" # scripts_path de Gabriel (ordi SSMSI)
-
-
-# 3) Fenêtre temporelle à retenir (définir la période d'étude entre 2016 et 2021):
-
-periode_etude = c(2016,2019) # période 2016-2019 (pré-Covid)
-# Mais possibilité de travailler par exemple sur la période 2020-2021 (post-Covid):
-#periode_etude = c(2020,2021)
+scripts_path="/Users/sklenard/Documents/GitHub/stats_app" # scripts_path pour Gabriel.
 
 # Remarque pour Clémence, Marie et Catherine: pour nous le chemin doit pointer vers notre repo Github créé sur notre ordi
 # perso via Desktop, ce qui permet de toujours pointer sur la dernière version validée Github des scripts ;)
@@ -57,19 +40,19 @@ periode_etude = c(2016,2019) # période 2016-2019 (pré-Covid)
 # par leur version non secrétisée stockée au SSMSI sous le répertoire M...
 
 # Etape 0 - Les packages utilisés dans ce projet:
-source(paste0(scripts_path,"/0_Chargement_packages.R"),encoding="UTF-8")
+source(paste0(scripts_path,"/0_Chargement_packages.R"),encoding = "UTF-8")
 # @Kevin et Aurélien: RAS (rien à modifier ici!)
 
 
 # Etape 1 - Le chargement des différentes sources de données utilisées dans ce projet:
-source(paste0(scripts_path,"/1_Chargement_data.R"),encoding="UTF-8")
+source(paste0(scripts_path,"/1_Chargement_data.R"),encoding = "UTF-8")
 # IMPORTANT! @Kevin et Aurélien: 
 # Pensez ici à remplacer les deux fichiers .Rdata secréitisés chargés dans ce script
 # par leur version non secrétisée !!
 
 
 # Etape 2: La construction des bases de données analysées dans ce projet:
-source(paste0(scripts_path,"/2_Construction_bases_etude.R"),encoding="UTF-8")
+source(paste0(scripts_path,"/2_Construction_bases_etude.R"),encoding = "UTF-8")
 # @Kevin et Aurélien: 1 seule chose à modifier dans ce script -> commenter le petit morceau de code 
 # qui impute des modalités explicites à la variable "classe" (à la place des lettres).
 # Il s'agit des lignes 145 à 158.
@@ -77,7 +60,7 @@ source(paste0(scripts_path,"/2_Construction_bases_etude.R"),encoding="UTF-8")
 
 
 # Etape 3: Partie 1 du mémoire: Les données
-source(paste0(scripts_path,"/3_Partie1_Memoire.R"),encoding="UTF-8")
+source(paste0(scripts_path,"/3_Partie1_Memoire.R"),encoding = "UTF-8")
 # @Kevin et Aurélien: RAS (rien à modifier ici!)
 
 # Tableau 1: Les différents types d'atteinte selon l'information spatiale disponible
@@ -85,31 +68,36 @@ write.csv(tableau1, "Tableau1.csv", row.names=FALSE)
 
 
 # Etape 4: Partie 2 du mémoire: Faits stylisés: une description fine de l'organisation spatiale de la délinquance
-source(paste0(scripts_path,"/4_Partie2_Memoire.R"),encoding="UTF-8")
+source(paste0(scripts_path,"/4_Partie2_Memoire.R"),encoding = "UTF-8")
 # @Kevin et Aurélien: RAS (rien à modifier ici!)
 
 # Tableau 2: Distribution du nombre d'infractions au niveau communal (pour 1000 habitants), selon le type d'atteinte
 write.csv(tableau2, "Tableau2.csv", row.names=FALSE)
 
-# Graphique 1: Nombre d’infractions par commune en fonction de leur taille (échelle log. base 10)
+# Graphique 1: Nombre d’infractions par commune (en log) en fonction de leur taille (en log)
 png("Graphique1.png")
-Graphique1
+plot(data.graphique1$P19_POP,data.graphique1$Nb_I,main = "", xlab="Nombre d'habitants (log)", ylab="Nombre d'infractions (log)")
 dev.off()
 
-png("Graphique1bis_annexe.pdf")
-ggarrange(Graphique1_cambr, Graphique1_bless_famil,Graphique1_bless_horsfamil,
-          Graphique1_destr_degrad,Graphique1_homic,Graphique1_viol_sex,
-          ncol = 3, nrow = 2)
+# Détail par type d'atteinte en Annexe:
+png("Graphique1bis_annexe.png")
+layout(matrix(1:6,2,3))
+plot(data.graphique1$P19_POP,data.graphique1$Nb_I_cambr,main = "Cambriolages", xlab="Pop (log)", ylab="Nb I (log)")
+plot(data.graphique1$P19_POP,data.graphique1$Nb_I_bless_famil,main = "Blessures intra-familiales", xlab="Pop (log)", ylab="Nb I (log)")
+plot(data.graphique1$P19_POP,data.graphique1$Nb_I_bless_horsfamil,main = "Blessures extra-familiales", xlab="Pop (log)", ylab="Nb I (log)")
+plot(data.graphique1$P19_POP,data.graphique1$Nb_I_destr_degrad,main = "Destructions, dégradations", xlab="Pop (log)", ylab="Nb I (log)")
+plot(data.graphique1$P19_POP,data.graphique1$Nb_I_homic,main = "Homicides", xlab="Pop (log)", ylab="Nb I (log)")
+plot(data.graphique1$P19_POP,data.graphique1$Nb_I_viol_sex,main = "Violences sexuelles", xlab="Pop (log)", ylab="Nb I (log)")
 dev.off()
 
-png("Graphique1ter_annexe.pdf")
-ggarrange(Graphique1_vols_armes,
-          Graphique1_vols_acces_vehic,
-          Graphique1_vols_ds_vehic,
-          Graphique1_vols_de_vehic,
-          Graphique1_vols_sansviol,
-          Graphique1_vols_viol_sansarme,
-          ncol = 3, nrow = 2)
+png("Graphique1ter_annexe.png")
+layout(matrix(1:6,2,3))
+plot(data.graphique1$P19_POP,data.graphique1$Nb_I_vols_armes,main = "Violences avec armes", xlab="Pop (log)", ylab="Nb I (log)")
+plot(data.graphique1$P19_POP,data.graphique1$Nb_I_vols_acces_vehic,main = "Vols d'accessoires de véhicules", xlab="Pop (log)", ylab="Nb I (log)")
+plot(data.graphique1$P19_POP,data.graphique1$Nb_I_vols_ds_vehic,main = "Vols dans les véhicules", xlab="Pop (log)", ylab="Nb I (log)")
+plot(data.graphique1$P19_POP,data.graphique1$Nb_I_vols_de_vehic,main = "Vols de véhicules", xlab="Pop (log)", ylab="Nb I (log)")
+plot(data.graphique1$P19_POP,data.graphique1$Nb_I_vols_sansviol,main = "Vol sans violence", xlab="Pop (log)", ylab="Nb I (log)")
+plot(data.graphique1$P19_POP,data.graphique1$Nb_I_vols_viol_sansarme,main = "Vol violents sans armes", xlab="Pop (log)", ylab="Nb I (log)")
 dev.off()
 
 # Graphique 2: matrice de corrélation des nombres d'infractions par commune (pour 1000 habitants) selon le type d'atteinte
@@ -117,11 +105,7 @@ png("Graphique2.png")
 corrplot(data.graphique2.cor, type="upper", order="hclust", tl.col="black", tl.srt=45)
 dev.off()
 
-write.csv(data.graphique2.cor, "data.graphique2.cor.csv", row.names=FALSE)
-
-
-
-# Graphiques 2a et 2b ci-dessous à mettre en Annexe (ou à supprimer du Mémoire):
+# Graphiques 2a et 2b ci-desspis à mettre en Annexe (ou à supprimer du Mémoire):
 
 # Graphique 2a (Annexe): Matrice de corrélation des nombres d'infractions (I) et des nombres de victimes (V),pour 1000 habitants 
 # - par type d'atteinte
@@ -129,16 +113,11 @@ png("Graphique2a_annexe.png")
 corrplot(data.graphique2a_annexe.cor, type="upper", order="hclust", tl.col="black", tl.srt=45)
 dev.off()
 
-write.csv(data.graphique2a_annexe.cor, "data.graphique2a_annexe.cor.csv", row.names=FALSE)
-
-
 # Graphique 2b (Annexe): Matrice de corrélation des nombres d'infractions (I), des nombres de victimes (V), et des nombres de 
 # mis en cause, pour 1000 habitants - par type d'atteinte
 png("Graphique2b_annexe.png")
 corrplot(data.graphique2b_annexe.cor, type="upper", order="hclust", tl.col="black", tl.srt=45)
 dev.off()
-
-write.csv(data.graphique2b_annexe.cor, "data.graphique2b_annexe.cor.csv", row.names=FALSE)
 
 
 # Graphique 3a: Distribution de la différence des log du nombre d'infractions et du nombre de victimes 
@@ -147,8 +126,6 @@ write.csv(data.graphique2b_annexe.cor, "data.graphique2b_annexe.cor.csv", row.na
 png("Graphique3a.png")
 ggplot(data.graphique3a, aes(x = type_atteinte, y = dlog_I_V)) + geom_boxplot()
 dev.off()
-
-write.csv(quartiles.graphique3a, "quartiles.graphique3a.csv", row.names=FALSE)
 
 # Graphique 3b: 
 # 1- Distribution de la différence des log du nombre d'infractions et du nombre de victimes
@@ -164,23 +141,14 @@ png("Graphique3b_2.png")
 ggplot(data.graphique3b_2, aes(x = type_atteinte, y = dlog_I_M)) + geom_boxplot()
 dev.off()
 
-write.csv(quartiles.graphique3b_1, "quartiles.graphique3b_1.csv", row.names=FALSE)
-write.csv(quartiles.graphique3b_2, "quartiles.graphique3b_2.csv", row.names=FALSE)
-
 
 # Tableau 3a: Proportion d'infractions (I) associées à un couple de communes (I,V) présentes dans un même zonage d'étude
 # - selon le type d'atteinte
 write.csv(tableau3a, "Tableau3a.csv", row.names=FALSE)
-# variante sur le champ des atteintes avec les communes I et V différentes:
-write.csv(tableau3a_2, "Tableau3a_2.csv", row.names=FALSE)
-
 
 # Tableau 3b: Proportion d'infractions (I) associées à un triplet de communes (I,V,M) présentes dans un même zonage d'étude
 # - selon le type d'atteinte
 write.csv(tableau3b, "Tableau3b.csv", row.names=FALSE)
-# variante sur le champ des atteintes avec les communes I, V et M différentes:
-write.csv(tableau3b_2, "Tableau3b_2.csv", row.names=FALSE)
-
 
 # A mettre en Annexe ou dans le corps principal du mémoire:
 
@@ -195,10 +163,10 @@ write.csv(tableau3b_bis, "Tableau3b_bis.csv", row.names=FALSE)
 
 # A mettre éventuellement en Annexe, en réplique des tableaux 3a et 3b en distinguant les sous-périodes 2016-2019 (pré-Covid)
 # et 2020-2021 (Covid):
-# write.csv(tableau3a_2016_2019_annexe, "Tableau3a_2016_2019_annexe.csv", row.names=FALSE)
-# write.csv(tableau3a_2020_2021_annexe, "Tableau3a_2020_2021_annexe.csv", row.names=FALSE)
-# write.csv(tableau3b_2016_2019_annexe, "Tableau3b_2016_2019_annexe.csv", row.names=FALSE)
-# write.csv(tableau3b_2020_2021_annexe, "Tableau3b_2020_2021_annexe.csv", row.names=FALSE)
+write.csv(tableau3a_2016_2019_annexe, "Tableau3a_2016_2019_annexe.csv", row.names=FALSE)
+write.csv(tableau3a_2020_2021_annexe, "Tableau3a_2020_2021_annexe.csv", row.names=FALSE)
+write.csv(tableau3b_2016_2019_annexe, "Tableau3b_2016_2019_annexe.csv", row.names=FALSE)
+write.csv(tableau3b_2020_2021_annexe, "Tableau3b_2020_2021_annexe.csv", row.names=FALSE)
 
 # Raffinements visant à analyser le statut des communes (I,V,M) au sein d'un même zonage...
 
@@ -273,203 +241,32 @@ write.csv(tableau7b_bis, "Tableau7b_bis.csv", row.names=FALSE)
 # selon  le couple de communes (I,V) dans la GD mais selon le couple (M,V) dans la GD:
 write.csv(tableau7b_ter, "Tableau7b_ter.csv", row.names=FALSE)
 
-# Autres tableaux:
-
-# ventilation des atteintes par type selon la grille de densité à 4 positions:
-write.csv(tableau_a_GD, "tableau_a_GD", row.names=FALSE)
-
-
 
 # Etape 5: Partie 3 du mémoire: Classification des communes et des départements de France métropolitaine au regard de la délinquance
-source(paste0(scripts_path,"/5_Partie3_Memoire.R"),encoding="UTF-8")
-
-# ACP n°1: individus = 96 départements de la France métropolitaine.
-# 16 variables actives: volume de la délinquance (8 types d'atteinte) + structure de la délinquance (8 types d'atteinte)
-# 12 variables quantitatives illustratives: 6 (IV ds même zonage) + 6 (corpo_IVM ds même zonage)
-
-# Export au format CSV des aides à l'interprétation:
-write.infile(res.PCA_1,"res.PCA_1.csv",sep=";")
+source(paste0(scripts_path,"/5_Partie3_Memoire.R"),encoding = "UTF-8")
 
 # Export au format PNG des figures relatives à l'ACP n°1:
-ggexport (plotlist = list(scree.plot_ACP_1,
-                          plot_PCA_1_var_axes1_2,plot_PCA_1_var_axes2_3,
-                          plot_PCA_1_ind_axes1_2,plot_PCA_1_ind_axes2_3,
+ggexport (plotlist = list(scree.plot_ACP_1,plot_PCA_1_var_axes1_2,plot_PCA_1_var_axes2_3,plot_PCA_1_ind_axes1_2,
                           plot_PCA_1_ind_axes1_2_ZE,plot_PCA_1_ind_axes1_2_BV,plot_PCA_1_ind_axes1_2_GD,
-                          plot_PCA_1_ind_axes1_2_UU,plot_PCA_1_ind_axes1_2_AAV,plot_PCA_1_ind_axes1_2_CENTR),
+                          plot_PCA_1_ind_axes1_2_UU,plot_PCA_1_ind_axes1_2_AAV,plot_PCA_1_ind_axes1_2_CENTR,plot_CAH_1_dendrogramme),
           filename = "Figures_ACP_1.png")
 
 # Export au format PNG des figures relatives à la CAH n°1:
-ggexport (plotlist = list(plot_CAH_1_dendrogramme2,plot_CAH_1_clusters_axes1_2),
+ggexport (plotlist = list(plot_CAH_1_dendrogramme2,fviz_cluster),
           filename = "Figures_CAH_1.png")
 
-# Export au format PDF des figures (meilleur rendu en latex):
-
-#ACP1:
-pdf ("scree.plot_ACP_1.pdf")
-print(scree.plot_ACP_1)
-dev.off ()
-pdf ("plot_PCA_1_var_axes1_2.pdf")
-print(plot_PCA_1_var_axes1_2)
-dev.off ()
-pdf ("plot_PCA_1_var_axes2_3.pdf")
-print(plot_PCA_1_var_axes1_2)
-dev.off ()
-pdf ("plot_PCA_1_ind_axes1_2.pdf")
-print(plot_PCA_1_ind_axes1_2)
-dev.off ()
-pdf ("plot_PCA_1_ind_axes2_3.pdf")
-print(plot_PCA_1_ind_axes2_3)
-dev.off ()
-pdf ("plot_PCA_1_ind_axes1_2_ZE.pdf")
-print(plot_PCA_1_ind_axes1_2_ZE)
-dev.off ()
-pdf ("plot_PCA_1_ind_axes1_2_BV.pdf")
-print(plot_PCA_1_ind_axes1_2_BV)
-dev.off ()
-pdf ("plot_PCA_1_ind_axes1_2_GD.pdf")
-print(plot_PCA_1_ind_axes1_2_GD)
-dev.off ()
-pdf ("plot_PCA_1_ind_axes1_2_UU.pdf")
-print(plot_PCA_1_ind_axes1_2_UU)
-dev.off ()
-pdf ("plot_PCA_1_ind_axes1_2_AAV.pdf")
-print(plot_PCA_1_ind_axes1_2_AAV)
-dev.off ()
-pdf ("plot_PCA_1_ind_axes1_2_CENTR.pdf")
-print(plot_PCA_1_ind_axes1_2_CENTR)
-dev.off ()
-pdf ("plot_PCA_1_ind_axes1_2_IVM_ZE.pdf")
-print(plot_PCA_1_ind_axes1_2_IVM_ZE)
-dev.off ()
-pdf ("plot_PCA_1_ind_axes1_2_IVM_BV.pdf")
-print(plot_PCA_1_ind_axes1_2_IVM_BV)
-dev.off ()
-pdf ("plot_PCA_1_ind_axes1_2_IVM_GD.pdf")
-print(plot_PCA_1_ind_axes1_2_IVM_GD)
-dev.off ()
-pdf ("plot_PCA_1_ind_axes1_2_IVM_UU.pdf")
-print(plot_PCA_1_ind_axes1_2_IVM_UU)
-dev.off ()
-pdf ("plot_PCA_1_ind_axes1_2_IVM_AAV.pdf")
-print(plot_PCA_1_ind_axes1_2_IVM_AAV)
-dev.off ()
-pdf ("plot_PCA_1_ind_axes1_2_IVM_CENTR.pdf")
-print(plot_PCA_1_ind_axes1_2_IVM_CENTR)
-dev.off ()
-
-# CAH1:
-pdf ("plot_CAH_1_dendrogramme2.pdf")
-print(plot_CAH_1_dendrogramme2)
-dev.off ()
-pdf ("plot_CAH_1_clusters_axes1_2.pdf")
-print(plot_CAH_1_clusters_axes1_2)
+# Export au format PDF des figures relatives à la CAH n°1 et non exportables en format PNG:
+pdf ("plot_CAH_1_gains_inertie.pdf")
+print(plot_CAH_1_gains_inertie)
 dev.off ()
 
 
 # Tableau 8: Dans chaque cluster de départements, part moyenne d'atteintes associées à un couple (I,V) de communes
 # situées dans un même zonage d'étude (une colonne = type de zonage):
-write.csv(tableau8_CAH1, "tableau8_CAH1.csv", row.names=FALSE)
-
-# Export au format CSV des aides à l'interprétation:
-write.infile(res.CAH_1$desc.var,"res.CAH_1_desc.var.csv",sep=";") # "description of the clusters by the variables" 
-write.infile(res.CAH_1$desc.axes,"res.CAH_1_desc.axes.csv",sep=";") # "description of the clusters by the dimensions
-# write.infile(res.CAH_1$desc.ind,"res.CAH_1_desc.ind.csv",sep=";") # "description of the clusters by the individuals" 
-# write.infile(res.CAH_1$call,"res.CAH_1_call.csv",sep=";") # "summary statistics" 
+write.csv(tableau8, "Tableau8.csv", row.names=FALSE)
 
 
-# B) ACP n°2: individus = 17 306 communes de la France métropolitaine.
-# 16 variables actives: volume de la délinquance (8 types d'atteinte) + structure de la délinquance (8 types d'atteinte)
-# 12 variables quantitatives illustratives: 6 (IV ds même zonage) + 6 (corpo_IVM ds même zonage)
-
-# Export au format CSV des aides à l'interprétation:
-write.infile(res.PCA_2,"res.PCA_2.csv",sep=";")
-
-# Export au format PNG des figures relatives à l'ACP n°2:
-ggexport (plotlist = list(scree.plot_ACP_2,
-                          plot_PCA_2_var_axes1_2,plot_PCA_2_var_axes2_3,
-                          plot_PCA_2_ind_axes1_2,plot_PCA_2_ind_axes2_3,
-                          plot_PCA_2_ind_axes1_2_ZE,plot_PCA_2_ind_axes1_2_BV,plot_PCA_2_ind_axes1_2_GD,
-                          plot_PCA_2_ind_axes1_2_UU,plot_PCA_2_ind_axes1_2_AAV,plot_PCA_2_ind_axes1_2_CENTR),
-          filename = "Figures_ACP_2.png")
-
-# Export au format PNG des figures relatives à la CAH n°2:
-# ggexport (plotlist = list(plot_CAH_2_dendrogramme2,plot_CAH_2_clusters_axes1_2),
-#           filename = "Figures_CAH_2.png")
-
-# Export au format PDF des figures (meilleur rendu en latex):
-
-#ACP2:
-pdf ("scree.plot_ACP_2.pdf")
-print(scree.plot_ACP_2)
-dev.off ()
-pdf ("plot_PCA_2_var_axes1_2.pdf")
-print(plot_PCA_2_var_axes1_2)
-dev.off ()
-pdf ("plot_PCA_2_var_axes2_3.pdf")
-print(plot_PCA_2_var_axes1_2)
-dev.off ()
-pdf ("plot_PCA_2_ind_axes1_2.pdf")
-print(plot_PCA_2_ind_axes1_2)
-dev.off ()
-pdf ("plot_PCA_2_ind_axes2_3.pdf")
-print(plot_PCA_2_ind_axes2_3)
-dev.off ()
-pdf ("plot_PCA_2_ind_axes1_2_ZE.pdf")
-print(plot_PCA_2_ind_axes1_2_ZE)
-dev.off ()
-pdf ("plot_PCA_2_ind_axes1_2_BV.pdf")
-print(plot_PCA_2_ind_axes1_2_BV)
-dev.off ()
-pdf ("plot_PCA_2_ind_axes1_2_GD.pdf")
-print(plot_PCA_2_ind_axes1_2_GD)
-dev.off ()
-pdf ("plot_PCA_2_ind_axes1_2_UU.pdf")
-print(plot_PCA_2_ind_axes1_2_UU)
-dev.off ()
-pdf ("plot_PCA_2_ind_axes1_2_AAV.pdf")
-print(plot_PCA_2_ind_axes1_2_AAV)
-dev.off ()
-pdf ("plot_PCA_2_ind_axes1_2_CENTR.pdf")
-print(plot_PCA_2_ind_axes1_2_CENTR)
-dev.off ()
-pdf ("plot_PCA_2_ind_axes1_2_IVM_ZE.pdf")
-print(plot_PCA_2_ind_axes1_2_IVM_ZE)
-dev.off ()
-pdf ("plot_PCA_2_ind_axes1_2_IVM_BV.pdf")
-print(plot_PCA_2_ind_axes1_2_IVM_BV)
-dev.off ()
-pdf ("plot_PCA_2_ind_axes1_2_IVM_GD.pdf")
-print(plot_PCA_2_ind_axes1_2_IVM_GD)
-dev.off ()
-pdf ("plot_PCA_2_ind_axes1_2_IVM_UU.pdf")
-print(plot_PCA_2_ind_axes1_2_IVM_UU)
-dev.off ()
-pdf ("plot_PCA_2_ind_axes1_2_IVM_AAV.pdf")
-print(plot_PCA_2_ind_axes1_2_IVM_AAV)
-dev.off ()
-pdf ("plot_PCA_2_ind_axes1_2_IVM_CENTR.pdf")
-print(plot_PCA_2_ind_axes1_2_IVM_CENTR)
-dev.off ()
-
-# CAH2:
-# pdf ("plot_CAH_2_dendrogramme2.pdf")
-# print(plot_CAH_2_dendrogramme2)
-# dev.off ()
-# pdf ("plot_CAH_2_clusters_axes1_2.pdf")
-# print(plot_CAH_2_clusters_axes1_2)
-# dev.off ()
-
-
-# Tableau 8: Dans chaque cluster de départements, part moyenne d'atteintes associées à un couple (I,V) de communes
-# situées dans un même zonage d'étude (une colonne = type de zonage):
-# write.csv(tableau8_CAH2, "tableau8_CAH2.csv", row.names=FALSE)
-# 
-# # Export au format CSV des aides à l'interprétation:
-# write.infile(res.CAH_2$desc.var,"res.CAH_2_desc.var.csv",sep=";") # "description of the clusters by the variables" 
-# write.infile(res.CAH_2$desc.axes,"res.CAH_2_desc.axes.csv",sep=";") # "description of the clusters by the dimensions
-# write.infile(res.CAH_2$desc.ind,"res.CAH_2_desc.ind.csv",sep=";") # "description of the clusters by the individuals" 
-# write.infile(res.CAH_2$call,"res.CAH_2_call.csv",sep=";") # "summary statistics" 
-
-
-
+# Etape 6: Partie 4 du mémoire: Lien entre les clusters de communes et les zonages d'étude
+# source(paste0(scripts_path,"/6_Partie4_Memoire.R"))
+# @Kevin et Aurélien: le code est en cours de finalisation et vous sera transmis très prochainement...
 
